@@ -23,20 +23,22 @@
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;height:100%;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,system-ui,sans-serif;overflow:hidden}
   body{background:var(--bg);transition:background 900ms cubic-bezier(.2,.8,.2,1)}
+  
   canvas#stars{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
   .aurora{position:fixed;inset:-20%;z-index:0;pointer-events:none;opacity:.36;transition:opacity .8s,background .8s;
     background:radial-gradient(circle at 50% 35%, rgba(var(--accent-rgb),.13), transparent 28%),
                radial-gradient(circle at 20% 85%, rgba(var(--accent-rgb),.08), transparent 24%);
     filter:blur(45px)}
+  
   .app{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding-top:max(18px,env(safe-area-inset-top))}
   header{display:flex;align-items:center;justify-content:space-between;padding:10px 22px 6px;position:relative;z-index:2}
   
-  /* Brand / Logo mit Klickfunktion */
   .brand{font-size:12px;font-weight:700;letter-spacing:.28em;color:rgba(255,255,255,.82);cursor:pointer;transition:opacity .2s ease, transform .2s ease;user-select:none}
   .brand:hover{opacity:.6}
   .brand:active{transform:scale(.95)}
 
   .utc-pill{font-size:11px;letter-spacing:.08em;color:var(--muted);border:1px solid var(--border);padding:7px 10px;border-radius:999px;background:rgba(0,0,0,.28);backdrop-filter:blur(18px)}
+  
   main{flex:1;position:relative;overflow:hidden}
   .view{position:absolute;inset:0;padding:22px 20px 140px;overflow:auto;opacity:0;transform:translateY(8px) scale(.995);pointer-events:none;transition:.32s ease}
   .view.active{opacity:1;transform:none;pointer-events:auto}
@@ -47,7 +49,6 @@
   .quote em{font-style:normal;color:var(--accent)}
   .sub{margin:24px auto 0;max-width:320px;color:var(--muted);font-size:14px;line-height:1.55}
   
-  /* Sticky Search Bar */
   .search-sticky{position:sticky;top:-22px;z-index:10;padding:12px 20px;background:rgba(0,0,0,.85);backdrop-filter:blur(18px);margin:-22px -20px 15px}
   .search-input{width:100%;padding:10px 16px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.07);color:#fff;font-size:14px;outline:none;transition:.2s ease}
   .search-input:focus{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.12)}
@@ -73,21 +74,21 @@
   .live-dot{width:7px;height:7px;border-radius:50%;background:var(--live);box-shadow:0 0 8px var(--live);animation:pulse 1.4s infinite}
   @keyframes pulse{0%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.5)}100%{opacity:1;transform:scale(1)}}
 
-  /* Detail Unterseite */
   .detail-page{display:none;padding-bottom:30px}
   .detail-page.active{display:block;animation:fade .25s ease}
   .back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.08);color:#fff;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:16px}
-  .detail-hero-img{width:100%;height:220px;border-radius:20px;object-fit:cover;margin-bottom:16px;border:1px solid var(--border);background:rgba(255,255,255,.05);display:block}
+  
+  /* Perfekt eingepasstes Hero-Bild */
+  .detail-hero-img{width:100%;height:220px;border-radius:20px;object-fit:cover;object-position:center;margin-bottom:16px;border:1px solid var(--border);background:rgba(255,255,255,.05);display:block}
+  
   .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
   .detail-card{padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
   .detail-card label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
   .detail-card val{display:block;font-size:13px;font-weight:650}
 
-  /* Glossar Querverweis Button */
   .glostar-link-btn{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:10px 16px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:.2s ease}
   .glostar-link-btn:active{transform:scale(.97);background:rgba(255,255,255,.12)}
 
-  /* GloStar Kacheln */
   .glostar-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));gap:12px}
   .glostar-card{border:1px solid var(--border);border-radius:18px;background:rgba(255,255,255,.04);padding:16px;cursor:pointer;transition:.25s ease;display:flex;flex-direction:column;gap:8px}
   .glostar-card:active{transform:scale(.98)}
@@ -95,15 +96,15 @@
   .glostar-title{font-size:15px;font-weight:650}
   .glostar-desc{font-size:12px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
-  /* Graphic Container */
   .graphic-box{width:100%;height:160px;border-radius:16px;border:1px solid var(--border);background:rgba(255,255,255,.02);display:grid;place-items:center;margin:15px 0;position:relative;overflow:hidden}
 
-  /* Tabbar & Überdeckung */
-  .tabbar{position:absolute;left:14px;right:14px;bottom:calc(12px + var(--safe-bottom));height:72px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:rgba(8,8,8,.88);backdrop-filter:blur(32px) saturate(1.5);display:grid;grid-template-columns:repeat(4,1fr);padding:7px;box-shadow:0 18px 45px rgba(0,0,0,.8);z-index:100}
+  /* Navigation Bar - Schwebend über dem Canvas mit Glasmorphismus */
+  .tabbar{position:fixed;left:14px;right:14px;bottom:calc(12px + var(--safe-bottom));height:72px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:rgba(8,8,8,.75);backdrop-filter:blur(32px) saturate(1.5);display:grid;grid-template-columns:repeat(4,1fr);padding:7px;box-shadow:0 18px 45px rgba(0,0,0,.8);z-index:100}
   .tab{border:0;background:none;color:rgba(255,255,255,.42);border-radius:18px;display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;font:inherit;cursor:pointer}
   .tab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
   .tab span{font-size:9.5px;font-weight:600}
   .tab.active{color:var(--accent);background:rgba(var(--accent-rgb),.08)}
+  
   .empty{text-align:center;color:var(--muted);padding-top:15vh}
   .empty .glyph{font-size:38px;margin-bottom:12px}
   .empty .title{font-size:20px;font-weight:650;color:#fff}
@@ -111,7 +112,10 @@
   .hist-list{display:grid;gap:12px}
   .hist-card{border:1px solid var(--border);border-radius:20px;background:rgba(255,255,255,.04);overflow:hidden;cursor:pointer;transition:.25s ease;display:grid;grid-template-columns:64px 1fr;gap:13px;padding:12px}
   .hist-card:active{transform:scale(.985)}
-  .hist-thumb{width:64px;height:64px;border-radius:14px;background-size:cover;background-position:center;display:grid;place-items:center;font-size:24px;background-color:rgba(var(--event-rgb),.13);border:1px solid rgba(var(--event-rgb),.2)}
+  
+  /* Perfekt angepasstes Vorschaubild im Verlauf */
+  .hist-thumb{width:64px;height:64px;border-radius:14px;background-size:cover;background-position:center;background-repeat:no-repeat;display:grid;place-items:center;font-size:24px;background-color:rgba(var(--event-rgb),.13);border:1px solid rgba(var(--event-rgb),.2)}
+  
   .hist-meta .name{font-size:14.5px}
   .hist-meta .time{margin-top:4px}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -131,9 +135,9 @@
   <main>
     <section class="view home active" id="home">
       <div class="hero">
-        <div class="eyebrow">Your window into the universe</div>
-        <div class="quote">“Somewhere, something <em>incredible</em> is waiting to be known.”</div>
-        <div class="sub">Track celestial moments. Tap an event and let the universe change the atmosphere around you.</div>
+        <div class="eyebrow">Dein Fenster ins Universum</div>
+        <div class="quote">“Irgendwo wartet etwas <em>Unglaubliches</em> darauf, entdeckt zu werden.”</div>
+        <div class="sub">Verfolge kosmische Momente. Tippe auf ein Ereignis, um das Universum um dich herum zu verändern.</div>
       </div>
     </section>
 
@@ -207,7 +211,10 @@ function fmtUTC(d){
 }
 function pad(n){ return String(n).padStart(2,"0"); }
 
-/* GloStar Begriffe Datenbank (Rein Erklärend) */
+/* Aktives Phänomen für Hintergrund-Canvas-Animation */
+let activeBackgroundPhenomenon = null;
+
+/* GloStar Begriffe Datenbank */
 const GLOSTAR_DATA = [
   {
     id: "perseiden-maximum",
@@ -315,7 +322,6 @@ function computeSeasons(startMs, endMs){
   return out;
 }
 
-/* Kuration: Rein ereignisbezogene Beschreibungen */
 const curated = [
   {name:"Totale Sonnenfinsternis", date:"2026-08-12T17:47:00Z", icon:"☀", rgb:"255,205,110", duration:3, wiki:"Solar eclipse", location:"Europa, Island, Grönland", desc:"Maximale Verdunkelung um 17:47 UTC. Beste Sichtverhältnisse im Kernschattenbereich.", glostarId:"sonnenfinsternis"},
   {name:"Perseiden-Maximum",       date:"2026-08-12T22:00:00Z", icon:"☄", rgb:"255,170,90",  duration:10, wiki:"Perseids", location:"Global", desc:"Erwartete Frequenz von bis zu 100 Meteoren pro Stunde. Optimal in den späten Nachtstunden.", glostarId:"perseiden-maximum"},
@@ -375,7 +381,6 @@ async function getWikiData(topic){
   return {img:null, extract:null};
 }
 
-/* Funktion zum direkten Wechsel ins Glossar */
 function jumpToGloStar(glostarId){
   const itemIndex = GLOSTAR_DATA.findIndex(item => item.id === glostarId);
   if(itemIndex !== -1){
@@ -394,9 +399,12 @@ async function openDetail(eventIndex, viewPrefix){
   const mainEl = document.getElementById(`${viewPrefix}-main`);
   const detailEl = document.getElementById(`${viewPrefix}-detail`);
   
+  // Setze Hintergrund-Phänomen für Canvas
+  activeBackgroundPhenomenon = e.glostarId || e.kind || "star";
+  
   mainEl.style.display = "none";
   detailEl.classList.add("active");
-  detailEl.innerHTML = `<button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück</button><div>Lade Informationen &amp; Medien...</div>`;
+  detailEl.innerHTML = `<button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück</button><div>Lade Informationen...</div>`;
   
   const wikiData = await getWikiData(e.wiki);
   const imgHtml = wikiData.img ? `<img src="${wikiData.img}" class="detail-hero-img" alt="${e.name}">` : '';
@@ -433,6 +441,9 @@ async function openGloStarDetail(index){
   const mainEl = document.getElementById(`glostar-main`);
   const detailEl = document.getElementById(`glostar-detail`);
   
+  // Setze Hintergrund-Phänomen für Canvas
+  activeBackgroundPhenomenon = item.id;
+
   mainEl.style.display = "none";
   detailEl.classList.add("active");
   detailEl.innerHTML = `<button class="back-btn" onclick="closeDetail('glostar')">← Zurück</button><div>Lade Begriff...</div>`;
@@ -453,12 +464,13 @@ async function openGloStarDetail(index){
     <div style="margin-top:20px;line-height:1.6;color:var(--muted)">
       <h3 style="color:#fff;margin-bottom:8px">Erklärung</h3>
       <p style="color:#fff;font-size:15px;margin-bottom:12px">${item.explanation}</p>
-      ${wikiData.extract ? `<h4 style="color:#fff;margin-top:16px">Zusatzwissen (Wikipedia)</h4><p style="font-size:13px">${wikiData.extract}</p>` : ''}
+      ${wikiData.extract ? `<p style="font-size:13px;color:rgba(255,255,255,0.85);margin-top:14px;">${wikiData.extract}</p>` : ''}
     </div>
   `;
 }
 
 function closeDetail(viewPrefix){
+  activeBackgroundPhenomenon = null;
   document.getElementById(`${viewPrefix}-main`).style.display = "block";
   document.getElementById(`${viewPrefix}-detail`).classList.remove("active");
 }
@@ -510,7 +522,10 @@ function renderHistory(filterText = ""){
     const wiki = await getWikiData(e.wiki);
     if(wiki.img){
       const thumb = document.getElementById("thumb-"+idx);
-      if(thumb){ thumb.style.backgroundImage = `url('${wiki.img}')`; thumb.textContent = ""; }
+      if(thumb){ 
+        thumb.style.backgroundImage = `url('${wiki.img}')`; 
+        thumb.textContent = ""; 
+      }
     }
   });
 }
@@ -531,7 +546,6 @@ function renderGloStar(filterText = ""){
   }).join("");
 }
 
-/* Klick auf das Logo führt zurück zur Startseite */
 document.getElementById("brandBtn").addEventListener("click", () => {
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
   document.querySelector('.tab[data-tab="home"]').classList.add("active");
@@ -574,7 +588,7 @@ setInterval(()=>{
   document.getElementById("utcClock").textContent = "UTC " + new Date().toLocaleTimeString("en-GB",{timeZone:"UTC",hour12:false});
 }, 1000);
 
-/* Sterne Canvas mit Gravitations-Scroll-Effekt */
+/* Sterne Canvas mit dynamischen Hintergrund-Phänomenen */
 const canvas = document.getElementById("stars"), ctx = canvas.getContext("2d");
 let W,H,DPR,stars=[];
 let scrollVelocity = 0;
@@ -606,8 +620,87 @@ document.querySelectorAll('.view').forEach(view => {
   });
 });
 
+function drawPhenomenon(t) {
+  if (!activeBackgroundPhenomenon) return;
+
+  const cx = W / 2;
+  const cy = H * 0.28;
+
+  ctx.save();
+
+  if (activeBackgroundPhenomenon === "sonnenfinsternis") {
+    // Rotierende Korona + Verdunkelte Sonne
+    const auraRadius = 75 + Math.sin(t * 0.003) * 6;
+    const grad = ctx.createRadialGradient(cx, cy, 50, cx, cy, auraRadius + 40);
+    grad.addColorStop(0, 'rgba(255, 205, 110, 0.7)');
+    grad.addColorStop(0.5, 'rgba(255, 150, 50, 0.2)');
+    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, auraRadius + 40, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Sonnenkorona Strahlen
+    ctx.strokeStyle = "rgba(255, 220, 150, 0.15)";
+    ctx.lineWidth = 1.5;
+    for (let i = 0; i < 12; i++) {
+      const angle = (t * 0.0005) + (i * Math.PI / 6);
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(angle) * 55, cy + Math.sin(angle) * 55);
+      ctx.lineTo(cx + Math.cos(angle) * 95, cy + Math.sin(angle) * 95);
+      ctx.stroke();
+    }
+
+    // Schwarzer Mondkörper
+    ctx.beginPath();
+    ctx.arc(cx, cy, 52, 0, Math.PI * 2);
+    ctx.fillStyle = '#000000';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 205, 110, 0.9)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+  } else if (activeBackgroundPhenomenon === "perseiden-maximum") {
+    // Fliegende Sternschnuppen
+    ctx.strokeStyle = "rgba(255, 200, 120, 0.6)";
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 3; i++) {
+      const offset = (t * 0.4 + i * 400) % (W + 200);
+      const startX = W - offset;
+      const startY = (offset * 0.5) % (H * 0.6);
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(startX + 60, startY - 30);
+      ctx.stroke();
+    }
+
+  } else if (activeBackgroundPhenomenon === "neptun" || activeBackgroundPhenomenon === "opposition" || activeBackgroundPhenomenon === "konjunktion") {
+    // Rotierendes Planeten-Modell
+    const rot = t * 0.001;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 45, 0, Math.PI * 2);
+    const pGrad = ctx.createLinearGradient(cx - 45, cy - 45, cx + 45, cy + 45);
+    pGrad.addColorStop(0, '#3182ce');
+    pGrad.addColorStop(1, '#0d253f');
+    ctx.fillStyle = pGrad;
+    ctx.fill();
+
+    // Planet-Ring
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, 75, 18, rot, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(180, 220, 255, 0.4)";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
 function animate(t){
   ctx.clearRect(0,0,W,H);
+  
+  // Sternenfeld zeichnen
   for(const s of stars){
     s.y -= (s.v + scrollVelocity);
     s.x += s.dx;
@@ -619,8 +712,13 @@ function animate(t){
     ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
     ctx.fillStyle = `rgba(255,255,255,${Math.min(1,tw)})`; ctx.fill();
   }
+
+  // Interaktives Phänomen im Hintergrund zeichnen
+  drawPhenomenon(t);
+
   requestAnimationFrame(animate);
 }
+
 addEventListener("resize",resize); resize(); requestAnimationFrame(animate);
 </script>
 </body>
