@@ -41,15 +41,21 @@
   .quote{font-size:clamp(32px,8vw,58px);line-height:.98;font-weight:650;letter-spacing:-.05em;text-wrap:balance;text-shadow:0 0 30px rgba(var(--accent-rgb),.12)}
   .quote em{font-style:normal;color:var(--accent)}
   .sub{margin:24px auto 0;max-width:320px;color:var(--muted);font-size:14px;line-height:1.55}
-  .section-head{display:flex;align-items:end;justify-content:space-between;margin:8px 3px 6px}
+  
+  /* Sticky Search Bar */
+  .search-sticky{position:sticky;top:-22px;z-index:10;padding:10px 0;background:rgba(0,0,0,.75);backdrop-filter:blur(15px);margin:-22px -20px 15px;padding:12px 20px}
+  .search-input{width:100%;padding:10px 16px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.07);color:#fff;font-size:14px;outline:none;transition:.2s ease}
+  .search-input:focus{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.12)}
+  .search-input::placeholder{color:var(--muted)}
+
+  .section-head{display:flex;align-items:end;justify-content:space-between;margin:8px 3px 12px}
   h1{font-size:34px;line-height:1;margin:0;letter-spacing:-.045em}
   .section-head span{font-size:12px;color:var(--muted)}
-  .data-note{font-size:10.5px;color:var(--muted);margin:0 3px 20px;line-height:1.5;opacity:.7}
+  .data-note{font-size:10.5px;color:var(--muted);margin:0 3px 15px;line-height:1.5;opacity:.7}
   .event-list{display:grid;gap:11px}
   .event{position:relative;display:grid;grid-template-columns:54px 1fr auto;gap:13px;align-items:center;padding:14px 14px;border:1px solid var(--border);background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.025));border-radius:20px;backdrop-filter:blur(20px);cursor:pointer;transition:.25s ease;overflow:hidden}
   .event:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 10% 50%,rgba(var(--event-rgb),.14),transparent 34%);opacity:.9;pointer-events:none}
   .event:active{transform:scale(.985)}
-  .event.selected{border-color:rgba(var(--event-rgb),.55);box-shadow:0 0 34px rgba(var(--event-rgb),.09)}
   .event.live{border-color:rgba(var(--live-rgb),.55);box-shadow:0 0 30px rgba(var(--live-rgb),.14)}
   .icon{width:54px;height:54px;border-radius:17px;display:grid;place-items:center;background:rgba(var(--event-rgb),.11);border:1px solid rgba(var(--event-rgb),.22);font-size:26px;filter:drop-shadow(0 0 11px rgba(var(--event-rgb),.25))}
   .meta{min-width:0}
@@ -61,41 +67,39 @@
   .live-badge{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:800;letter-spacing:.09em;color:var(--live);margin-bottom:3px}
   .live-dot{width:7px;height:7px;border-radius:50%;background:var(--live);box-shadow:0 0 8px var(--live);animation:pulse 1.4s infinite}
   @keyframes pulse{0%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.5)}100%{opacity:1;transform:scale(1)}}
-  .detail{margin-top:14px;padding:18px;border-radius:24px;border:1px solid var(--border);background:rgba(0,0,0,.38);backdrop-filter:blur(22px);display:none}
-  .detail.show{display:block;animation:fade .25s ease}
-  .detail .big-icon{font-size:38px}
-  .detail h2{font-size:24px;margin:10px 0 8px;letter-spacing:-.035em}
-  .detail p{font-size:13px;line-height:1.55;color:var(--muted);margin:0}
-  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  .tabbar{position:absolute;left:14px;right:14px;bottom:calc(12px + var(--safe-bottom));height:72px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:rgba(8,8,8,.76);backdrop-filter:blur(28px) saturate(1.4);display:grid;grid-template-columns:repeat(4,1fr);padding:7px;box-shadow:0 18px 45px rgba(0,0,0,.5)}
+
+  /* Detail Unterseite */
+  .detail-page{display:none;padding-bottom:20px}
+  .detail-page.active{display:block;animation:fade .25s ease}
+  .back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.08);color:#fff;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:16px}
+  .detail-hero-img{width:100%;height:200px;border-radius:20px;object-fit:cover;margin-bottom:16px;border:1px solid var(--border);background:rgba(255,255,255,.05)}
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+  .detail-card{padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
+  .detail-card label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+  .detail-card val{display:block;font-size:13px;font-weight:650}
+
+  .tabbar{position:absolute;left:14px;right:14px;bottom:calc(12px + var(--safe-bottom));height:72px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:rgba(8,8,8,.76);backdrop-filter:blur(28px) saturate(1.4);display:grid;grid-template-columns:repeat(4,1fr);padding:7px;box-shadow:0 18px 45px rgba(0,0,0,.5);z-index:20}
   .tab{border:0;background:none;color:rgba(255,255,255,.42);border-radius:18px;display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;font:inherit;cursor:pointer}
   .tab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
   .tab span{font-size:9.5px;font-weight:600}
   .tab.active{color:var(--accent);background:rgba(var(--accent-rgb),.08)}
-  .empty{text-align:center;color:var(--muted);padding-top:22vh}
+  .empty{text-align:center;color:var(--muted);padding-top:15vh}
   .empty .glyph{font-size:38px;margin-bottom:12px}
   .empty .title{font-size:20px;font-weight:650;color:#fff}
   .empty .sub2{font-size:13px;margin-top:8px}
-  .teaser{margin:22px auto 0;max-width:300px;padding:14px 16px;border-radius:18px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
-  .teaser .tname{font-size:13px;font-weight:650}
-  .teaser .tcount{font-size:20px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
-  .live-card{position:relative;padding:20px;border-radius:24px;border:1px solid rgba(var(--live-rgb),.4);background:linear-gradient(135deg,rgba(var(--live-rgb),.09),rgba(255,255,255,.02));backdrop-filter:blur(20px);margin-bottom:14px;box-shadow:0 0 36px rgba(var(--live-rgb),.1)}
+
+  .live-card{position:relative;padding:20px;border-radius:24px;border:1px solid rgba(var(--live-rgb),.4);background:linear-gradient(135deg,rgba(var(--live-rgb),.09),rgba(255,255,255,.02));backdrop-filter:blur(20px);margin-bottom:14px;box-shadow:0 0 36px rgba(var(--live-rgb),.1);cursor:pointer}
   .live-card .big-icon{font-size:34px}
   .live-card h2{font-size:22px;margin:8px 0 6px;letter-spacing:-.03em}
   .live-card .tplus{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--live);margin:6px 0 8px}
-  .live-card p{font-size:13px;line-height:1.55;color:var(--muted);margin:0}
+
   .hist-list{display:grid;gap:12px}
-  .hist-card{border:1px solid var(--border);border-radius:20px;background:rgba(255,255,255,.04);overflow:hidden;cursor:pointer;transition:.25s ease}
+  .hist-card{border:1px solid var(--border);border-radius:20px;background:rgba(255,255,255,.04);overflow:hidden;cursor:pointer;transition:.25s ease;display:grid;grid-template-columns:64px 1fr;gap:13px;padding:12px}
   .hist-card:active{transform:scale(.985)}
-  .hist-row{display:grid;grid-template-columns:64px 1fr;gap:13px;padding:12px}
   .hist-thumb{width:64px;height:64px;border-radius:14px;background-size:cover;background-position:center;display:grid;place-items:center;font-size:24px;background-color:rgba(var(--event-rgb),.13);border:1px solid rgba(var(--event-rgb),.2)}
   .hist-meta .name{font-size:14.5px}
   .hist-meta .time{margin-top:4px}
-  .hist-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
-  .hist-card.open .hist-body{max-height:260px}
-  .hist-body-inner{padding:0 16px 16px}
-  .hist-body-inner img{width:100%;border-radius:14px;display:block;margin-bottom:10px;max-height:150px;object-fit:cover}
-  .hist-body-inner p{font-size:12.5px;line-height:1.55;color:var(--muted);margin:0}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   ::-webkit-scrollbar{display:none}
 </style>
 </head>
@@ -110,6 +114,7 @@
   </header>
 
   <main>
+    <!-- HOME -->
     <section class="view home active" id="home">
       <div class="hero">
         <div class="eyebrow">Your window into the universe</div>
@@ -118,28 +123,45 @@
       </div>
     </section>
 
+    <!-- EREIGNISSE -->
     <section class="view" id="events">
-      <div class="section-head">
-        <div><div class="eyebrow" style="margin-bottom:9px">Kommende Ereignisse</div><h1>Ereignisse</h1></div>
-        <span id="eventCount"></span>
+      <div id="events-main">
+        <div class="search-sticky">
+          <input type="text" class="search-input" id="searchEvents" placeholder="Events durchsuchen..." />
+        </div>
+        <div class="section-head">
+          <div><div class="eyebrow" style="margin-bottom:9px">Nächste 30 Tage</div><h1>Ereignisse</h1></div>
+          <span id="eventCount"></span>
+        </div>
+        <div class="data-note">Mondphasen &amp; Äquinoktien live berechnet · Konjunktionen &amp; Oppositionen aktuell</div>
+        <div class="event-list" id="eventList"></div>
       </div>
-      <div class="data-note">Mondphasen &amp; Äquinoktien werden im Browser live berechnet · Konjunktionen &amp; Oppositionen: Stand 10. Sep 2026</div>
-      <div class="event-list" id="eventList"></div>
-      <div class="detail" id="detail"></div>
+      <div class="detail-page" id="events-detail"></div>
     </section>
 
+    <!-- LIVE -->
     <section class="view" id="live">
-      <div class="section-head">
-        <div><div class="eyebrow" style="margin-bottom:9px">Jetzt gerade</div><h1>Live</h1></div>
+      <div id="live-main">
+        <div class="section-head">
+          <div><div class="eyebrow" style="margin-bottom:9px">Jetzt gerade</div><h1>Live</h1></div>
+        </div>
+        <div id="liveContent"></div>
       </div>
-      <div id="liveContent"></div>
+      <div class="detail-page" id="live-detail"></div>
     </section>
 
+    <!-- VERLAUF -->
     <section class="view" id="history">
-      <div class="section-head">
-        <div><div class="eyebrow" style="margin-bottom:9px">Letzte 30 Tage</div><h1>Verlauf</h1></div>
+      <div id="history-main">
+        <div class="search-sticky">
+          <input type="text" class="search-input" id="searchHistory" placeholder="Verlauf durchsuchen..." />
+        </div>
+        <div class="section-head">
+          <div><div class="eyebrow" style="margin-bottom:9px">Letzte 30 Tage</div><h1>Verlauf</h1></div>
+        </div>
+        <div class="hist-list" id="histList"></div>
       </div>
-      <div class="hist-list" id="histList"></div>
+      <div class="detail-page" id="history-detail"></div>
     </section>
   </main>
 
@@ -164,7 +186,6 @@
 </div>
 
 <script>
-/* ---------- Zeit-Helfer ---------- */
 const MS_DAY = 86400000;
 function jdToMs(jd){ return (jd - 2440587.5) * MS_DAY; }
 function fmtUTC(d){
@@ -172,7 +193,7 @@ function fmtUTC(d){
 }
 function pad(n){ return String(n).padStart(2,"0"); }
 
-/* ---------- Live berechnete Mondphasen ---------- */
+/* Mondphasen Berechnung */
 function computeMoonPhases(startMs, endMs){
   const REF = Date.UTC(2000,0,6,18,14,0);
   const SYN = 29.530588861 * MS_DAY;
@@ -182,19 +203,19 @@ function computeMoonPhases(startMs, endMs){
   for(; k<=kEnd; k++){
     const base = REF + k*SYN;
     const phases = [
-      {t:base,          name:"Neumond",        icon:"●", rgb:"205,220,255", duration:2, wiki:"New moon",  desc:"Der Mond steht zwischen Erde und Sonne; seine beleuchtete Seite zeigt von der Erde weg. Die beste Nacht im Monat für Deep-Sky-Beobachtung ohne störendes Mondlicht."},
-      {t:base+SYN*0.25,  name:"Erstes Viertel", icon:"◑", rgb:"220,230,255", duration:2, wiki:"Moon",      desc:"Der Mond erreicht das erste Viertel — die Hälfte seiner sichtbaren Scheibe ist beleuchtet."},
-      {t:base+SYN*0.5,   name:"Vollmond",       icon:"○", rgb:"235,240,255", duration:3, wiki:"Full moon", desc:"Der Mond ist von der Erde aus vollständig beleuchtet zu sehen."},
-      {t:base+SYN*0.75,  name:"Letztes Viertel",icon:"◐", rgb:"220,230,255", duration:2, wiki:"Moon",      desc:"Der Mond erreicht das letzte Viertel — die Hälfte seiner sichtbaren Scheibe ist beleuchtet."}
+      {t:base,          name:"Neumond",        icon:"●", rgb:"205,220,255", duration:2, wiki:"New moon", location:"Global", desc:"Der Mond steht zwischen Erde und Sonne. Optimal für Sternenbeobachtungen."},
+      {t:base+SYN*0.25,  name:"Erstes Viertel", icon:"◑", rgb:"220,230,255", duration:2, wiki:"Moon",     location:"Global", desc:"Die Hälfte der Mondscheibe ist beleuchtet."},
+      {t:base+SYN*0.5,   name:"Vollmond",       icon:"○", rgb:"235,240,255", duration:3, wiki:"Full moon", location:"Global", desc:"Vollständig beleuchtete Mondscheibe."},
+      {t:base+SYN*0.75,  name:"Letztes Viertel",icon:"◐", rgb:"220,230,255", duration:2, wiki:"Moon",     location:"Global", desc:"Das letzte Viertel des Mondzyklus beginnt."}
     ];
     phases.forEach(p=>{
-      if(p.t>=startMs && p.t<=endMs) out.push({name:p.name, date:new Date(p.t).toISOString(), icon:p.icon, rgb:p.rgb, duration:p.duration, wiki:p.wiki, desc:p.desc, kind:"moon"});
+      if(p.t>=startMs && p.t<=endMs) out.push({name:p.name, date:new Date(p.t).toISOString(), icon:p.icon, rgb:p.rgb, duration:p.duration, wiki:p.wiki, desc:p.desc, location:p.location, kind:"moon"});
     });
   }
   return out;
 }
 
-/* ---------- Live berechnete Äquinoktien / Solstitien (Meeus, Näherung) ---------- */
+/* Äquinoktien / Solstitien */
 function computeSeasons(startMs, endMs){
   const out = [];
   const y0 = new Date(startMs).getUTCFullYear()-1;
@@ -202,40 +223,32 @@ function computeSeasons(startMs, endMs){
   for(let year=y0; year<=y1; year++){
     const Y = (year-2000)/1000;
     const defs = [
-      {jd:2451623.80984 + 365242.37404*Y + 0.05169*Y**2 - 0.00411*Y**3 - 0.00057*Y**4, name:"Frühlings-Äquinoktium", wiki:"Equinox",  desc:"Die Sonne kreuzt den Himmelsäquator — astronomischer Frühlingsbeginn auf der Nordhalbkugel, nahezu gleich lange Tage und Nächte weltweit."},
-      {jd:2451716.56767 + 365241.62603*Y + 0.00325*Y**2 + 0.00888*Y**3 - 0.00030*Y**4, name:"Sommersonnenwende",   wiki:"Solstice", desc:"Die Sonne erreicht ihren höchsten Stand am Himmel — der längste Tag des Jahres auf der Nordhalbkugel."},
-      {jd:2451810.21715 + 365242.01767*Y - 0.11575*Y**2 + 0.00337*Y**3 + 0.00078*Y**4, name:"Herbst-Äquinoktium",   wiki:"Equinox",  desc:"Die Sonne kreuzt den Himmelsäquator — astronomischer Herbstbeginn auf der Nordhalbkugel, nahezu gleich lange Tage und Nächte weltweit."},
-      {jd:2451900.05952 + 365242.74049*Y - 0.06223*Y**2 - 0.00823*Y**3 + 0.00032*Y**4, name:"Wintersonnenwende",   wiki:"Solstice", desc:"Die Sonne erreicht ihren tiefsten Stand am Himmel — die längste Nacht des Jahres auf der Nordhalbkugel."}
+      {jd:2451623.80984 + 365242.37404*Y + 0.05169*Y**2 - 0.00411*Y**3 - 0.00057*Y**4, name:"Frühlings-Äquinoktium", wiki:"Equinox", location:"Global", desc:"Astronomischer Frühlingsbeginn."},
+      {jd:2451716.56767 + 365241.62603*Y + 0.00325*Y**2 + 0.00888*Y**3 - 0.00030*Y**4, name:"Sommersonnenwende",   wiki:"Solstice", location:"Nordhalbkugel", desc:"Der längste Tag des Jahres."},
+      {jd:2451810.21715 + 365242.01767*Y - 0.11575*Y**2 + 0.00337*Y**3 + 0.00078*Y**4, name:"Herbst-Äquinoktium",   wiki:"Equinox", location:"Global", desc:"Astronomischer Herbstbeginn."},
+      {jd:2451900.05952 + 365242.74049*Y - 0.06223*Y**2 - 0.00823*Y**3 + 0.00032*Y**4, name:"Wintersonnenwende",   wiki:"Solstice", location:"Nordhalbkugel", desc:"Die längste Nacht des Jahres."}
     ];
     defs.forEach(d=>{
       const t = jdToMs(d.jd);
-      if(t>=startMs && t<=endMs) out.push({name:d.name, date:new Date(t).toISOString(), icon:"✦", rgb:"255,244,205", duration:1, wiki:d.wiki, desc:d.desc, kind:"season"});
+      if(t>=startMs && t<=endMs) out.push({name:d.name, date:new Date(t).toISOString(), icon:"✦", rgb:"255,244,205", duration:24, wiki:d.wiki, desc:d.desc, location:d.location, kind:"season"});
     });
   }
   return out;
 }
 
-/* ---------- Kuratierte Konjunktionen / Oppositionen / Meteore ---------- */
-/* Stand: 10. September 2026 — recherchiert aus planetary.org, starwalk.space, seasky.org, cosmobc.com */
 const curated = [
-  {name:"Totale Sonnenfinsternis", date:"2026-08-12T17:47:00Z", icon:"☀", rgb:"255,205,110", duration:3,  wiki:"Solar eclipse", desc:"Der Mond schiebt sich vollständig vor die Sonne. Der Pfad der Totalität verläuft über Grönland, Island und Nordspanien — die erste totale Sonnenfinsternis über dem europäischen Festland seit 1999."},
-  {name:"Perseiden-Maximum",       date:"2026-08-12T22:00:00Z", icon:"☄", rgb:"255,170,90",  duration:10, wiki:"Perseids",       desc:"Der Meteorstrom der Perseiden erreicht sein Maximum mit bis zu 100 Sternschnuppen pro Stunde unter dunklem Himmel."},
-  {name:"Mond × Plejaden",         date:"2026-09-03T03:00:00Z", icon:"✧", rgb:"200,210,255", duration:6,  wiki:"Pleiades",       desc:"Der Mond nähert sich dem offenen Sternhaufen der Plejaden im Sternbild Stier an."},
-  {name:"Mond × Mars",             date:"2026-09-06T20:00:00Z", icon:"♂", rgb:"255,90,60",   duration:6,  wiki:"Mars",           desc:"Der Mond zieht nahe am rötlichen Mars im Sternbild Zwillinge vorbei."},
-  {name:"Mond × Jupiter",          date:"2026-09-08T03:30:00Z", icon:"♃", rgb:"250,210,140", duration:6,  wiki:"Jupiter",        desc:"Der Mond und der Riesenplanet Jupiter stehen eng beieinander am Morgenhimmel im Sternbild Krebs."},
-  {name:"Mond × Merkur",           date:"2026-09-12T09:00:00Z", icon:"☿", rgb:"200,200,210", duration:6,  wiki:"Mercury (planet)", desc:"Eine schmale Mondsichel begegnet dem flinken Merkur tief am Morgenhimmel."},
-  {name:"Mond × Venus",            date:"2026-09-14T11:10:00Z", icon:"♀", rgb:"230,220,255", duration:6,  wiki:"Venus",          desc:"Der Mond erscheint nahe der strahlenden Venus — eine der hellsten Paarungen am Himmel."},
-  {name:"Neptun in Opposition",    date:"2026-09-26T01:28:00Z", icon:"♆", rgb:"90,150,255",  duration:24, wiki:"Neptune",        desc:"Neptun steht der Sonne genau gegenüber und ist die ganze Nacht sichtbar — sein hellster Zeitpunkt im Jahr (mag 7.8, Fernglas/Teleskop nötig)."},
-  {name:"Mond × Saturn",           date:"2026-09-27T22:00:00Z", icon:"♄", rgb:"235,215,160", duration:6,  wiki:"Saturn",         desc:"Der fast volle Mond zieht nahe an den Ringen Saturns vorbei."},
-  {name:"Mond × Plejaden",         date:"2026-09-30T03:00:00Z", icon:"✧", rgb:"200,210,255", duration:6,  wiki:"Pleiades",       desc:"Ein weiterer enger Vorbeigang des Mondes an den Plejaden im Sternbild Stier."}
+  {name:"Totale Sonnenfinsternis", date:"2026-08-12T17:47:00Z", icon:"☀", rgb:"255,205,110", duration:3, wiki:"Solar eclipse", location:"Europa, Island, Grönland", desc:"Der Mond schiebt sich vollständig vor die Sonne."},
+  {name:"Perseiden-Maximum",       date:"2026-08-12T22:00:00Z", icon:"☄", rgb:"255,170,90",  duration:10, wiki:"Perseids", location:"Global", desc:"Höhepunkt des Perseiden-Meteorstroms."},
+  {name:"Mond × Plejaden",         date:"2026-09-03T03:00:00Z", icon:"✧", rgb:"200,210,255", duration:6, wiki:"Pleiades", location:"Nachtseite", desc:"Begegnung von Mond und Plejaden."},
+  {name:"Neptun in Opposition",    date:"2026-09-26T01:28:00Z", icon:"♆", rgb:"90,150,255",  duration:24, wiki:"Neptune", location:"Global", desc:"Neptun steht der Sonne genau gegenüber."},
+  {name:"Mond × Saturn",           date:"2026-09-27T22:00:00Z", icon:"♄", rgb:"235,215,160", duration:6, wiki:"Saturn", location:"Nachtseite", desc:"Vorbeigang des Mondes an Saturn."}
 ].map(c => ({...c, kind:"planet"}));
 
-/* ---------- Gesamtliste bauen ---------- */
 let EVENTS = [];
 function buildEvents(){
   const now = Date.now();
-  const start = now - 45*MS_DAY;
-  const end   = now + 150*MS_DAY;
+  const start = now - 30*MS_DAY; // Max 30 Tage zurück
+  const end   = now + 30*MS_DAY; // Max 30 Tage voraus (1 Monat)
   const list = [
     ...computeMoonPhases(start,end),
     ...computeSeasons(start,end),
@@ -245,7 +258,6 @@ function buildEvents(){
   return list;
 }
 
-/* ---------- Timing / Status ---------- */
 function timing(ev){
   const start = new Date(ev.date).getTime();
   const durMs = (ev.duration||2)*3600000;
@@ -265,21 +277,77 @@ function timing(ev){
   return {state:"passed", main:"Vorbei", sub:fmtUTC(new Date(start))};
 }
 
-const root = document.documentElement;
+/* Wikipedia Image API */
+const imgCache = {};
+async function getWikiData(topic){
+  if(imgCache[topic]) return imgCache[topic];
+  try{
+    const res = await fetch("https://de.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(topic));
+    if(res.ok){
+      const data = await res.json();
+      const result = {
+        img: data.thumbnail?.source || data.originalimage?.source || null,
+        extract: data.extract || null
+      };
+      imgCache[topic] = result;
+      return result;
+    }
+  }catch(e){}
+  return {img:null, extract:null};
+}
 
-/* ---------- Ereignisse-Tab ---------- */
-const list = document.getElementById("eventList");
-const detail = document.getElementById("detail");
-const countEl = document.getElementById("eventCount");
+/* Event Detail Unterseite öffnen */
+async function openDetail(eventIndex, viewPrefix){
+  const e = EVENTS[eventIndex];
+  const mainEl = document.getElementById(`${viewPrefix}-main`);
+  const detailEl = document.getElementById(`${viewPrefix}-detail`);
+  
+  mainEl.style.display = "none";
+  detailEl.classList.add("active");
+  
+  detailEl.innerHTML = `<button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück</button><div>Lade Informationen...</div>`;
+  
+  const wikiData = await getWikiData(e.wiki);
+  const imgHtml = wikiData.img ? `<img src="${wikiData.img}" class="detail-hero-img" alt="${e.name}">` : '';
+  
+  detailEl.innerHTML = `
+    <button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück zur Liste</button>
+    ${imgHtml}
+    <div class="eyebrow">${e.kind || 'Ereignis'}</div>
+    <h1 style="margin-bottom:10px">${e.name}</h1>
+    
+    <div class="detail-grid">
+      <div class="detail-card"><label>Zeitpunkt</label><val>${fmtUTC(new Date(e.date))}</val></div>
+      <div class="detail-card"><label>Dauer</label><val>ca. ${e.duration || 2} Stunden</val></div>
+      <div class="detail-card"><label>Sichtbar in</label><val>${e.location || 'Global'}</val></div>
+      <div class="detail-card"><label>Status</label><val>${timing(e).main}</val></div>
+    </div>
+    
+    <div style="margin-top:20px;line-height:1.6;color:var(--muted)">
+      <h3 style="color:#fff;margin-bottom:8px">Beschreibung</h3>
+      <p>${e.desc}</p>
+      ${wikiData.extract ? `<p style="margin-top:12px;font-size:13px">${wikiData.extract}</p>` : ''}
+    </div>
+  `;
+}
 
-function renderEvents(){
-  const upcoming = EVENTS.filter(e => timing(e).state !== "passed");
-  countEl.textContent = upcoming.filter(e=>timing(e).state==="upcoming").length + " kommend";
+function closeDetail(viewPrefix){
+  document.getElementById(`${viewPrefix}-main`).style.display = "block";
+  document.getElementById(`${viewPrefix}-detail`).classList.remove("active");
+}
+
+/* Render Funktionen */
+function renderEvents(filterText = ""){
+  const list = document.getElementById("eventList");
+  const upcoming = EVENTS.filter(e => timing(e).state !== "passed" && e.name.toLowerCase().includes(filterText.toLowerCase()));
+  
+  document.getElementById("eventCount").textContent = upcoming.filter(e=>timing(e).state==="upcoming").length + " kommend";
+  
   list.innerHTML = upcoming.map((e)=>{
     const idx = EVENTS.indexOf(e);
     const t = timing(e);
     const live = t.state === "live";
-    return `<article class="event ${live?'live':''}" data-i="${idx}" style="--event-rgb:${e.rgb}">
+    return `<article class="event ${live?'live':''}" onclick="openDetail(${idx}, 'events')" style="--event-rgb:${e.rgb}">
       <div class="icon">${e.icon}</div>
       <div class="meta"><div class="name">${e.name}</div><div class="time">${fmtUTC(new Date(e.date))}</div></div>
       <div class="count">
@@ -290,36 +358,23 @@ function renderEvents(){
   }).join("");
 }
 
-function selectEvent(i){
-  const e = EVENTS[i];
-  document.querySelectorAll("#eventList .event").forEach(x=>x.classList.remove("selected"));
-  const card = document.querySelector(`#eventList .event[data-i="${i}"]`);
-  if(card) card.classList.add("selected");
-  root.style.setProperty("--accent", "#"+e.rgb.split(",").map(n=>(+n).toString(16).padStart(2,"0")).join(""));
-  root.style.setProperty("--accent-rgb", e.rgb);
-  document.body.style.background = `radial-gradient(circle at 50% 18%, rgba(${e.rgb},.20), #000 45%)`;
-  detail.innerHTML = `<div class="big-icon">${e.icon}</div><h2>${e.name}</h2><p>${e.desc}<br><br><strong style="color:#fff">${fmtUTC(new Date(e.date))}</strong></p>`;
-  detail.classList.add("show");
-  setTimeout(()=>detail.scrollIntoView({behavior:"smooth",block:"nearest"}),40);
-}
-
-/* ---------- Live-Tab ---------- */
-const liveContent = document.getElementById("liveContent");
 function renderLive(){
+  const liveContent = document.getElementById("liveContent");
   const liveEvents = EVENTS.filter(e => timing(e).state === "live");
+  
   if(liveEvents.length === 0){
     const next = EVENTS.find(e => timing(e).state === "upcoming");
     liveContent.innerHTML = `
       <div class="empty">
         <div class="glyph">✦</div>
         <div class="title">Aktuell keine Astro-Events</div>
-        <div class="sub2">Gerade findet kein Himmelsereignis statt.</div>
-        ${next ? `<div class="teaser"><div class="tname">Nächstes Ereignis: ${next.name}</div><div class="tcount" id="teaserCount">${timing(next).main}</div></div>` : ""}
+        <div class="sub2">In diesem Moment findet kein Ereignis statt.</div>
       </div>`;
   } else {
     liveContent.innerHTML = liveEvents.map(e=>{
+      const idx = EVENTS.indexOf(e);
       const t = timing(e);
-      return `<div class="live-card" style="--event-rgb:${e.rgb}">
+      return `<div class="live-card" onclick="openDetail(${idx}, 'live')" style="--event-rgb:${e.rgb}">
         <div class="live-badge"><span class="live-dot"></span>LIVE JETZT</div>
         <div class="big-icon">${e.icon}</div>
         <h2>${e.name}</h2>
@@ -330,133 +385,71 @@ function renderLive(){
   }
 }
 
-/* ---------- Verlauf-Tab (30 Tage, mit Bildern) ---------- */
-const histList = document.getElementById("histList");
-const imgCache = {};
-async function getWikiImage(topic){
-  if(imgCache[topic] !== undefined) return imgCache[topic];
-  try{
-    const cached = await window.storage.get("wikiimg:"+topic);
-    if(cached && cached.value){ imgCache[topic]=cached.value; return cached.value; }
-  }catch(e){}
-  try{
-    const res = await fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(topic));
-    if(res.ok){
-      const data = await res.json();
-      const src = (data.thumbnail && data.thumbnail.source) || (data.originalimage && data.originalimage.source) || null;
-      if(src){
-        imgCache[topic] = src;
-        try{ await window.storage.set("wikiimg:"+topic, src); }catch(e){}
-        return src;
-      }
-    }
-  }catch(e){}
-  imgCache[topic] = null;
-  return null;
-}
-
-function renderHistory(){
-  const now = Date.now();
-  const past = EVENTS.filter(e=>{
-    const t = new Date(e.date).getTime();
-    return t < now && t >= now - 30*MS_DAY;
-  }).sort((a,b)=> new Date(b.date)-new Date(a.date));
+function renderHistory(filterText = ""){
+  const histList = document.getElementById("histList");
+  const past = EVENTS.filter(e => timing(e).state === "passed" && e.name.toLowerCase().includes(filterText.toLowerCase()))
+                     .sort((a,b)=> new Date(b.date)-new Date(a.date));
 
   if(past.length === 0){
-    histList.innerHTML = `<div class="empty"><div class="glyph">✦</div><div class="title">Noch kein Verlauf</div><div class="sub2">In den letzten 30 Tagen gab es keine erfassten Ereignisse.</div></div>`;
+    histList.innerHTML = `<div class="empty"><div class="glyph">✦</div><div class="title">Keine Ereignisse gefunden</div></div>`;
     return;
   }
 
-  histList.innerHTML = past.map((e,i)=>`
-    <article class="hist-card" data-hi="${i}" style="--event-rgb:${e.rgb}">
-      <div class="hist-row">
-        <div class="hist-thumb" id="thumb-${i}">${e.icon}</div>
-        <div class="hist-meta">
-          <div class="name">${e.name}</div>
-          <div class="time">${fmtUTC(new Date(e.date))}</div>
-        </div>
+  histList.innerHTML = past.map((e)=>{
+    const idx = EVENTS.indexOf(e);
+    return `
+    <article class="hist-card" onclick="openDetail(${idx}, 'history')" style="--event-rgb:${e.rgb}">
+      <div class="hist-thumb" id="thumb-${idx}">${e.icon}</div>
+      <div class="hist-meta">
+        <div class="name">${e.name}</div>
+        <div class="time">${fmtUTC(new Date(e.date))}</div>
       </div>
-      <div class="hist-body"><div class="hist-body-inner" id="body-${i}"><p>${e.desc}</p></div></div>
-    </article>`).join("");
+    </article>`;
+  }).join("");
 
-  past.forEach((e,i)=>{
-    getWikiImage(e.wiki).then(src=>{
-      if(!src) return;
-      const thumb = document.getElementById("thumb-"+i);
-      if(thumb){ thumb.style.backgroundImage = `url('${src}')`; thumb.textContent = ""; }
-      const body = document.getElementById("body-"+i);
-      if(body && !body.querySelector("img")){
-        const img = document.createElement("img");
-        img.src = src; img.alt = e.name;
-        body.prepend(img);
-      }
-    });
+  past.forEach(async (e)=>{
+    const idx = EVENTS.indexOf(e);
+    const wiki = await getWikiData(e.wiki);
+    if(wiki.img){
+      const thumb = document.getElementById("thumb-"+idx);
+      if(thumb){ thumb.style.backgroundImage = `url('${wiki.img}')`; thumb.textContent = ""; }
+    }
   });
 }
 
+/* Event-Listener für Suche */
+document.getElementById("searchEvents").addEventListener("input", (e) => renderEvents(e.target.value));
+document.getElementById("searchHistory").addEventListener("input", (e) => renderHistory(e.target.value));
+
+/* Tab Navigation */
 document.addEventListener("click", ev=>{
-  const histCard = ev.target.closest(".hist-card");
-  if(histCard){ histCard.classList.toggle("open"); }
-});
-
-/* ---------- Ticker: jede Sekunde ---------- */
-function tick(){
-  document.getElementById("utcClock").textContent = "UTC " + new Date().toLocaleTimeString("en-GB",{timeZone:"UTC",hour12:false});
-  document.querySelectorAll("#eventList .event").forEach(card=>{
-    const e = EVENTS[+card.dataset.i], t = timing(e);
-    const wasLive = card.classList.contains("live");
-    if(t.state !== "live" && wasLive){ renderEvents(); return; }
-    card.querySelector(".count strong").textContent = t.main;
-    card.querySelector(".count small").textContent = t.sub;
-  });
-  const activeTab = document.querySelector(".tab.active")?.dataset.tab;
-  if(activeTab === "live") renderLive();
-  const teaser = document.getElementById("teaserCount");
-  if(teaser){
-    const next = EVENTS.find(e=>timing(e).state==="upcoming");
-    if(next) teaser.textContent = timing(next).main;
-  }
-}
-
-/* ---------- Tages-Refresh: neu berechnen, sobald sich das Datum ändert ---------- */
-let lastComputedDay = null;
-async function refreshIfNewDay(force){
-  const today = new Date().toISOString().slice(0,10);
-  if(force || today !== lastComputedDay){
-    lastComputedDay = today;
-    EVENTS = buildEvents();
-    try{ await window.storage.set("lastComputedDay", today); }catch(e){}
-    renderEvents(); renderLive(); renderHistory();
-  }
-}
-
-/* ---------- Init ---------- */
-EVENTS = buildEvents();
-renderEvents(); renderLive(); renderHistory();
-setInterval(tick, 1000);
-setInterval(()=>refreshIfNewDay(false), 60*1000); // prüft minütlich, ob ein neuer Tag begonnen hat
-
-document.addEventListener("click", ev=>{
-  const eventCard = ev.target.closest("#eventList .event");
-  if(eventCard) selectEvent(+eventCard.dataset.i);
-
   const tab = ev.target.closest(".tab");
   if(tab){
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
     tab.classList.add("active");
     document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
-    document.getElementById(tab.dataset.tab).classList.add("active");
-    if(tab.dataset.tab !== "events"){
-      root.style.setProperty("--accent","#ffffff");
-      root.style.setProperty("--accent-rgb","255,255,255");
-      document.body.style.background = "#000";
-    }
+    
+    const targetView = document.getElementById(tab.dataset.tab);
+    targetView.classList.add("active");
+    
+    // Unterseiten schließen beim Tab-Wechsel
+    closeDetail('events');
+    closeDetail('live');
+    closeDetail('history');
+    
     if(tab.dataset.tab === "live") renderLive();
     if(tab.dataset.tab === "history") renderHistory();
   }
 });
 
-/* ---------- Sterne (heller + mehr Glanz) ---------- */
+/* Init & Canvas Stars */
+EVENTS = buildEvents();
+renderEvents(); renderLive(); renderHistory();
+
+setInterval(()=>{
+  document.getElementById("utcClock").textContent = "UTC " + new Date().toLocaleTimeString("en-GB",{timeZone:"UTC",hour12:false});
+}, 1000);
+
 const canvas = document.getElementById("stars"), ctx = canvas.getContext("2d");
 let W,H,DPR,stars=[];
 function resize(){
@@ -465,11 +458,8 @@ function resize(){
   ctx.setTransform(DPR,0,0,DPR,0,0);
   stars = Array.from({length:650},()=>({
     x:Math.random()*W, y:Math.random()*H,
-    r:Math.random()*1.5+.25,
-    a:Math.random()*.55+.45,
-    v:(Math.random()*.025+.008),
-    p:Math.random()*Math.PI*2,
-    dx:(Math.random()-.5)*.018
+    r:Math.random()*1.5+.25, a:Math.random()*.55+.45,
+    v:(Math.random()*.025+.008), p:Math.random()*Math.PI*2, dx:(Math.random()-.5)*.018
   }));
 }
 function animate(t){
@@ -480,10 +470,6 @@ function animate(t){
     const tw = s.a*(.75+.25*Math.sin(t*.0018+s.p));
     ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
     ctx.fillStyle = `rgba(255,255,255,${Math.min(1,tw)})`; ctx.fill();
-    if(s.r>.85){
-      ctx.beginPath(); ctx.arc(s.x,s.y,s.r*4.2,0,Math.PI*2);
-      ctx.fillStyle = `rgba(255,255,255,${tw*.09})`; ctx.fill();
-    }
   }
   requestAnimationFrame(animate);
 }
