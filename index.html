@@ -266,7 +266,7 @@ function changeOffset(val){
 }
 
 // -----------------------------------------------------------------
-// SANFTE RAUMKRÜMMUNG & STERNE CANVAS SYSTEM (OHNE SINGULARITÄT)
+// SCHWARZES LOCH CURSOR & STERNE CANVAS SYSTEM
 // -----------------------------------------------------------------
 const canvas = document.getElementById("stars");
 const ctx = canvas.getContext("2d");
@@ -290,9 +290,9 @@ function initStars() {
       y: y,
       baseX: x,
       baseY: y,
-      vx: (Math.random() - 0.5) * 0.2,
-      vy: (Math.random() - 0.5) * 0.2,
-      size: Math.random() * 1.5 + 0.4,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      size: Math.random() * 1.6 + 0.4,
       alpha: Math.random() * 0.7 + 0.3
     });
   }
@@ -317,7 +317,7 @@ window.addEventListener("touchend", () => { mouse.active = false; });
 
 function animateStars() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const gravityRadius = 260; // Reichweite der Raumkrümmung
+  const blackHoleRadius = 220; // Gravitationsreichweite
   
   for (let s of stars) {
     if (mouse.active) {
@@ -325,34 +325,30 @@ function animateStars() {
       let dy = mouse.y - s.y;
       let dist = Math.sqrt(dx * dx + dy * dy);
 
-      if (dist < gravityRadius) {
-        // Sanfter Gravitations-Verlauf für Raumkrümmung
-        let factor = (gravityRadius - dist) / gravityRadius;
+      if (dist < blackHoleRadius && dist > 2) {
+        // Gravitationskraft: Je näher, desto stärker gezogen
+        let force = (blackHoleRadius - dist) / blackHoleRadius;
+        let pull = force * 1.8;
         
-        // Sog zum Cursor hin
-        let pullForce = factor * 0.35; 
-        
-        // Sehr leichte, verzerrende Rotation (verschmähte Bahnen)
-        let rotationForce = factor * 0.15;
-
-        s.vx += (dx / dist) * pullForce + (-dy / dist) * rotationForce;
-        s.vy += (dy / dist) * pullForce + (dx / dist) * rotationForce;
+        // Sog zum Zentrum + Rotations-Spin (Wirbel)
+        s.vx += (dx / dist) * pull + (-dy / dist) * force * 0.8;
+        s.vy += (dy / dist) * pull + (dx / dist) * force * 0.8;
       }
     }
 
-    // Positions-Update mit flüssiger Trägheit
+    // Positions-Update mit Reibung für flüssige Bewegung
     s.x += s.vx;
     s.y += s.vy;
-    s.vx *= 0.92;
-    s.vy *= 0.92;
+    s.vx *= 0.93;
+    s.vy *= 0.93;
 
-    // Sanfte elastische Rückkehr zur ursprünglichen Position im Raum
-    s.x += (s.baseX - s.x) * 0.012;
-    s.y += (s.baseY - s.y) * 0.012;
+    // Sanfte Rückkehr zur Ursprungsposition
+    s.x += (s.baseX - s.x) * 0.005;
+    s.y += (s.baseY - s.y) * 0.005;
 
-    // Natürliche Drift
-    s.baseX += s.vx * 0.05;
-    s.baseY += s.vy * 0.05;
+    // Eigenbewegung der Sterne
+    s.baseX += s.vx * 0.1;
+    s.baseY += s.vy * 0.1;
 
     // Display-Ränder behandeln
     if (s.baseX < 0) s.baseX = canvas.width;
@@ -360,10 +356,22 @@ function animateStars() {
     if (s.baseY < 0) s.baseY = canvas.height;
     if (s.baseY > canvas.height) s.baseY = 0;
 
-    // Zeichnen der gekrümmten Sterne
+    // Zeichnen
     ctx.fillStyle = `rgba(255, 255, 255, ${s.alpha})`;
     ctx.beginPath();
     ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Schwarzes Loch Schatten-Glow am Cursor zeichnen
+  if (mouse.active) {
+    let grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 60);
+    grad.addColorStop(0, "rgba(0, 0, 0, 0.95)");
+    grad.addColorStop(0.4, "rgba(0, 0, 0, 0.6)");
+    grad.addColorStop(1, "rgba(0, 0, 0, 0)");
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(mouse.x, mouse.y, 60, 0, Math.PI * 2);
     ctx.fill();
   }
 
