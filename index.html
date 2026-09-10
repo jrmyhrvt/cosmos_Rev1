@@ -67,7 +67,7 @@
   .count strong{display:block;font-size:13px;font-weight:700}
   .count small{display:block;margin-top:3px;font-size:9.5px;color:var(--muted);text-transform:uppercase}
   
-  .globe-container{position:relative;width:100%;height:200px;border-radius:20px;background:radial-gradient(circle at center, rgba(30,30,30,0.8), #000);border:1px solid var(--border);overflow:hidden;margin-bottom:16px;display:grid;place-items:center}
+  .globe-container{position:relative;width:100%;height:320px;border-radius:20px;background:radial-gradient(circle at center, rgba(15,15,25,0.9), #000);border:1px solid var(--border);overflow:hidden;margin-bottom:16px;display:grid;place-items:center}
   #globeCanvasDetail{cursor:grab}
   #globeCanvasDetail:active{cursor:grabbing}
 
@@ -75,7 +75,7 @@
   .detail-page.active{display:block}
   .back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.08);color:#fff;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:16px}
   
-  .detail-hero-graphic{width:100%;height:180px;border-radius:20px;border:1px solid var(--border);background:radial-gradient(circle at center, rgba(255,255,255,0.04), rgba(0,0,0,0.9));display:grid;place-items:center;margin-bottom:16px;overflow:hidden}
+  .detail-hero-graphic{width:100%;height:220px;border-radius:20px;border:1px solid var(--border);background:radial-gradient(circle at center, rgba(255,255,255,0.04), rgba(0,0,0,0.9));display:grid;place-items:center;margin-bottom:16px;overflow:hidden}
   .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
   .detail-card{padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
   .detail-card label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
@@ -89,7 +89,7 @@
   .glostar-title{font-size:15px;font-weight:650}
   .glostar-desc{font-size:12px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
-  .glostar-viewport{width:100%;height:200px;border-radius:20px;border:1px solid var(--border);background:radial-gradient(circle at center, rgba(255,255,255,0.04), rgba(0,0,0,0.9));display:grid;place-items:center;margin-bottom:20px;overflow:hidden}
+  .glostar-viewport{width:100%;height:220px;border-radius:20px;border:1px solid var(--border);background:radial-gradient(circle at center, rgba(255,255,255,0.04), rgba(0,0,0,0.9));display:grid;place-items:center;margin-bottom:20px;overflow:hidden}
 
   .tabbar{position:fixed;left:10px;right:10px;bottom:calc(12px + var(--safe-bottom));height:72px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:rgba(8,8,8,.75);backdrop-filter:blur(32px);display:grid;grid-template-columns:repeat(5,1fr);padding:5px;z-index:100}
   .tab{border:0;background:none;color:rgba(255,255,255,.42);border-radius:18px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer}
@@ -215,6 +215,7 @@ let currentIssLon = 16.37;
 let globeRotation = 0;
 let isDraggingGlobe = false;
 let prevMouseX = 0;
+let activeBlackHoleAnimation = null;
 
 function changeOffset(val){
   tzOffsetHours += val;
@@ -233,6 +234,18 @@ function fmtTime(d){
 
 function pad(n){ return String(n).padStart(2,"0"); }
 
+function updateUtcClock(){
+  const now = new Date();
+  const adjusted = new Date(now.getTime() + tzOffsetHours * 3600000);
+  const h = pad(adjusted.getUTCHours());
+  const m = pad(adjusted.getUTCMinutes());
+  const s = pad(adjusted.getUTCSeconds());
+  const clockEl = document.getElementById('utcClock');
+  if(clockEl) clockEl.textContent = `${h}:${m}:${s}`;
+}
+setInterval(updateUtcClock, 1000);
+updateUtcClock();
+
 const SVG_ICONS = {
   satellite: `<svg viewBox="0 0 24 24"><path d="M2 12h5"/><path d="M17 12h5"/><path d="M7 8l5-5 5 5"/><path d="M7 16l5 5 5-5"/><rect x="7" y="10" width="10" height="4" rx="1"/></svg>`,
   planet: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M3 12h18"/><path d="M5 8c4 2 10 2 14 0"/></svg>`,
@@ -240,10 +253,12 @@ const SVG_ICONS = {
   rocket: `<svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.5-2 3-2 3s1.5-.5 3-2l7-7-3-3-7 7z"/><path d="M12 15l5 5"/><path d="M15 9l3-3"/><path d="M9 15l-3 3"/></svg>`,
   eclipse: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z"/></svg>`,
   star: `<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
-  orbit: `<svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="10" ry="4"/><circle cx="12" cy="8" r="2"/></svg>`
+  orbit: `<svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="10" ry="4"/><circle cx="12" cy="8" r="2"/></svg>`,
+  blackhole: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="#fff"/><circle cx="12" cy="12" r="10" stroke="#fff" stroke-dasharray="2 2" fill="none"/></svg>`
 };
 
 const GLOSTAR_DATA = [
+  {id: "blackhole", name: "Schwarzes Loch & Orbit", icon: "blackhole", summary: "Extrem kompakte Masse mit so starker Gravitation, dass nichts ihr entkommen kann.", explanation: "Ein Schwarzes Loch krümmt die Raumzeit so stark, dass ein Ereignishorizont entsteht. Objekte außerhalb drehen sich auf weiten Spiralbahnen um das Zentrum und benötigen durch die immense Entfernung viele Sekunden oder Jahre, bis sie den inneren Orbit erreichen.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="100" cy="50" r="15" fill="#000" stroke="#fff" stroke-width="2"/><ellipse cx="100" cy="50" rx="45" ry="14" fill="none" stroke="#fff" stroke-dasharray="3 3"/></svg>`},
   {id: "opposition", name: "Opposition", icon: "planet", summary: "Konstellation, bei der ein Himmelskörper der Sonne von der Erde aus gesehen genau gegenübersteht.", explanation: "Eine Opposition tritt auf, wenn die Erde auf ihrer Umlaufbahn direkt zwischen der Sonne und einem äußeren Himmelskörper (wie Mars oder Jupiter) steht. In dieser Phase ist das Objekt der Erde besonders nah, erscheint am Nachthimmel maximal groß und leuchtet extrem hell.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="40" cy="50" r="14" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="8" fill="#fff"/><circle cx="160" cy="50" r="11" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="3,3"/></svg>`},
   {id: "meteorstrom", name: "Meteorstrom", icon: "meteor", summary: "Regelmäßig wiederkehrendes Auftreten zahlreicher Sternschnuppen in einem bestimmten Himmelsareal.", explanation: "Ein Meteorstrom entsteht, wenn die Erde die Bahnkreuzung mit einer Kometenstaubspur durchquert. Die winzigen Staubkörner verglühen beim Eintritt in die Erdatmosphäre und erzeugen dabei helle Leuchtspuren am Nachthimmel.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><path d="M170 20 L70 60" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="70" r="18" fill="none" stroke="#fff" stroke-width="2"/></svg>`},
   {id: "finsternis", name: "Finsternis (Solar / Lunar)", icon: "eclipse", summary: "Vollständige oder teilweise Verdeckung eines Himmelskörpers durch einen Schattenwurf.", explanation: "Eine astronomische Finsternis ereignet sich, wenn Sonne, Erde und Mond exakt auf einer geraden Linie positioniert sind. Bei einer Sonnenfinsternis schiebt sich der Mond vor die Sonnenscheibe; bei einer Mondfinsternis wandert der Mond durch den Kernschatten der Erde.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="90" cy="50" r="22" fill="none" stroke="#fff" stroke-width="2"/><circle cx="110" cy="50" r="22" fill="#000" stroke="#fff" stroke-width="1"/></svg>`},
@@ -251,6 +266,7 @@ const GLOSTAR_DATA = [
 ];
 
 const EVENTS = [
+  {id: "blackhole-sim", name: "Black Hole / Orbit Simulation", date: "2024-01-01T00:00:00Z", icon: "blackhole", duration: 999999, desc: "Echtzeit-Simulation: Objekte drehen sich in großen Kreisen und benötigen ~10 Sekunden, um spiralisierend in den inneren Orbit des Schwarzen Lochs zu gelangen.", glostarId: "blackhole", kind: "Kosmische Simulation", isPermanentLive: true, isBlackHoleSim: true},
   {id: "iss-live", name: "ISS Raumstation Live", date: "2024-01-01T00:00:00Z", icon: "satellite", duration: 999999, desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.", glostarId: "orbit", kind: "Live-Raumfahrt", isPermanentLive: true},
   {id: "mars-opp", name: "Mars in Opposition", date: "2027-02-19T18:00:00Z", icon: "planet", duration: 48, desc: "Der rote Planet steht der Sonne exakt gegenüber und bietet hervorragende Beobachtungsbedingungen.", glostarId: "opposition", kind: "Planeten-Event", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="50" cy="50" r="12" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="6" fill="#fff"/><circle cx="150" cy="50" r="10" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="2,2"/></svg>`},
   {id: "perseiden-2026", name: "Perseiden Maximum", date: "2026-08-12T21:00:00Z", icon: "meteor", duration: 24, desc: "Jährlicher Meteorstrom mit bis zu 100 Sternschnuppen pro Stunde am Sommerhimmel.", glostarId: "meteorstrom", kind: "Meteorstrom", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><path d="M160 20 L60 60" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="40" cy="70" r="15" fill="none" stroke="#fff" stroke-width="2"/></svg>`},
@@ -267,7 +283,7 @@ function timing(ev){
     const days = Math.floor(diff / 86400);
     const hrs = Math.floor((diff % 86400) / 3600);
     const mins = Math.floor((diff % 3600) / 60);
-    return {state:"live", main:`T+${days}d ${pad(hrs)}:${pad(mins)}`, sub:"Live im Orbit"};
+    return {state:"live", main:`T+${days}d ${pad(hrs)}:${pad(mins)}`, sub:"Live Aktiv"};
   }
   const start = new Date(ev.date).getTime();
   const durMs = (ev.duration || 6) * 3600000;
@@ -299,6 +315,7 @@ function jumpToGloStar(glostarId){
 }
 
 function openDetail(eventId, viewPrefix){
+  if(activeBlackHoleAnimation) cancelAnimationFrame(activeBlackHoleAnimation);
   const e = EVENTS.find(item => item.id === eventId);
   if(!e) return;
   const mainEl = document.getElementById(`${viewPrefix}-main`);
@@ -308,11 +325,32 @@ function openDetail(eventId, viewPrefix){
   
   const glostarBtn = e.glostarId ? `<button class="glostar-link-btn" onclick="jumpToGloStar('${e.glostarId}')">📖 Im GloStar nachschlagen</button>` : '';
 
+  if(e.isBlackHoleSim){
+    detailEl.innerHTML = `
+      <button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück</button>
+      <div class="globe-container">
+        <canvas id="blackHoleCanvas" width="400" height="320"></canvas>
+      </div>
+      <div class="eyebrow">${e.kind || 'Ereignis'}</div>
+      <h1 style="margin-bottom:10px">${e.name}</h1>
+      <div class="detail-grid">
+        <div class="detail-card"><label>Spiraldauer</label><val>~10 Sekunden</val></div>
+        <div class="detail-card"><label>Bahnform</label><val>Große Kreise</val></div>
+        <div class="detail-card"><label>Objekte</label><val>8 Stereos</val></div>
+        <div class="detail-card"><label>Status</label><val>Aktiv</val></div>
+      </div>
+      <p style="color:var(--muted);margin-top:15px;line-height:1.5">${e.desc}</p>
+      ${glostarBtn}
+    `;
+    initBlackHoleSimulation();
+    return;
+  }
+
   if(e.isPermanentLive){
     detailEl.innerHTML = `
       <button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück</button>
       <div class="globe-container">
-        <canvas id="globeCanvasDetail" width="400" height="200"></canvas>
+        <canvas id="globeCanvasDetail" width="400" height="320"></canvas>
       </div>
       <div class="eyebrow">${e.kind || 'Ereignis'}</div>
       <h1 style="margin-bottom:10px">${e.name}</h1>
@@ -344,6 +382,88 @@ function openDetail(eventId, viewPrefix){
   `;
 }
 
+function initBlackHoleSimulation(){
+  const canvas = document.getElementById('blackHoleCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const blackHoleRadius = 25;
+  const numParticles = 8;
+  const particles = [];
+
+  function createParticle(index) {
+    const startRadius = 150;
+    const targetRadius = 38;
+    const durationInSeconds = 10;
+    const fps = 60;
+    return {
+      angle: (index * (2 * Math.PI / numParticles)) + Math.random() * 0.4,
+      radius: startRadius,
+      startRadius: startRadius,
+      targetRadius: targetRadius,
+      rotationSpeed: 0.008 + Math.random() * 0.003,
+      inwardSpeed: (startRadius - targetRadius) / (durationInSeconds * fps),
+      size: 4,
+      color: `hsl(${index * (360 / numParticles)}, 85%, 65%)`
+    };
+  }
+
+  for (let i = 0; i < numParticles; i++) {
+    particles.push(createParticle(i));
+  }
+
+  function animate() {
+    ctx.fillStyle = 'rgba(3, 3, 8, 0.2)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const glowGradient = ctx.createRadialGradient(
+      centerX, centerY, blackHoleRadius,
+      centerX, centerY, blackHoleRadius + 20
+    );
+    glowGradient.addColorStop(0, 'rgba(255, 140, 0, 0.8)');
+    glowGradient.addColorStop(0.5, 'rgba(255, 60, 0, 0.3)');
+    glowGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, blackHoleRadius + 20, 0, Math.PI * 2);
+    ctx.fillStyle = glowGradient;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, blackHoleRadius, 0, Math.PI * 2);
+    ctx.fillStyle = '#000000';
+    ctx.fill();
+    ctx.strokeStyle = '#ff8c00';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    particles.forEach((p) => {
+      p.angle += p.rotationSpeed;
+      if (p.radius > p.targetRadius) {
+        p.radius -= p.inwardSpeed;
+      } else {
+        p.radius = p.startRadius;
+      }
+
+      const x = centerX + Math.cos(p.angle) * p.radius;
+      const y = centerY + Math.sin(p.angle) * p.radius;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x, y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 10;
+      ctx.fill();
+      ctx.restore();
+    });
+
+    activeBlackHoleAnimation = requestAnimationFrame(animate);
+  }
+  animate();
+}
+
 function openGloStarDetail(index){
   const item = GLOSTAR_DATA[index];
   document.getElementById(`glostar-main`).style.display = "none";
@@ -359,6 +479,7 @@ function openGloStarDetail(index){
 }
 
 function closeDetail(viewPrefix){
+  if(activeBlackHoleAnimation) cancelAnimationFrame(activeBlackHoleAnimation);
   document.getElementById(`${viewPrefix}-main`).style.display = "block";
   document.getElementById(`${viewPrefix}-detail`).classList.remove("active");
 }
@@ -434,6 +555,8 @@ async function fetchISS(){
     }
   }catch(e){}
 }
+setInterval(fetchISS, 5000);
+fetchISS();
 
 function initGlobeDetail(){
   const canvas = document.getElementById('globeCanvasDetail');
@@ -459,7 +582,7 @@ function initGlobeDetail(){
   function render(){
     if(!canvas.parentElement || !canvas.parentElement.parentElement.classList.contains('active')) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const cx = canvas.width/2, cy = canvas.height/2, r = 70;
+    const cx = canvas.width/2, cy = canvas.height/2, r = 85;
     
     if(!isDraggingGlobe) globeRotation += 0.003;
 
@@ -518,11 +641,11 @@ function initGlobeDetail(){
   render();
 }
 
+// Background Starfield Animation
 const starCanvas = document.getElementById('stars');
 const starCtx = starCanvas.getContext('2d');
 let stars = [];
 let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
-let targetX = mouseX, targetY = mouseY;
 
 function resizeStars(){
   starCanvas.width = window.innerWidth;
@@ -531,78 +654,58 @@ function resizeStars(){
 window.addEventListener('resize', resizeStars);
 resizeStars();
 
-for(let i=0; i<400; i++){
+for(let i=0; i<300; i++){
   stars.push({
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
-    size: Math.random() * 1.3 + 0.3,
-    alpha: Math.random() * 0.6 + 0.2,
-    depth: Math.random() * 2 + 0.5
+    size: Math.random() * 1.2 + 0.3,
+    alpha: Math.random() * 0.7 + 0.2,
+    speed: Math.random() * 0.2 + 0.05
   });
 }
 
-window.addEventListener('mousemove', e => {
-  targetX = e.clientX;
-  targetY = e.clientY;
-});
-
-function animateStars(){
-  mouseX += (targetX - mouseX) * 0.05;
-  mouseY += (targetY - mouseY) * 0.05;
-  starCtx.clearRect(0,0,starCanvas.width,starCanvas.height);
-  
-  const cx = window.innerWidth/2, cy = window.innerHeight/2;
-  const offX = (mouseX - cx) / cx * 15;
-  const offY = (mouseY - cy) / cy * 15;
-
+function drawStars(){
+  starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
   stars.forEach(s => {
+    s.y -= s.speed;
+    if(s.y < 0) s.y = starCanvas.height;
     starCtx.fillStyle = `rgba(255,255,255,${s.alpha})`;
     starCtx.beginPath();
-    starCtx.arc(s.x + offX * s.depth, s.y + offY * s.depth, s.size, 0, Math.PI*2);
+    starCtx.arc(s.x, s.y, s.size, 0, Math.PI*2);
     starCtx.fill();
   });
-  requestAnimationFrame(animateStars);
+  requestAnimationFrame(drawStars);
 }
-animateStars();
+drawStars();
 
-document.querySelectorAll('.tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const target = btn.dataset.tab;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.view').forEach(v => {
-      v.classList.remove('active');
-      if(v.id === target) v.classList.add('active');
-    });
-    if(target === 'live-view'){
-      renderLiveEvents();
-    }
+// Tab Switcher
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    const target = tab.dataset.tab;
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    document.getElementById(target).classList.add("active");
   });
 });
 
 document.getElementById('brandBtn').addEventListener('click', () => {
-  document.querySelector('.tab[data-tab="home"]').click();
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelector('.tab[data-tab="home"]').classList.add("active");
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById('home').classList.add("active");
 });
 
+// Event Listener for Search Inputs
 document.getElementById('searchEvents').addEventListener('input', e => renderEvents(e.target.value));
 document.getElementById('searchHistory').addEventListener('input', e => renderHistory(e.target.value));
 document.getElementById('searchGloStar').addEventListener('input', e => renderGloStar(e.target.value));
 
-setInterval(() => {
-  const d = new Date();
-  const adjusted = new Date(d.getTime() + tzOffsetHours * 3600000);
-  document.getElementById('utcClock').textContent = pad(adjusted.getUTCHours()) + ':' + pad(adjusted.getUTCMinutes()) + ':' + pad(adjusted.getUTCSeconds());
-  renderLiveEvents();
-}, 1000);
-
-window.addEventListener('DOMContentLoaded', () => {
-  renderLiveEvents();
-  renderEvents();
-  renderHistory();
-  renderGloStar();
-  fetchISS();
-  setInterval(fetchISS, 10000);
-});
+// Initial Render
+renderLiveEvents();
+renderEvents();
+renderHistory();
+renderGloStar();
 </script>
 </body>
 </html>
