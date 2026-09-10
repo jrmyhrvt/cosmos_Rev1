@@ -448,17 +448,11 @@ function initGlobeDetail(){
   };
   window.onmouseup = () => { isDraggingGlobe = false; };
 
-  // Kontinente Punkte (Näherung für Weltkarte)
   const landmasses = [
-    // Nordamerika
     {lat:50,lon:-100},{lat:45,lon:-120},{lat:30,lon:-100},{lat:60,lon:-140},{lat:40,lon:-80},
-    // Südamerika
     {lat:-10,lon:-60},{lat:-20,lon:-55},{lat:10,lon:-75},{lat:-35,lon:-65},
-    // Europa / Afrika
     {lat:50,lon:10},{lat:40,lon:3},{lat:55,lon:30},{lat:20,lon:20},{lat:0,lon:20},{lat:-20,lon:25},{lat:30,lon:30},
-    // Asien
     {lat:60,lon:90},{lat:50,lon:120},{lat:35,lon:105},{lat:25,lon:90},{lat:40,lon:60},{lat:60,lon:60},
-    // Australien
     {lat:-25,lon:135},{lat:-30,lon:150}
   ];
 
@@ -469,7 +463,6 @@ function initGlobeDetail(){
     
     if(!isDraggingGlobe) globeRotation += 0.003;
 
-    // Globus Hintergrund (Meere)
     ctx.save();
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI*2);
@@ -481,7 +474,6 @@ function initGlobeDetail(){
     ctx.fillStyle = grad;
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    // Kontinente zeichnen
     ctx.fillStyle = 'rgba(255,255,255,0.35)';
     landmasses.forEach(p=>{
       const phi = (90 - p.lat) * Math.PI/180;
@@ -496,19 +488,16 @@ function initGlobeDetail(){
     });
     ctx.restore();
 
-    // Globus Rand
     ctx.strokeStyle = 'rgba(255,255,255,0.3)';
     ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
 
-    // ISS Orbit-Ring
     ctx.strokeStyle = 'rgba(255,255,255,0.15)';
     ctx.lineWidth = 1;
     ctx.setLineDash([3,3]);
     ctx.beginPath(); ctx.arc(cx, cy, r*1.2, 0, Math.PI*2); ctx.stroke();
     ctx.setLineDash([]);
 
-    // Live ISS Position auf dem Globus
     const issPhi = (90 - currentIssLat) * Math.PI/180;
     const issTheta = (currentIssLon + globeRotation * 57.3) * Math.PI/180;
     const issX = cx + r * Math.sin(issPhi) * Math.cos(issTheta);
