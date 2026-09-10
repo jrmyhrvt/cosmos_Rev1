@@ -75,7 +75,7 @@
   .detail-page.active{display:block}
   .back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.08);color:#fff;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:16px}
   
-  .detail-hero-img{width:100%;height:220px;border-radius:20px;object-fit:cover;margin-bottom:16px;border:1px solid var(--border)}
+  .detail-hero-graphic{width:100%;height:180px;border-radius:20px;border:1px solid var(--border);background:radial-gradient(circle at center, rgba(255,255,255,0.04), rgba(0,0,0,0.9));display:grid;place-items:center;margin-bottom:16px;overflow:hidden}
   .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
   .detail-card{padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
   .detail-card label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
@@ -244,21 +244,20 @@ const SVG_ICONS = {
 };
 
 const GLOSTAR_DATA = [
-  {id: "iss-station", name: "ISS (Internationale Raumstation)", icon: "satellite", summary: "Permanenter bemannter Außenposten im erdnahen Orbit.", explanation: "Die ISS umkreist die Erde in ca. 400 km Höhe mit rund 27.500 km/h und benötigt 92 Minuten für einen Orbit.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><rect x="40" y="42" width="120" height="16" rx="4" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="14" fill="none" stroke="#fff" stroke-width="2"/></svg>`},
-  {id: "mars-opposition", name: "Mars-Opposition", icon: "planet", summary: "Konstellation, bei der die Erde direkt zwischen Mars und Sonne steht.", explanation: "Während einer Opposition steht der Mars der Sonne genau gegenüber, ist der Erde nah und leuchtet extrem hell.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="40" cy="50" r="14" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="8" fill="#fff"/><circle cx="160" cy="50" r="11" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="3,3"/></svg>`},
-  {id: "perseiden", name: "Perseiden", icon: "meteor", summary: "Jährlicher Meteorstrom im August mit hoher Sternschnuppen-Dichte.", explanation: "Entsteht durch die Staubspur des Kometen Swift-Tuttle, die die Erdbahn kreuzt.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><path d="M170 20 L70 60" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="70" r="18" fill="none" stroke="#fff" stroke-width="2"/></svg>`},
-  {id: "solar-eclipse", name: "Totale Sonnenfinsternis", icon: "eclipse", summary: "Vollständige Verdeckung der Sonnenscheibe durch den Mond.", explanation: "Tritt auf, wenn Sonne, Mond und Erde exakt auf einer Linie liegen und der Mond die Sonne temporär blockiert.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="90" cy="50" r="22" fill="none" stroke="#fff" stroke-width="2"/><circle cx="110" cy="50" r="22" fill="#000" stroke="#fff" stroke-width="1"/></svg>`},
-  {id: "jupiter-opp", name: "Jupiter-Opposition", icon: "planet", summary: "Beste Beobachtungszeit für den größten Planeten unseres Systems.", explanation: "Jupiter zeigt sich in seiner maximalen Helligkeit und ist die gesamte Nacht über am Nachthimmel zu sehen.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="100" cy="50" r="25" fill="none" stroke="#fff" stroke-width="2"/><ellipse cx="100" cy="50" rx="35" ry="10" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="4,4"/></svg>`}
+  {id: "opposition", name: "Opposition", icon: "planet", summary: "Konstellation, bei der ein Himmelskörper der Sonne von der Erde aus gesehen genau gegenübersteht.", explanation: "Eine Opposition tritt auf, wenn die Erde auf ihrer Umlaufbahn direkt zwischen der Sonne und einem äußeren Himmelskörper (wie Mars oder Jupiter) steht. In dieser Phase ist das Objekt der Erde besonders nah, erscheint am Nachthimmel maximal groß und leuchtet extrem hell.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="40" cy="50" r="14" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="8" fill="#fff"/><circle cx="160" cy="50" r="11" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="3,3"/></svg>`},
+  {id: "meteorstrom", name: "Meteorstrom", icon: "meteor", summary: "Regelmäßig wiederkehrendes Auftreten zahlreicher Sternschnuppen in einem bestimmten Himmelsareal.", explanation: "Ein Meteorstrom entsteht, wenn die Erde die Bahnkreuzung mit einer Kometenstaubspur durchquert. Die winzigen Staubkörner verglühen beim Eintritt in die Erdatmosphäre und erzeugen dabei helle Leuchtspuren am Nachthimmel.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><path d="M170 20 L70 60" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="70" r="18" fill="none" stroke="#fff" stroke-width="2"/></svg>`},
+  {id: "finsternis", name: "Finsternis (Solar / Lunar)", icon: "eclipse", summary: "Vollständige oder teilweise Verdeckung eines Himmelskörpers durch einen Schattenwurf.", explanation: "Eine astronomische Finsternis ereignet sich, wenn Sonne, Erde und Mond exakt auf einer geraden Linie positioniert sind. Bei einer Sonnenfinsternis schiebt sich der Mond vor die Sonnenscheibe; bei einer Mondfinsternis wandert der Mond durch den Kernschatten der Erde.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="90" cy="50" r="22" fill="none" stroke="#fff" stroke-width="2"/><circle cx="110" cy="50" r="22" fill="#000" stroke="#fff" stroke-width="1"/></svg>`},
+  {id: "orbit", name: "Orbit & Umlaufbahn", icon: "orbit", summary: "Die Gravitations-Bahn, auf der sich ein Satellit oder Planet um einen Zentralkörper bewegt.", explanation: "Ein Orbit beschreibt die physikalische Flugbahn im Raum. Sie wird durch die Anziehungskraft des Zentralkörpers und die Zentrifugalkraft des sich bewegenden Objekts im perfekten Gleichgewicht gehalten.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="100" cy="50" r="25" fill="none" stroke="#fff" stroke-width="2"/><ellipse cx="100" cy="50" rx="35" ry="10" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="4,4"/></svg>`}
 ];
 
 const EVENTS = [
-  {id: "iss-live", name: "ISS Raumstation Live", date: "2024-01-01T00:00:00Z", icon: "satellite", duration: 999999, wiki: "International_Space_Station", desc: "Permanenter Live-Stream und Orbit-Tracking der Internationalen Raumstation.", glostarId: "iss-station", kind: "Live-Raumfahrt", isPermanentLive: true},
-  {id: "mars-opp", name: "Mars in Opposition", date: "2027-02-19T18:00:00Z", icon: "planet", duration: 48, wiki: "Mars", desc: "Der Mars steht der Sonne genau gegenüber und leuchtet besonders hell am Nachthimmel.", glostarId: "mars-opposition", kind: "Planeten-Event"},
-  {id: "perseiden-2026", name: "Perseiden Maximum", date: "2026-08-12T21:00:00Z", icon: "meteor", duration: 24, wiki: "Perseids", desc: "Bis zu 100 Sternschnuppen pro Stunde am Sommerhimmel.", glostarId: "perseiden", kind: "Meteorstrom"},
-  {id: "jupiter-opp-2026", name: "Jupiter in Opposition", date: "2026-12-10T22:00:00Z", icon: "planet", duration: 36, wiki: "Jupiter", desc: "Jupiter erreicht seine erdnächste Position und leuchtet strahlend hell.", glostarId: "jupiter-opp", kind: "Planeten-Event"},
-  {id: "artemis-3", name: "Artemis III Startfenster", date: "2026-09-15T12:00:00Z", icon: "rocket", duration: 72, wiki: "Artemis_3", desc: "Geplante bemannte Landung der NASA in der Südpolregion des Mondes.", glostarId: null, kind: "Raumfahrt-Mission"},
-  {id: "total-solar-eclipse", name: "Totale Sonnenfinsternis", date: "2026-08-12T17:47:00Z", icon: "eclipse", duration: 4, wiki: "Solar_eclipse", desc: "Spektakuläre totale Sonnenfinsternis sichtbar über Teilen von Grönland, Island und Spanien.", glostarId: "solar-eclipse", kind: "Finsternis"},
-  {id: "historic-artemis-1", name: "Artemis I Unbemannter Testflug", date: "2022-11-16T06:47:00Z", icon: "rocket", duration: 600, wiki: "Artemis_1", desc: "Erfolgreicher unbemannter Testflug des Space Launch Systems zum Mond und zurück.", glostarId: null, kind: "Vergangene Mission"}
+  {id: "iss-live", name: "ISS Raumstation Live", date: "2024-01-01T00:00:00Z", icon: "satellite", duration: 999999, desc: "Permanenter Live-Stream und Orbit-Tracking der Internationalen Raumstation im erdnahen Orbit.", glostarId: "orbit", kind: "Live-Raumfahrt", isPermanentLive: true, graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><rect x="50" y="42" width="100" height="16" rx="4" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="12" fill="none" stroke="#fff" stroke-width="2"/></svg>`},
+  {id: "mars-opp", name: "Mars in Opposition", date: "2027-02-19T18:00:00Z", icon: "planet", duration: 48, desc: "Der rote Planet steht der Sonne exakt gegenüber und bietet hervorragende Beobachtungsbedingungen.", glostarId: "opposition", kind: "Planeten-Event", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="50" cy="50" r="12" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="6" fill="#fff"/><circle cx="150" cy="50" r="10" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="2,2"/></svg>`},
+  {id: "perseiden-2026", name: "Perseiden Maximum", date: "2026-08-12T21:00:00Z", icon: "meteor", duration: 24, desc: "Jährlicher Meteorstrom mit bis zu 100 Sternschnuppen pro Stunde am Sommerhimmel.", glostarId: "meteorstrom", kind: "Meteorstrom", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><path d="M160 20 L60 60" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="40" cy="70" r="15" fill="none" stroke="#fff" stroke-width="2"/></svg>`},
+  {id: "jupiter-opp-2026", name: "Jupiter in Opposition", date: "2026-12-10T22:00:00Z", icon: "planet", duration: 36, desc: "Der Riesenplanet leuchtet strahlend hell die gesamte Nacht hindurch.", glostarId: "opposition", kind: "Planeten-Event", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="100" cy="50" r="22" fill="none" stroke="#fff" stroke-width="2"/><ellipse cx="100" cy="50" rx="30" ry="8" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="3,3"/></svg>`},
+  {id: "artemis-3", name: "Artemis III Startfenster", date: "2026-09-15T12:00:00Z", icon: "rocket", duration: 72, desc: "Geplante bemannte Landungsmission der NASA in der Südpolregion des Mondes.", glostarId: "orbit", kind: "Raumfahrt-Mission", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><path d="M80 70 L100 30 L120 70 Z" fill="none" stroke="#fff" stroke-width="2"/><line x1="88" y1="70" x2="112" y2="70" stroke="#fff" stroke-width="2"/></svg>`},
+  {id: "total-solar-eclipse", name: "Totale Sonnenfinsternis", date: "2026-08-12T17:47:00Z", icon: "eclipse", duration: 4, desc: "Spektakuläre totale Sonnenfinsternis über Teilen von Grönland, Island und Spanien.", glostarId: "finsternis", kind: "Finsternis", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="85" cy="50" r="20" fill="none" stroke="#fff" stroke-width="2"/><circle cx="115" cy="50" r="20" fill="#000" stroke="#fff" stroke-width="1"/></svg>`},
+  {id: "historic-artemis-1", name: "Artemis I Unbemannter Testflug", date: "2022-11-16T06:47:00Z", icon: "rocket", duration: 600, desc: "Erfolgreicher unbemannter Testflug des Space Launch Systems zum Mond und zurück.", glostarId: "orbit", kind: "Vergangene Mission", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><path d="M80 70 L100 30 L120 70 Z" fill="none" stroke="#fff" stroke-width="2"/><path d="M90 70 L100 85 L110 70" stroke="#fff" stroke-width="2"/></svg>`}
 ];
 
 function timing(ev){
@@ -288,22 +287,6 @@ function timing(ev){
   return {state:"passed", main:"Vorbei", sub:fmtTime(new Date(start))};
 }
 
-const imgCache = {};
-async function getWikiData(topic){
-  if(!topic) return {img:null, extract:null};
-  if(imgCache[topic]) return imgCache[topic];
-  try{
-    const res = await fetch("https://de.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(topic));
-    if(res.ok){
-      const data = await res.json();
-      const result = {img: data.thumbnail?.source || null, extract: data.extract || null};
-      imgCache[topic] = result;
-      return result;
-    }
-  }catch(e){}
-  return {img:null, extract:null};
-}
-
 function jumpToGloStar(glostarId){
   const itemIndex = GLOSTAR_DATA.findIndex(item => item.id === glostarId);
   if(itemIndex !== -1){
@@ -315,17 +298,15 @@ function jumpToGloStar(glostarId){
   }
 }
 
-async function openDetail(eventId, viewPrefix){
+function openDetail(eventId, viewPrefix){
   const e = EVENTS.find(item => item.id === eventId);
   if(!e) return;
   const mainEl = document.getElementById(`${viewPrefix}-main`);
   const detailEl = document.getElementById(`${viewPrefix}-detail`);
   mainEl.style.display = "none";
   detailEl.classList.add("active");
-  detailEl.innerHTML = `<button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück</button><div>Lade Details...</div>`;
   
-  const wikiData = await getWikiData(e.wiki);
-  const imgHtml = wikiData.img ? `<img src="${wikiData.img}" class="detail-hero-img" alt="${e.name}">` : '';
+  const graphicHtml = e.graphic ? `<div class="detail-hero-graphic">${e.graphic}</div>` : '';
   const glostarBtn = e.glostarId ? `<button class="glostar-link-btn" onclick="jumpToGloStar('${e.glostarId}')">📖 Im GloStar nachschlagen</button>` : '';
 
   if(e.isPermanentLive){
@@ -343,7 +324,6 @@ async function openDetail(eventId, viewPrefix){
         <div class="detail-card"><label>Orbithöhe</label><val>~415 km</val></div>
       </div>
       <p style="color:var(--muted);margin-top:15px;line-height:1.5">${e.desc}</p>
-      ${wikiData.extract ? `<p style="color:var(--muted);margin-top:10px;font-size:13px;line-height:1.5">${wikiData.extract}</p>` : ''}
       ${glostarBtn}
     `;
     initGlobeDetail();
@@ -352,7 +332,7 @@ async function openDetail(eventId, viewPrefix){
 
   detailEl.innerHTML = `
     <button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück</button>
-    ${imgHtml}
+    ${graphicHtml}
     <div class="eyebrow">${e.kind || 'Ereignis'}</div>
     <h1 style="margin-bottom:10px">${e.name}</h1>
     <div class="detail-grid">
@@ -360,7 +340,6 @@ async function openDetail(eventId, viewPrefix){
       <div class="detail-card"><label>Dauer / Fenster</label><val>ca. ${e.duration} Stunden</val></div>
     </div>
     <p style="color:var(--muted);margin-top:15px;line-height:1.5">${e.desc}</p>
-    ${wikiData.extract ? `<p style="color:var(--muted);margin-top:10px;font-size:13px;line-height:1.5">${wikiData.extract}</p>` : ''}
     ${glostarBtn}
   `;
 }
