@@ -37,7 +37,12 @@
   .brand:hover{opacity:.6}
   .brand:active{transform:scale(.95)}
 
-  .utc-pill{font-size:11px;letter-spacing:.08em;color:var(--muted);border:1px solid var(--border);padding:7px 10px;border-radius:999px;background:rgba(0,0,0,.28);backdrop-filter:blur(18px)}
+  /* Zeitzonen Steuerung in der Pille */
+  .utc-container{display:flex;align-items:center;gap:6px;border:1px solid var(--border);padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.35);backdrop-filter:blur(18px)}
+  .utc-pill{font-size:11px;letter-spacing:.08em;color:var(--muted);user-select:none}
+  .tz-btn{border:none;background:rgba(255,255,255,0.08);color:#fff;width:20px;height:20px;border-radius:50%;font-size:11px;font-weight:700;display:grid;place-items:center;cursor:pointer;transition:.2s}
+  .tz-btn:active{transform:scale(0.9);background:rgba(255,255,255,0.2)}
+  .tz-display{font-size:11px;font-weight:600;color:var(--accent);min-width:32px;text-align:center}
   
   main{flex:1;position:relative;overflow:hidden}
   .view{position:absolute;inset:0;padding:22px 20px 140px;overflow:auto;opacity:0;transform:translateY(8px) scale(.995);pointer-events:none;transition:.32s ease}
@@ -75,8 +80,15 @@
   @keyframes pulse{0%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.5)}100%{opacity:1;transform:scale(1)}}
 
   /* ISS Tracker Box */
-  .iss-card{margin-bottom:16px;padding:16px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);backdrop-filter:blur(20px)}
+  .iss-card{margin-bottom:16px;padding:16px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);backdrop-filter:blur(20px);cursor:pointer;transition:.25s ease}
+  .iss-card:active{transform:scale(.985)}
   .iss-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+
+  /* Weltkarte für ISS */
+  .iss-map-container{position:relative;width:100%;height:220px;border-radius:16px;background:#050814;border:1px solid var(--border);overflow:hidden;margin:16px 0;display:grid;place-items:center}
+  .world-map-svg{width:100%;height:100%;opacity:.35}
+  .iss-marker{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--live);box-shadow:0 0 12px var(--live);transform:translate(-50%,-50%);transition:top 0.5s linear, left 0.5s linear}
+  .iss-marker::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid var(--live);animation:pulse 1.5s infinite}
 
   .detail-page{display:none;padding-bottom:30px}
   .detail-page.active{display:block;animation:fade .25s ease}
@@ -132,7 +144,12 @@
 <div class="app">
   <header>
     <div class="brand" id="brandBtn">COSMOS</div>
-    <div class="utc-pill" id="utcClock">UTC --:--:--</div>
+    <div class="utc-container">
+      <button class="tz-btn" onclick="changeOffset(-1)">-</button>
+      <span class="tz-display" id="tzDisplay">UTC+2</span>
+      <button class="tz-btn" onclick="changeOffset(1)">+</button>
+      <div class="utc-pill" id="utcClock">--:--:--</div>
+    </div>
   </header>
 
   <main>
@@ -151,10 +168,10 @@
         </div>
         
         <!-- ISS Live Tracker Widget -->
-        <div class="iss-card">
+        <div class="iss-card" onclick="openISNDetail()">
           <div class="iss-title"><span class="live-dot"></span> 🛰️ ISS Raumstation Position</div>
           <div style="font-size:12px;color:var(--muted)">Koordinaten: <span id="issCoords" style="color:#fff">Lade Live-Daten...</span></div>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px">Standort: <span id="issLocation" style="color:#fff">Berechne...</span></div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">Standort: <span id="issLocation" style="color:#fff">Berechne...</span> (Tippen für Weltkarte)</div>
         </div>
 
         <div class="event-list" id="liveEventList"></div>
@@ -230,13 +247,31 @@
 
 <script>
 const MS_DAY = 86400000;
+let tzOffsetHours = 2; // Standardmäßig UTC+2 (bzw. anpassbar)
 function jdToMs(jd){ return (jd - 2440587.5) * MS_DAY; }
-function fmtUTC(d){
-  return new Intl.DateTimeFormat("de-DE",{timeZone:"UTC",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(d) + " UTC";
+
+function fmtTime(d){
+  // Verschiebt das Datum um den Offset für die lokale Anzeige
+  const adjusted = new Date(d.getTime() + tzOffsetHours * 3600000);
+  return new Intl.DateTimeFormat("de-DE",{timeZone:"UTC",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(adjusted) + ` (UTC${tzOffsetHours>=0?'+':''}${tzOffsetHours})`;
 }
+
 function pad(n){ return String(n).padStart(2,"0"); }
 
 let activeBackgroundPhenomenon = null;
+let currentIssLat = 0;
+let currentIssLon = 0;
+
+function changeOffset(val){
+  tzOffsetHours += val;
+  if(tzOffsetHours > 14) tzOffsetHours = 14;
+  if(tzOffsetHours < -12) tzOffsetHours = -12;
+  document.getElementById('tzDisplay').textContent = `UTC${tzOffsetHours>=0?'+':''}${tzOffsetHours}`;
+  // Ansichten aktualisieren, damit die Zeiten direkt umspringen
+  renderLiveEvents();
+  renderEvents(document.getElementById('searchEvents').value);
+  renderHistory(document.getElementById('searchHistory').value);
+}
 
 const GLOSTAR_DATA = [
   {
@@ -340,11 +375,10 @@ function computeSeasons(startMs, endMs){
 
 const nowMs = Date.now();
 const curated = [
-  {name:"Totale Sonnenfinsternis", date: new Date(nowMs - 3600000).toISOString(), icon:"☀", rgb:"255,205,110", duration:5, wiki:"Solar eclipse", location:"Europa, Island, Grönland", desc:"Maximale Verdunkelung aktuell beobachtbar. Beste Sichtverhältnisse im Kernschattenbereich.", glostarId:"sonnenfinsternis"},
   {name:"Perseiden-Maximum",       date:"2026-08-12T22:00:00Z", icon:"☄", rgb:"255,170,90",  duration:10, wiki:"Perseids", location:"Global", desc:"Erwartete Frequenz von bis zu 100 Meteoren pro Stunde. Optimal in den späten Nachtstunden.", glostarId:"perseiden-maximum"},
   {name:"Mond × Plejaden",         date:"2026-09-03T03:00:00Z", icon:"✧", rgb:"200,210,255", duration:6, wiki:"Pleiades", location:"Nachtseite", desc:"Geringster Winkelabstand von ca. 1.2° gegen 03:00 UTC. Gut sichtbar mit bloßem Auge oder Fernglas."},
-  {name:"Neptun in Opposition",    date:"2026-09-26T01:28:00Z", icon:"♆", rgb:"90,150,255",  duration:24, wiki:"Neptune", location:"Global", desc:"Erreicht heute maximale Helligkeit (Mag 7.8). Die gesamte Nacht im Sternbild Fische zu beobachten.", glostarId:"opposition"},
-  {name:"Mond × Saturn",           date:"2026-09-27T22:00:00Z", icon:"♄", rgb:"235,215,160", duration:6, wiki:"Saturn", location:"Nachtseite", desc:"Dichtes Vorbeiziehen des Mondes an Saturn im Südosten. Beobachtung ab 22:00 UTC empfohlen.", glostarId:"konjunktion"}
+  {name:"Neptun in Opposition",    date:"2026-09-26T22:00:00Z", icon:"♆", rgb:"90,150,255",  duration:24, wiki:"Neptune", location:"Global", desc:"Erreicht heute maximale Helligkeit (Mag 7.8). Die gesamte Nacht im Sternbild Fische zu beobachten.", glostarId:"opposition"},
+  {name:"Mond × Saturn",           date:"2026-09-27T22:00:00Z", icon:"♄", rgb:"235,215,160", duration:6, wiki:"Saturn", location:"Nachtseite", desc:"Dichtes Vorbeiziehen des Mondes an Saturn im Südosten. Beobachtung ab 22:00 Uhr empfohlen.", glostarId:"konjunktion"}
 ].map(c => ({...c, kind:"planet"}));
 
 let EVENTS = [];
@@ -377,7 +411,7 @@ function timing(ev){
     const hrs=Math.floor(s/3600), mins=Math.floor((s%3600)/60), sec=s%60;
     return {state:"live", main:`T+${pad(hrs)}:${pad(mins)}:${pad(sec)}`, sub:"läuft gerade"};
   }
-  return {state:"passed", main:"Vorbei", sub:fmtUTC(new Date(start))};
+  return {state:"passed", main:"Vorbei", sub:fmtTime(new Date(start))};
 }
 
 const imgCache = {};
@@ -411,6 +445,45 @@ function jumpToGloStar(glostarId){
   }
 }
 
+async function openISNDetail(){
+  const mainEl = document.getElementById("live-main");
+  const detailEl = document.getElementById("live-detail");
+  
+  mainEl.style.display = "none";
+  detailEl.classList.add("active");
+  
+  const mapX = ((currentIssLon + 180) / 360) * 100;
+  const mapY = ((90 - currentIssLat) / 180) * 100;
+
+  detailEl.innerHTML = `
+    <button class="back-btn" onclick="closeDetail('live')">← Zurück zur Live-Ansicht</button>
+    <div class="eyebrow" style="color:var(--live)">Live Raumstation</div>
+    <h1 style="margin-bottom:10px">Internationale Raumstation (ISS)</h1>
+    
+    <div class="iss-map-container" id="issMapBox">
+      <svg class="world-map-svg" viewBox="0 0 1000 500" preserveAspectRatio="none">
+        <path fill="#1e293b" d="M150,100 Q200,80 250,110 T350,100 T450,130 T550,90 T650,110 T750,95 T850,120 V400 H150 Z"/>
+        <circle cx="200" cy="150" r="40" fill="#334155" opacity="0.6"/>
+        <circle cx="750" cy="180" r="60" fill="#334155" opacity="0.6"/>
+        <circle cx="500" cy="300" r="80" fill="#334155" opacity="0.6"/>
+      </svg>
+      <div class="iss-marker" id="liveMapMarker" style="top:${mapY}%; left:${mapX}%"></div>
+    </div>
+    
+    <div class="detail-grid">
+      <div class="detail-card"><label>Breitengrad</label><val id="mapLatVal">${currentIssLat}°</val></div>
+      <div class="detail-card"><label>Längengrad</label><val id="mapLonVal">${currentIssLon}°</val></div>
+      <div class="detail-card"><label>Status</label><val style="color:var(--live)">Im Orbit aktiv</val></div>
+      <div class="detail-card"><label>Geschwindigkeit</label><val>ca. 27.500 km/h</val></div>
+    </div>
+    
+    <div style="margin-top:20px;line-height:1.6;color:var(--muted)">
+      <h3 style="color:#fff;margin-bottom:8px">Über die ISS</h3>
+      <p style="color:#fff;font-size:15px">Die Internationale Raumstation umkreist die Erde in etwa 400 Kilometern Höhe einmal alle 92 Minuten. Auf dieser eingeblendeten Live-Weltkarte siehst du sekündlich ihre aktuelle Position über der Erdoberfläche.</p>
+    </div>
+  `;
+}
+
 async function openDetail(eventIndex, viewPrefix){
   const e = EVENTS[eventIndex];
   const mainEl = document.getElementById(`${viewPrefix}-main`);
@@ -438,7 +511,7 @@ async function openDetail(eventIndex, viewPrefix){
     <h1 style="margin-bottom:10px">${e.name}</h1>
     
     <div class="detail-grid">
-      <div class="detail-card"><label>Zeitpunkt</label><val>${fmtUTC(new Date(e.date))}</val></div>
+      <div class="detail-card"><label>Zeitpunkt</label><val>${fmtTime(new Date(e.date))}</val></div>
       <div class="detail-card"><label>Dauer</label><val>ca. ${e.duration || 2} Stunden</val></div>
       <div class="detail-card"><label>Sichtbar in</label><val>${e.location || 'Global'}</val></div>
       <div class="detail-card"><label>Status</label><val>${timing(e).main}</val></div>
@@ -489,7 +562,7 @@ function renderLiveEvents(){
   const liveEvents = EVENTS.filter(e => timing(e).state === "live");
 
   if(liveEvents.length === 0){
-    list.innerHTML = `<div class="empty"><div class="glyph">📡</div><div class="title">Derzeit keine Live-Ereignisse</div></div>`;
+    list.innerHTML = `<div class="empty" style="padding-top:5vh"><div class="glyph">📡</div><div class="title" style="font-size:16px">Derzeit keine temporären Live-Ereignisse im Gange</div><div style="font-size:12px;color:var(--muted);margin-top:6px">Die ISS oben bleibt dein ständiger Live-Begleiter.</div></div>`;
     return;
   }
 
@@ -498,7 +571,7 @@ function renderLiveEvents(){
     const t = timing(e);
     return `<article class="event live" onclick="openDetail(${idx}, 'live')" style="--event-rgb:${e.rgb}">
       <div class="icon">${e.icon}</div>
-      <div class="meta"><div class="name">${e.name}</div><div class="time">${fmtUTC(new Date(e.date))}</div></div>
+      <div class="meta"><div class="name">${e.name}</div><div class="time">${fmtTime(new Date(e.date))}</div></div>
       <div class="count">
         <div class="live-badge"><span class="live-dot"></span>LIVE</div>
         <strong>${t.main}</strong><small>${t.sub}</small>
@@ -518,7 +591,7 @@ function renderEvents(filterText = ""){
     const live = t.state === "live";
     return `<article class="event ${live?'live':''}" onclick="openDetail(${idx}, 'events')" style="--event-rgb:${e.rgb}">
       <div class="icon">${e.icon}</div>
-      <div class="meta"><div class="name">${e.name}</div><div class="time">${fmtUTC(new Date(e.date))}</div></div>
+      <div class="meta"><div class="name">${e.name}</div><div class="time">${fmtTime(new Date(e.date))}</div></div>
       <div class="count">
         ${live?'<div class="live-badge"><span class="live-dot"></span>LIVE</div>':''}
         <strong>${t.main}</strong><small>${t.sub}</small>
@@ -544,7 +617,7 @@ function renderHistory(filterText = ""){
       <div class="hist-thumb" id="thumb-${idx}">${e.icon}</div>
       <div class="hist-meta">
         <div class="name">${e.name}</div>
-        <div class="time">${fmtUTC(new Date(e.date))}</div>
+        <div class="time">${fmtTime(new Date(e.date))}</div>
       </div>
     </article>`;
   }).join("");
@@ -577,17 +650,28 @@ function renderGloStar(filterText = ""){
   }).join("");
 }
 
-/* ISS Live-Tracking */
+/* ISS Live-Tracking mit Weltkarten-Update */
 async function fetchISS(){
   try{
     const res = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
     if(res.ok){
       const data = await res.json();
-      const lat = parseFloat(data.latitude).toFixed(2);
-      const lon = parseFloat(data.longitude).toFixed(2);
-      document.getElementById('issCoords').textContent = `${lat}°, ${lon}°`;
+      currentIssLat = parseFloat(data.latitude).toFixed(2);
+      currentIssLon = parseFloat(data.longitude).toFixed(2);
       
-      const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+      document.getElementById('issCoords').textContent = `${currentIssLat}°, ${currentIssLon}°`;
+      
+      const marker = document.getElementById('liveMapMarker');
+      if(marker){
+        const mapX = ((parseFloat(currentIssLon) + 180) / 360) * 100;
+        const mapY = ((90 - parseFloat(currentIssLat)) / 180) * 100;
+        marker.style.top = `${mapY}%`;
+        marker.style.left = `${mapX}%`;
+        document.getElementById('mapLatVal').textContent = `${currentIssLat}°`;
+        document.getElementById('mapLonVal').textContent = `${currentIssLon}°`;
+      }
+
+      const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${currentIssLat}&lon=${currentIssLon}&format=json`);
       if(geoRes.ok){
         const geoData = await geoRes.json();
         if(geoData && geoData.address && geoData.address.country){
@@ -602,7 +686,7 @@ async function fetchISS(){
   }
 }
 
-/* Dynamischer Canvas-Sternenhimmel (Interaktiv + Drift + Glimmern) */
+/* Dynamischer Canvas-Sternenhimmel */
 const canvas = document.getElementById('stars');
 const ctx = canvas.getContext('2d');
 let width, height;
@@ -636,11 +720,9 @@ class DynamicStar {
     this.y = Math.random() * height;
     this.size = Math.random() * 2 + 0.6;
     
-    // Sanfte Bewegung
     this.vx = (Math.random() - 0.5) * 0.35;
     this.vy = (Math.random() - 0.5) * 0.35;
 
-    // Glimmern/Flimmern
     this.alpha = Math.random();
     this.twinkleSpeed = Math.random() * 0.02 + 0.006;
     this.maxAlpha = Math.random() * 0.6 + 0.4;
@@ -648,7 +730,6 @@ class DynamicStar {
   }
 
   update() {
-    // 1. Drift
     this.x += this.vx;
     this.y += this.vy;
 
@@ -657,13 +738,11 @@ class DynamicStar {
     if (this.y < 0) this.y = height;
     if (this.y > height) this.y = 0;
 
-    // 2. Pulsierendes Glimmern
     this.alpha += this.twinkleSpeed;
     if (this.alpha > this.maxAlpha || this.alpha < this.minAlpha) {
       this.twinkleSpeed = -this.twinkleSpeed;
     }
 
-    // 3. Maus-Interaktion (Sanftes Ausweichen)
     if (mouse.x !== null && mouse.y !== null) {
       let dx = mouse.x - this.x;
       let dy = mouse.y - this.y;
@@ -747,10 +826,11 @@ document.getElementById('searchEvents').addEventListener('input', (e) => renderE
 document.getElementById('searchHistory').addEventListener('input', (e) => renderHistory(e.target.value));
 document.getElementById('searchGloStar').addEventListener('input', (e) => renderGloStar(e.target.value));
 
-// Live UTC Uhrzeit
+// Live Uhrzeit mit Zeitzonen-Offset
 setInterval(() => {
   const d = new Date();
-  document.getElementById('utcClock').textContent = 'UTC ' + pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + ':' + pad(d.getUTCSeconds());
+  const adjusted = new Date(d.getTime() + tzOffsetHours * 3600000);
+  document.getElementById('utcClock').textContent = pad(adjusted.getUTCHours()) + ':' + pad(adjusted.getUTCMinutes()) + ':' + pad(adjusted.getUTCSeconds());
 }, 1000);
 
 // Init
