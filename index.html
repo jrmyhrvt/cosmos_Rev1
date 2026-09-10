@@ -67,7 +67,7 @@
   .count strong{display:block;font-size:13px;font-weight:700}
   .count small{display:block;margin-top:3px;font-size:9.5px;color:var(--muted);text-transform:uppercase}
   
-  .globe-container{position:relative;width:100%;height:220px;border-radius:16px;background:radial-gradient(circle at center, rgba(30,30,30,0.8), #000);border:1px solid var(--border);overflow:hidden;margin:12px 0;display:grid;place-items:center}
+  .globe-container{position:relative;width:100%;height:200px;border-radius:20px;background:radial-gradient(circle at center, rgba(30,30,30,0.8), #000);border:1px solid var(--border);overflow:hidden;margin-bottom:16px;display:grid;place-items:center}
   #globeCanvasDetail{cursor:grab}
   #globeCanvasDetail:active{cursor:grabbing}
 
@@ -210,8 +210,8 @@
 
 <script>
 let tzOffsetHours = 2; 
-let currentIssLat = '48.20';
-let currentIssLon = '16.37';
+let currentIssLat = 48.20;
+let currentIssLon = 16.37;
 let globeRotation = 0;
 let isDraggingGlobe = false;
 let prevMouseX = 0;
@@ -251,7 +251,7 @@ const GLOSTAR_DATA = [
 ];
 
 const EVENTS = [
-  {id: "iss-live", name: "ISS Raumstation Live", date: "2024-01-01T00:00:00Z", icon: "satellite", duration: 999999, desc: "Permanenter Live-Stream und Orbit-Tracking der Internationalen Raumstation im erdnahen Orbit.", glostarId: "orbit", kind: "Live-Raumfahrt", isPermanentLive: true, graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><rect x="50" y="42" width="100" height="16" rx="4" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="12" fill="none" stroke="#fff" stroke-width="2"/></svg>`},
+  {id: "iss-live", name: "ISS Raumstation Live", date: "2024-01-01T00:00:00Z", icon: "satellite", duration: 999999, desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.", glostarId: "orbit", kind: "Live-Raumfahrt", isPermanentLive: true},
   {id: "mars-opp", name: "Mars in Opposition", date: "2027-02-19T18:00:00Z", icon: "planet", duration: 48, desc: "Der rote Planet steht der Sonne exakt gegenüber und bietet hervorragende Beobachtungsbedingungen.", glostarId: "opposition", kind: "Planeten-Event", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="50" cy="50" r="12" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="6" fill="#fff"/><circle cx="150" cy="50" r="10" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="2,2"/></svg>`},
   {id: "perseiden-2026", name: "Perseiden Maximum", date: "2026-08-12T21:00:00Z", icon: "meteor", duration: 24, desc: "Jährlicher Meteorstrom mit bis zu 100 Sternschnuppen pro Stunde am Sommerhimmel.", glostarId: "meteorstrom", kind: "Meteorstrom", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><path d="M160 20 L60 60" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="40" cy="70" r="15" fill="none" stroke="#fff" stroke-width="2"/></svg>`},
   {id: "jupiter-opp-2026", name: "Jupiter in Opposition", date: "2026-12-10T22:00:00Z", icon: "planet", duration: 36, desc: "Der Riesenplanet leuchtet strahlend hell die gesamte Nacht hindurch.", glostarId: "opposition", kind: "Planeten-Event", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="100" cy="50" r="22" fill="none" stroke="#fff" stroke-width="2"/><ellipse cx="100" cy="50" rx="30" ry="8" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="3,3"/></svg>`},
@@ -306,17 +306,16 @@ function openDetail(eventId, viewPrefix){
   mainEl.style.display = "none";
   detailEl.classList.add("active");
   
-  const graphicHtml = e.graphic ? `<div class="detail-hero-graphic">${e.graphic}</div>` : '';
   const glostarBtn = e.glostarId ? `<button class="glostar-link-btn" onclick="jumpToGloStar('${e.glostarId}')">📖 Im GloStar nachschlagen</button>` : '';
 
   if(e.isPermanentLive){
     detailEl.innerHTML = `
       <button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück</button>
-      <div class="eyebrow">Live Raumstation</div>
-      <h1 style="margin-bottom:10px">${e.name}</h1>
       <div class="globe-container">
-        <canvas id="globeCanvasDetail" width="400" height="220"></canvas>
+        <canvas id="globeCanvasDetail" width="400" height="200"></canvas>
       </div>
+      <div class="eyebrow">${e.kind || 'Ereignis'}</div>
+      <h1 style="margin-bottom:10px">${e.name}</h1>
       <div class="detail-grid">
         <div class="detail-card"><label>Breitengrad</label><val id="detailLat">${currentIssLat}°</val></div>
         <div class="detail-card"><label>Längengrad</label><val id="detailLon">${currentIssLon}°</val></div>
@@ -330,6 +329,7 @@ function openDetail(eventId, viewPrefix){
     return;
   }
 
+  const graphicHtml = e.graphic ? `<div class="detail-hero-graphic">${e.graphic}</div>` : '';
   detailEl.innerHTML = `
     <button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück</button>
     ${graphicHtml}
@@ -425,12 +425,12 @@ async function fetchISS(){
     const res = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
     if(res.ok){
       const data = await res.json();
-      currentIssLat = parseFloat(data.latitude).toFixed(2);
-      currentIssLon = parseFloat(data.longitude).toFixed(2);
+      currentIssLat = parseFloat(data.latitude);
+      currentIssLon = parseFloat(data.longitude);
       const latEl = document.getElementById('detailLat');
       const lonEl = document.getElementById('detailLon');
-      if(latEl) latEl.textContent = `${currentIssLat}°`;
-      if(lonEl) lonEl.textContent = `${currentIssLon}°`;
+      if(latEl) latEl.textContent = `${currentIssLat.toFixed(2)}°`;
+      if(lonEl) lonEl.textContent = `${currentIssLon.toFixed(2)}°`;
     }
   }catch(e){}
 }
@@ -448,43 +448,81 @@ function initGlobeDetail(){
   };
   window.onmouseup = () => { isDraggingGlobe = false; };
 
+  // Kontinente Punkte (Näherung für Weltkarte)
+  const landmasses = [
+    // Nordamerika
+    {lat:50,lon:-100},{lat:45,lon:-120},{lat:30,lon:-100},{lat:60,lon:-140},{lat:40,lon:-80},
+    // Südamerika
+    {lat:-10,lon:-60},{lat:-20,lon:-55},{lat:10,lon:-75},{lat:-35,lon:-65},
+    // Europa / Afrika
+    {lat:50,lon:10},{lat:40,lon:3},{lat:55,lon:30},{lat:20,lon:20},{lat:0,lon:20},{lat:-20,lon:25},{lat:30,lon:30},
+    // Asien
+    {lat:60,lon:90},{lat:50,lon:120},{lat:35,lon:105},{lat:25,lon:90},{lat:40,lon:60},{lat:60,lon:60},
+    // Australien
+    {lat:-25,lon:135},{lat:-30,lon:150}
+  ];
+
   function render(){
     if(!canvas.parentElement || !canvas.parentElement.parentElement.classList.contains('active')) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const cx = canvas.width/2, cy = canvas.height/2, r = 75;
+    const cx = canvas.width/2, cy = canvas.height/2, r = 70;
     
-    if(!isDraggingGlobe) globeRotation += 0.004;
+    if(!isDraggingGlobe) globeRotation += 0.003;
 
+    // Globus Hintergrund (Meere)
     ctx.save();
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI*2);
     ctx.clip();
-    ctx.fillStyle = '#111';
+    
+    let grad = ctx.createRadialGradient(cx-20, cy-20, 10, cx, cy, r);
+    grad.addColorStop(0, '#112233');
+    grad.addColorStop(1, '#050a12');
+    ctx.fillStyle = grad;
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    ctx.fillStyle = '#fff';
-    [{lat:45,lon:-100},{lat:-10,lon:-60},{lat:50,lon:10},{lat:-25,lon:135},{lat:35,lon:105}].forEach(p=>{
+    // Kontinente zeichnen
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    landmasses.forEach(p=>{
       const phi = (90 - p.lat) * Math.PI/180;
       const theta = (p.lon + globeRotation * 57.3) * Math.PI/180;
       const x = cx + r * Math.sin(phi) * Math.cos(theta);
       const y = cy + r * Math.cos(phi);
-      if(Math.sin(phi)*Math.sin(theta) > 0){
-        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2); ctx.fill();
+      if(Math.sin(phi)*Math.sin(theta) > -0.1){
+        ctx.beginPath(); 
+        ctx.arc(x, y, 3, 0, Math.PI*2); 
+        ctx.fill();
       }
     });
     ctx.restore();
 
-    ctx.strokeStyle = '#fff';
+    // Globus Rand
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+
+    // ISS Orbit-Ring
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
     ctx.lineWidth = 1;
     ctx.setLineDash([3,3]);
-    ctx.beginPath(); ctx.arc(cx, cy, r*1.25, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, r*1.2, 0, Math.PI*2); ctx.stroke();
     ctx.setLineDash([]);
 
-    const angle = Date.now() * 0.0008;
-    const ix = cx + r*1.25 * Math.cos(angle);
-    const iy = cy + r*1.25 * Math.sin(angle) * 0.5;
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(ix, iy, 3.5, 0, Math.PI*2); ctx.fill();
+    // Live ISS Position auf dem Globus
+    const issPhi = (90 - currentIssLat) * Math.PI/180;
+    const issTheta = (currentIssLon + globeRotation * 57.3) * Math.PI/180;
+    const issX = cx + r * Math.sin(issPhi) * Math.cos(issTheta);
+    const issY = cy + r * Math.cos(issPhi);
+
+    if(Math.sin(issPhi)*Math.sin(issTheta) > -0.2){
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#ffffff';
+      ctx.shadowBlur = 10;
+      ctx.beginPath(); 
+      ctx.arc(issX, issY, 4.5, 0, Math.PI*2); 
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
 
     requestAnimationFrame(render);
   }
