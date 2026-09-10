@@ -78,7 +78,6 @@
   .detail-page.active{display:block;animation:fade .25s ease}
   .back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.08);color:#fff;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:16px}
   
-  /* Perfekt eingepasstes Hero-Bild */
   .detail-hero-img{width:100%;height:220px;border-radius:20px;object-fit:cover;object-position:center;margin-bottom:16px;border:1px solid var(--border);background:rgba(255,255,255,.05);display:block}
   
   .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
@@ -96,14 +95,17 @@
   .glostar-title{font-size:15px;font-weight:650}
   .glostar-desc{font-size:12px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
-  .graphic-box{width:100%;height:160px;border-radius:16px;border:1px solid var(--border);background:rgba(255,255,255,.02);display:grid;place-items:center;margin:15px 0;position:relative;overflow:hidden}
+  /* Neues Betrachter-Feld für GloStar Grafik */
+  .glostar-viewport{width:100%;height:220px;border-radius:20px;border:1px solid var(--border);background:radial-gradient(circle at center, rgba(255,255,255,0.06), rgba(0,0,0,0.8));display:grid;place-items:center;margin-bottom:20px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
 
-  /* Navigation Bar - Schwebend über dem Canvas mit Glasmorphismus */
-  .tabbar{position:fixed;left:14px;right:14px;bottom:calc(12px + var(--safe-bottom));height:72px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:rgba(8,8,8,.75);backdrop-filter:blur(32px) saturate(1.5);display:grid;grid-template-columns:repeat(4,1fr);padding:7px;box-shadow:0 18px 45px rgba(0,0,0,.8);z-index:100}
-  .tab{border:0;background:none;color:rgba(255,255,255,.42);border-radius:18px;display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;font:inherit;cursor:pointer}
-  .tab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
-  .tab span{font-size:9.5px;font-weight:600}
+  /* Navigation Bar - 5 Felder */
+  .tabbar{position:fixed;left:10px;right:10px;bottom:calc(12px + var(--safe-bottom));height:72px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:rgba(8,8,8,.75);backdrop-filter:blur(32px) saturate(1.5);display:grid;grid-template-columns:repeat(5,1fr);padding:5px;box-shadow:0 18px 45px rgba(0,0,0,.8);z-index:100}
+  .tab{border:0;background:none;color:rgba(255,255,255,.42);border-radius:18px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;font:inherit;cursor:pointer}
+  .tab svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}
+  .tab span{font-size:9px;font-weight:600}
   .tab.active{color:var(--accent);background:rgba(var(--accent-rgb),.08)}
+  .tab.live-tab{color:var(--live)}
+  .tab.live-tab.active{background:rgba(var(--live-rgb),.12)}
   
   .empty{text-align:center;color:var(--muted);padding-top:15vh}
   .empty .glyph{font-size:38px;margin-bottom:12px}
@@ -113,7 +115,6 @@
   .hist-card{border:1px solid var(--border);border-radius:20px;background:rgba(255,255,255,.04);overflow:hidden;cursor:pointer;transition:.25s ease;display:grid;grid-template-columns:64px 1fr;gap:13px;padding:12px}
   .hist-card:active{transform:scale(.985)}
   
-  /* Perfekt angepasstes Vorschaubild im Verlauf */
   .hist-thumb{width:64px;height:64px;border-radius:14px;background-size:cover;background-position:center;background-repeat:no-repeat;display:grid;place-items:center;font-size:24px;background-color:rgba(var(--event-rgb),.13);border:1px solid rgba(var(--event-rgb),.2)}
   
   .hist-meta .name{font-size:14.5px}
@@ -139,6 +140,16 @@
         <div class="quote">“Irgendwo wartet etwas <em>Unglaubliches</em> darauf, entdeckt zu werden.”</div>
         <div class="sub">Verfolge kosmische Momente. Tippe auf ein Ereignis, um das Universum um dich herum zu verändern.</div>
       </div>
+    </section>
+
+    <section class="view" id="live-view">
+      <div id="live-main">
+        <div class="section-head">
+          <div><div class="eyebrow" style="margin-bottom:9px;color:var(--live)">Jetzt Aktiv</div><h1>Live Ereignisse</h1></div>
+        </div>
+        <div class="event-list" id="liveEventList"></div>
+      </div>
+      <div class="detail-page" id="live-detail"></div>
     </section>
 
     <section class="view" id="events">
@@ -188,6 +199,10 @@
       <svg viewBox="0 0 24 24"><path d="M3.5 11.2 12 4l8.5 7.2v8.3a1.5 1.5 0 0 1-1.5 1.5h-5v-6H10v6H5a1.5 1.5 0 0 1-1.5-1.5z"/></svg>
       <span>Home</span>
     </button>
+    <button class="tab live-tab" data-tab="live-view" aria-label="Live">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 1 0 10 10"/></svg>
+      <span>Live</span>
+    </button>
     <button class="tab" data-tab="events" aria-label="Ereignisse">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg>
       <span>Ereignisse</span>
@@ -211,73 +226,64 @@ function fmtUTC(d){
 }
 function pad(n){ return String(n).padStart(2,"0"); }
 
-/* Aktives Phänomen für Hintergrund-Canvas-Animation */
 let activeBackgroundPhenomenon = null;
 
-/* GloStar Begriffe Datenbank */
 const GLOSTAR_DATA = [
   {
     id: "perseiden-maximum",
     name: "Perseiden-Maximum",
     icon: "☄️",
-    wiki: "Perseids",
     summary: "Der Höhepunkt des bekanntesten Sternschnuppenstroms des Jahres.",
     explanation: "Das Perseiden-Maximum tritt jedes Jahr Mitte August auf, wenn die Erde die Staubspur des Kometen 109P/Swift-Tuttle kreuzt. Beim Eintritt in die Erdatmosphäre verglühen winzige Staubkörner mit bis zu 59 km/s und erzeugen helle Leuchtspuren.",
-    graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="40" cy="50" r="25" fill="#1a365d" stroke="#63b3ed" stroke-width="2"/><path d="M180 20 L80 45" stroke="#f6ad55" stroke-width="3" stroke-linecap="round"/><path d="M160 70 L90 55" stroke="#f6ad55" stroke-width="2" stroke-linecap="round"/><circle cx="180" cy="20" r="3" fill="#fff"/><circle cx="160" cy="70" r="2" fill="#fff"/><text x="40" y="54" fill="#fff" font-size="10" text-anchor="middle">Erde</text></svg>`
+    graphic: `<svg width="240" height="140" viewBox="0 0 200 100"><circle cx="40" cy="50" r="25" fill="#1a365d" stroke="#63b3ed" stroke-width="2"/><path d="M180 20 L80 45" stroke="#f6ad55" stroke-width="3" stroke-linecap="round"/><path d="M160 70 L90 55" stroke="#f6ad55" stroke-width="2" stroke-linecap="round"/><circle cx="180" cy="20" r="3" fill="#fff"/><circle cx="160" cy="70" r="2" fill="#fff"/><text x="40" y="54" fill="#fff" font-size="10" text-anchor="middle">Erde</text></svg>`
   },
   {
     id: "opposition",
     name: "Opposition",
     icon: "♆",
-    wiki: "Opposition (Astronomie)",
     summary: "Ein Himmelskörper steht der Sonne von der Erde aus genau gegenüber.",
     explanation: "Steht ein Planet in Opposition, befindet sich die Erde genau auf einer Linie zwischen ihm und der Sonne. Der Planet ist dann die gesamte Nacht über sichtbar und erreicht seine geringste Entfernung zur Erde.",
-    graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="30" cy="50" r="15" fill="#ecc94b"/><circle cx="100" cy="50" r="10" fill="#3182ce"/><circle cx="170" cy="50" r="12" fill="#dd6b20"/><line x1="30" y1="50" x2="170" y2="50" stroke="rgba(255,255,255,0.2)" stroke-dasharray="4"/><text x="30" y="80" fill="#aaa" font-size="9" text-anchor="middle">Sonne</text><text x="100" y="80" fill="#aaa" font-size="9" text-anchor="middle">Erde</text><text x="170" y="80" fill="#aaa" font-size="9" text-anchor="middle">Planet</text></svg>`
+    graphic: `<svg width="240" height="140" viewBox="0 0 200 100"><circle cx="30" cy="50" r="15" fill="#ecc94b"/><circle cx="100" cy="50" r="10" fill="#3182ce"/><circle cx="170" cy="50" r="12" fill="#dd6b20"/><line x1="30" y1="50" x2="170" y2="50" stroke="rgba(255,255,255,0.2)" stroke-dasharray="4"/><text x="30" y="80" fill="#aaa" font-size="9" text-anchor="middle">Sonne</text><text x="100" y="80" fill="#aaa" font-size="9" text-anchor="middle">Erde</text><text x="170" y="80" fill="#aaa" font-size="9" text-anchor="middle">Planet</text></svg>`
   },
   {
     id: "aequinoktium",
     name: "Äquinoktium",
     icon: "☯",
-    wiki: "Tagundnachtgleiche",
     summary: "Tag und Nacht sind überall auf der Erde exakt gleich lang.",
     explanation: "Ein Äquinoktium (Tagundnachtgleiche) passiert zweimal im Jahr (März & September). An diesen Tagen steht die Sonne genau über dem Erdäquator, wodurch Tag und Nacht weltweit jeweils etwa 12 Stunden dauern.",
-    graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="100" cy="50" r="30" fill="#2b6cb0"/><line x1="100" y1="15" x2="100" y2="85" stroke="#e2e8f0" stroke-width="2"/><path d="M70 50 A30 30 0 0 0 130 50 Z" fill="rgba(0,0,0,0.5)"/><text x="100" y="96" fill="#aaa" font-size="9" text-anchor="middle">Sonne trifft Äquator direkt</text></svg>`
+    graphic: `<svg width="240" height="140" viewBox="0 0 200 100"><circle cx="100" cy="50" r="30" fill="#2b6cb0"/><line x1="100" y1="15" x2="100" y2="85" stroke="#e2e8f0" stroke-width="2"/><path d="M70 50 A30 30 0 0 0 130 50 Z" fill="rgba(0,0,0,0.5)"/><text x="100" y="96" fill="#aaa" font-size="9" text-anchor="middle">Sonne trifft Äquator direkt</text></svg>`
   },
   {
     id: "konjunktion",
     name: "Konjunktion",
     icon: "☌",
-    wiki: "Konjunktion (Astronomie)",
     summary: "Zwei Himmelskörper erscheinen am Himmel nah beieinander.",
     explanation: "Bei einer Konjunktion stehen zwei Himmelskörper (z.B. Mond und Saturn oder Jupiter) aus Sicht der Erde auf der gleichen Himmelslänge und scheinen scheinbar extrem nah nebeneinander zu stehen.",
-    graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="85" cy="45" r="14" fill="#cbd5e0"/><circle cx="115" cy="55" r="8" fill="#ed8936"/><text x="100" y="85" fill="#aaa" font-size="9" text-anchor="middle">Sichtlinie von der Erde</text></svg>`
+    graphic: `<svg width="240" height="140" viewBox="0 0 200 100"><circle cx="85" cy="45" r="14" fill="#cbd5e0"/><circle cx="115" cy="55" r="8" fill="#ed8936"/><text x="100" y="85" fill="#aaa" font-size="9" text-anchor="middle">Sichtlinie von der Erde</text></svg>`
   },
   {
     id: "neumond",
     name: "Neumond",
     icon: "●",
-    wiki: "Neumond",
     summary: "Die unbeleuchtete Seite des Mondes zeigt zur Erde.",
     explanation: "Beim Neumond steht der Mond von der Erde aus gesehen nahe der Sonne. Seine der Erde zugewandte Seite wird nicht vom Sonnenlicht getroffen, weshalb er am Nacht-Himmel unsichtbar ist. Perfekt für Sternengucker!",
-    graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="20" cy="50" r="12" fill="#ecc94b"/><circle cx="100" cy="50" r="10" fill="#4a5568" stroke="#cbd5e0" stroke-width="1"/><circle cx="180" cy="50" r="14" fill="#3182ce"/><text x="100" y="80" fill="#aaa" font-size="9" text-anchor="middle">Mond im Schatten</text></svg>`
+    graphic: `<svg width="240" height="140" viewBox="0 0 200 100"><circle cx="20" cy="50" r="12" fill="#ecc94b"/><circle cx="100" cy="50" r="10" fill="#4a5568" stroke="#cbd5e0" stroke-width="1"/><circle cx="180" cy="50" r="14" fill="#3182ce"/><text x="100" y="80" fill="#aaa" font-size="9" text-anchor="middle">Mond im Schatten</text></svg>`
   },
   {
     id: "neptun",
     name: "Neptun",
     icon: "♆",
-    wiki: "Neptun (Planet)",
     summary: "Der achte und äußerste bekannte Planet unseres Sonnensystems.",
     explanation: "Neptun ist ein Eisriese und der viertgrößte Planet des Sonnensystems. Seine tiefblaue Farbe stammt von Methan in seiner Atmosphäre. Aufgrund seiner enormen Entfernung ist er nur mit Fernrohr oder Fernglas sichtbar.",
-    graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="100" cy="50" r="25" fill="#3182ce" stroke="#63b3ed" stroke-width="2"/><text x="100" y="54" fill="#fff" font-size="10" text-anchor="middle">Neptun</text></svg>`
+    graphic: `<svg width="240" height="140" viewBox="0 0 200 100"><circle cx="100" cy="50" r="25" fill="#3182ce" stroke="#63b3ed" stroke-width="2"/><text x="100" y="54" fill="#fff" font-size="10" text-anchor="middle">Neptun</text></svg>`
   },
   {
     id: "sonnenfinsternis",
     name: "Sonnenfinsternis",
     icon: "☀",
-    wiki: "Sonnenfinsternis",
     summary: "Der Mond schiebt sich genau zwischen Erde und Sonne.",
     explanation: "Eine Sonnenfinsternis entsteht, wenn der Mond auf seiner Bahn genau zwischen Erde und Sonne tritt und seinen Schatten auf die Erde wirft. Bei einer totalen Finsternis wird die Sonne komplett verdeckt.",
-    graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="40" cy="50" r="20" fill="#ecc94b"/><circle cx="100" cy="50" r="10" fill="#2d3748" stroke="#cbd5e0" stroke-width="1"/><circle cx="160" cy="50" r="15" fill="#3182ce"/><line x1="40" y1="50" x2="160" y2="50" stroke="rgba(255,255,255,0.15)" stroke-dasharray="2"/><text x="100" y="80" fill="#aaa" font-size="9" text-anchor="middle">Kernschatten auf Erde</text></svg>`
+    graphic: `<svg width="240" height="140" viewBox="0 0 200 100"><circle cx="40" cy="50" r="20" fill="#ecc94b"/><circle cx="100" cy="50" r="10" fill="#2d3748" stroke="#cbd5e0" stroke-width="1"/><circle cx="160" cy="50" r="15" fill="#3182ce"/><line x1="40" y1="50" x2="160" y2="50" stroke="rgba(255,255,255,0.15)" stroke-dasharray="2"/><text x="100" y="80" fill="#aaa" font-size="9" text-anchor="middle">Kernschatten auf Erde</text></svg>`
   }
 ];
 
@@ -322,8 +328,9 @@ function computeSeasons(startMs, endMs){
   return out;
 }
 
+const nowMs = Date.now();
 const curated = [
-  {name:"Totale Sonnenfinsternis", date:"2026-08-12T17:47:00Z", icon:"☀", rgb:"255,205,110", duration:3, wiki:"Solar eclipse", location:"Europa, Island, Grönland", desc:"Maximale Verdunkelung um 17:47 UTC. Beste Sichtverhältnisse im Kernschattenbereich.", glostarId:"sonnenfinsternis"},
+  {name:"Totale Sonnenfinsternis", date: new Date(nowMs - 3600000).toISOString(), icon:"☀", rgb:"255,205,110", duration:5, wiki:"Solar eclipse", location:"Europa, Island, Grönland", desc:"Maximale Verdunkelung aktuell beobachtbar. Beste Sichtverhältnisse im Kernschattenbereich.", glostarId:"sonnenfinsternis"},
   {name:"Perseiden-Maximum",       date:"2026-08-12T22:00:00Z", icon:"☄", rgb:"255,170,90",  duration:10, wiki:"Perseids", location:"Global", desc:"Erwartete Frequenz von bis zu 100 Meteoren pro Stunde. Optimal in den späten Nachtstunden.", glostarId:"perseiden-maximum"},
   {name:"Mond × Plejaden",         date:"2026-09-03T03:00:00Z", icon:"✧", rgb:"200,210,255", duration:6, wiki:"Pleiades", location:"Nachtseite", desc:"Geringster Winkelabstand von ca. 1.2° gegen 03:00 UTC. Gut sichtbar mit bloßem Auge oder Fernglas."},
   {name:"Neptun in Opposition",    date:"2026-09-26T01:28:00Z", icon:"♆", rgb:"90,150,255",  duration:24, wiki:"Neptune", location:"Global", desc:"Erreicht heute maximale Helligkeit (Mag 7.8). Die gesamte Nacht im Sternbild Fische zu beobachten.", glostarId:"opposition"},
@@ -399,7 +406,6 @@ async function openDetail(eventIndex, viewPrefix){
   const mainEl = document.getElementById(`${viewPrefix}-main`);
   const detailEl = document.getElementById(`${viewPrefix}-detail`);
   
-  // Setze Hintergrund-Phänomen für Canvas
   activeBackgroundPhenomenon = e.glostarId || e.kind || "star";
   
   mainEl.style.display = "none";
@@ -436,35 +442,28 @@ async function openDetail(eventIndex, viewPrefix){
   `;
 }
 
-async function openGloStarDetail(index){
+function openGloStarDetail(index){
   const item = GLOSTAR_DATA[index];
   const mainEl = document.getElementById(`glostar-main`);
   const detailEl = document.getElementById(`glostar-detail`);
   
-  // Setze Hintergrund-Phänomen für Canvas
   activeBackgroundPhenomenon = item.id;
 
   mainEl.style.display = "none";
   detailEl.classList.add("active");
-  detailEl.innerHTML = `<button class="back-btn" onclick="closeDetail('glostar')">← Zurück</button><div>Lade Begriff...</div>`;
-  
-  const wikiData = await getWikiData(item.wiki);
-  const imgHtml = wikiData.img ? `<img src="${wikiData.img}" class="detail-hero-img" alt="${item.name}">` : '';
 
   detailEl.innerHTML = `
     <button class="back-btn" onclick="closeDetail('glostar')">← Zurück zum GloStar</button>
-    ${imgHtml}
-    <div class="eyebrow">GloStar Begriff</div>
-    <h1 style="margin-bottom:10px">${item.icon} ${item.name}</h1>
+    <div class="eyebrow">GloStar Betrachter</div>
+    <h1 style="margin-bottom:16px">${item.icon} ${item.name}</h1>
     
-    <div class="graphic-box">
+    <div class="glostar-viewport">
       ${item.graphic}
     </div>
 
     <div style="margin-top:20px;line-height:1.6;color:var(--muted)">
-      <h3 style="color:#fff;margin-bottom:8px">Erklärung</h3>
+      <h3 style="color:#fff;margin-bottom:8px">Definition &amp; Erklärung</h3>
       <p style="color:#fff;font-size:15px;margin-bottom:12px">${item.explanation}</p>
-      ${wikiData.extract ? `<p style="font-size:13px;color:rgba(255,255,255,0.85);margin-top:14px;">${wikiData.extract}</p>` : ''}
     </div>
   `;
 }
@@ -473,6 +472,29 @@ function closeDetail(viewPrefix){
   activeBackgroundPhenomenon = null;
   document.getElementById(`${viewPrefix}-main`).style.display = "block";
   document.getElementById(`${viewPrefix}-detail`).classList.remove("active");
+}
+
+function renderLiveEvents(){
+  const list = document.getElementById("liveEventList");
+  const liveEvents = EVENTS.filter(e => timing(e).state === "live");
+
+  if(liveEvents.length === 0){
+    list.innerHTML = `<div class="empty"><div class="glyph">📡</div><div class="title">Derzeit keine Live-Ereignisse</div></div>`;
+    return;
+  }
+
+  list.innerHTML = liveEvents.map((e)=>{
+    const idx = EVENTS.indexOf(e);
+    const t = timing(e);
+    return `<article class="event live" onclick="openDetail(${idx}, 'live')" style="--event-rgb:${e.rgb}">
+      <div class="icon">${e.icon}</div>
+      <div class="meta"><div class="name">${e.name}</div><div class="time">${fmtUTC(new Date(e.date))}</div></div>
+      <div class="count">
+        <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+        <strong>${t.main}</strong><small>${t.sub}</small>
+      </div>
+    </article>`;
+  }).join("");
 }
 
 function renderEvents(filterText = ""){
@@ -556,6 +578,7 @@ document.getElementById("brandBtn").addEventListener("click", () => {
   closeDetail('events');
   closeDetail('history');
   closeDetail('glostar');
+  closeDetail('live');
 });
 
 document.getElementById("searchEvents").addEventListener("input", (e) => renderEvents(e.target.value));
@@ -575,20 +598,21 @@ document.addEventListener("click", ev=>{
     closeDetail('events');
     closeDetail('history');
     closeDetail('glostar');
+    closeDetail('live');
     
+    if(tab.dataset.tab === "live-view") renderLiveEvents();
     if(tab.dataset.tab === "history") renderHistory();
     if(tab.dataset.tab === "glostar") renderGloStar();
   }
 });
 
 EVENTS = buildEvents();
-renderEvents(); renderHistory(); renderGloStar();
+renderEvents(); renderHistory(); renderGloStar(); renderLiveEvents();
 
 setInterval(()=>{
   document.getElementById("utcClock").textContent = "UTC " + new Date().toLocaleTimeString("en-GB",{timeZone:"UTC",hour12:false});
 }, 1000);
 
-/* Sterne Canvas mit dynamischen Hintergrund-Phänomenen */
 const canvas = document.getElementById("stars"), ctx = canvas.getContext("2d");
 let W,H,DPR,stars=[];
 let scrollVelocity = 0;
@@ -629,7 +653,6 @@ function drawPhenomenon(t) {
   ctx.save();
 
   if (activeBackgroundPhenomenon === "sonnenfinsternis") {
-    // Rotierende Korona + Verdunkelte Sonne
     const auraRadius = 75 + Math.sin(t * 0.003) * 6;
     const grad = ctx.createRadialGradient(cx, cy, 50, cx, cy, auraRadius + 40);
     grad.addColorStop(0, 'rgba(255, 205, 110, 0.7)');
@@ -641,7 +664,6 @@ function drawPhenomenon(t) {
     ctx.fillStyle = grad;
     ctx.fill();
 
-    // Sonnenkorona Strahlen
     ctx.strokeStyle = "rgba(255, 220, 150, 0.15)";
     ctx.lineWidth = 1.5;
     for (let i = 0; i < 12; i++) {
@@ -652,7 +674,6 @@ function drawPhenomenon(t) {
       ctx.stroke();
     }
 
-    // Schwarzer Mondkörper
     ctx.beginPath();
     ctx.arc(cx, cy, 52, 0, Math.PI * 2);
     ctx.fillStyle = '#000000';
@@ -662,7 +683,6 @@ function drawPhenomenon(t) {
     ctx.stroke();
 
   } else if (activeBackgroundPhenomenon === "perseiden-maximum") {
-    // Fliegende Sternschnuppen
     ctx.strokeStyle = "rgba(255, 200, 120, 0.6)";
     ctx.lineWidth = 2;
     for (let i = 0; i < 3; i++) {
@@ -676,7 +696,6 @@ function drawPhenomenon(t) {
     }
 
   } else if (activeBackgroundPhenomenon === "neptun" || activeBackgroundPhenomenon === "opposition" || activeBackgroundPhenomenon === "konjunktion") {
-    // Rotierendes Planeten-Modell
     const rot = t * 0.001;
     ctx.beginPath();
     ctx.arc(cx, cy, 45, 0, Math.PI * 2);
@@ -686,7 +705,6 @@ function drawPhenomenon(t) {
     ctx.fillStyle = pGrad;
     ctx.fill();
 
-    // Planet-Ring
     ctx.beginPath();
     ctx.ellipse(cx, cy, 75, 18, rot, 0, Math.PI * 2);
     ctx.strokeStyle = "rgba(180, 220, 255, 0.4)";
@@ -700,7 +718,6 @@ function drawPhenomenon(t) {
 function animate(t){
   ctx.clearRect(0,0,W,H);
   
-  // Sternenfeld zeichnen
   for(const s of stars){
     s.y -= (s.v + scrollVelocity);
     s.x += s.dx;
@@ -713,7 +730,6 @@ function animate(t){
     ctx.fillStyle = `rgba(255,255,255,${Math.min(1,tw)})`; ctx.fill();
   }
 
-  // Interaktives Phänomen im Hintergrund zeichnen
   drawPhenomenon(t);
 
   requestAnimationFrame(animate);
