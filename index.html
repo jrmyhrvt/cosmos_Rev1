@@ -55,6 +55,8 @@
   .section-head{display:flex;align-items:end;justify-content:space-between;margin:8px 3px 12px}
   h1{font-size:34px;line-height:1;margin:0;letter-spacing:-.045em}
   .section-head span{font-size:12px;color:var(--muted)}
+  .update-info{font-size:10px;color:var(--muted);margin-bottom:12px;letter-spacing:.05em}
+  
   .event-list{display:grid;gap:11px}
   .event{position:relative;display:grid;grid-template-columns:54px 1fr auto;gap:13px;align-items:center;padding:14px;border:1px solid var(--border);background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.01));border-radius:20px;backdrop-filter:blur(20px);cursor:pointer}
   .event.live{border-color:rgba(255,255,255,.4);box-shadow:0 0 25px rgba(255,255,255,.08)}
@@ -63,6 +65,9 @@
   .meta{min-width:0}
   .name{font-size:16px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .time{font-size:11px;color:var(--muted);margin-top:5px}
+  .badge-row{display:flex;gap:6px;margin-top:4px}
+  .badge{font-size:9px;background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:6px;color:var(--muted);text-transform:uppercase}
+  
   .count{text-align:right}
   .count strong{display:block;font-size:13px;font-weight:700}
   .count small{display:block;margin-top:3px;font-size:9.5px;color:var(--muted);text-transform:uppercase}
@@ -75,11 +80,10 @@
   .detail-page.active{display:block}
   .back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.08);color:#fff;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:16px}
   
-  .detail-hero-graphic{width:100%;height:220px;border-radius:20px;border:1px solid var(--border);background:radial-gradient(circle at center, rgba(255,255,255,0.04), rgba(0,0,0,0.9));display:grid;place-items:center;margin-bottom:16px;overflow:hidden}
   .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
   .detail-card{padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
   .detail-card label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
-  .detail-card val{display:block;font-size:13px;font-weight:650}
+  .detail-card val{display:block;font-size:13px;font-weight:650;word-break:break-all}
 
   .glostar-link-btn{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:10px 16px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:#fff;font-size:13px;font-weight:600;cursor:pointer}
   .glostar-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));gap:12px}
@@ -149,9 +153,10 @@
           <input type="text" class="search-input" id="searchEvents" placeholder="Events durchsuchen..." />
         </div>
         <div class="section-head">
-          <div><div class="eyebrow" style="margin-bottom:9px">Kommende Highlights &amp; Space Calendar API</div><h1>Ereignisse</h1></div>
+          <div><div class="eyebrow" style="margin-bottom:9px">Space-Calendar-Feed</div><h1>Ereignisse</h1></div>
           <span id="eventCount"></span>
         </div>
+        <div class="update-info" id="updateInfo">Daten werden geladen...</div>
         <div class="event-list" id="eventList"></div>
       </div>
       <div class="detail-page" id="events-detail"></div>
@@ -216,59 +221,70 @@ let globeRotation = 0;
 let isDraggingGlobe = false;
 let prevMouseX = 0;
 let activeBlackHoleAnimation = null;
+let lastUpdatedTime = "--:--:--";
 
-// Dynamische Event-Liste (Basis-Einträge)
+// Dynamische Basis (Live & Simulationen bleiben lokal erhalten)
 let EVENTS = [
-  {id: "blackhole-sim", name: "Black Hole / Orbit Simulation", date: "2024-01-01T00:00:00Z", icon: "blackhole", duration: 999999, desc: "Echtzeit-Simulation: Objekte drehen sich in großen Kreisen und benötigen ~10 Sekunden, um spiralisierend in den inneren Orbit des Schwarzen Lochs zu gelangen.", glostarId: "blackhole", kind: "Kosmische Simulation", isPermanentLive: true, isBlackHoleSim: true},
-  {id: "iss-live", name: "ISS Raumstation Live", date: "2024-01-01T00:00:00Z", icon: "satellite", duration: 999999, desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.", glostarId: "orbit", kind: "Live-Raumfahrt", isPermanentLive: true},
-  {id: "mars-opp", name: "Mars in Opposition", date: "2027-02-19T18:00:00Z", icon: "planet", duration: 48, desc: "Der rote Planet steht der Sonne exakt gegenüber und bietet hervorragende Beobachtungsbedingungen.", glostarId: "opposition", kind: "Planeten-Event"},
-  {id: "perseiden-2026", name: "Perseiden Maximum", date: "2026-08-12T21:00:00Z", icon: "meteor", duration: 24, desc: "Jährlicher Meteorstrom mit bis zu 100 Sternschnuppen pro Stunde am Sommerhimmel.", glostarId: "meteorstrom", kind: "Meteorstrom"},
-  {id: "jupiter-opp-2026", name: "Jupiter in Opposition", date: "2026-12-10T22:00:00Z", icon: "planet", duration: 36, desc: "Der Riesenplanet leuchtet strahlend hell die gesamte Nacht hindurch.", glostarId: "opposition", kind: "Planeten-Event"},
-  {id: "artemis-3", name: "Artemis III Startfenster", date: "2026-09-15T12:00:00Z", icon: "rocket", duration: 72, desc: "Geplante bemannte Landungsmission der NASA in der Südpolregion des Mondes.", glostarId: "orbit", kind: "Raumfahrt-Mission"},
-  {id: "total-solar-eclipse", name: "Totale Sonnenfinsternis", date: "2026-08-12T17:47:00Z", icon: "eclipse", duration: 4, desc: "Spektakuläre totale Sonnenfinsternis über Teilen von Grönland, Island und Spanien.", glostarId: "finsternis", kind: "Finsternis"},
-  {id: "historic-artemis-1", name: "Artemis I Unbemannter Testflug", date: "2022-11-16T06:47:00Z", icon: "rocket", duration: 600, desc: "Erfolgreicher unbemannter Testflug des Space Launch Systems zum Mond und zurück.", glostarId: "orbit", kind: "Vergangene Mission"}
+  {id: "blackhole-sim", name: "Black Hole / Orbit Simulation", date: "2024-01-01T00:00:00Z", icon: "blackhole", duration: 999999, desc: "Echtzeit-Simulation: Objekte drehen sich in großen Kreisen und benötigen ~10 Sekunden, um spiralisierend in den inneren Orbit des Schwarzen Lochs zu gelangen.", glostarId: "blackhole", kind: "Kosmische Simulation", source: "COSMOS Engine", status: "Aktiv", isPermanentLive: true, isBlackHoleSim: true},
+  {id: "iss-live", name: "ISS Raumstation Live", date: "2024-01-01T00:00:00Z", icon: "satellite", duration: 999999, desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.", glostarId: "orbit", kind: "Live-Raumfahrt", source: "Wheretheiss.at", status: "Aktiv", isPermanentLive: true}
 ];
 
-// Automatische Sortierfunktion anhand des JSON-Datums (neuestes oben / aufsteigend für Kommende)
+// Automatische Sortierfunktion anhand des ISO-Datums (das zeitlich nächste Event zuerst)
 function sortEventsAutomatically() {
   EVENTS.sort((a, b) => {
-    // Permanente Live-Einträge bleiben aus der Sortierung unberührt
     if (a.isPermanentLive) return -1;
     if (b.isPermanentLive) return 1;
     return new Date(a.date).getTime() - new Date(b.date).getTime();
   });
 }
 
-// Funktion zum Laden externer Space-Events über die The Space Devs / Launch Library API (Space Calendar JSON Feed)
-async function fetchSpaceCalendarEvents() {
+// Abruf des Space-Calendar-JSON-Feeds
+async function fetchSpaceCalendarFeed() {
+  const updateInfoEl = document.getElementById('updateInfo');
   try {
-    const response = await fetch('https://lldev.thespacedevs.com/2.3.0/events/upcoming/');
-    if (!response.ok) return;
+    const response = await fetch('https://space-calendar.lukekorth.com/feed.json?c=moon-phases,meteor-showers,eclipses,planetary-events,rocket-launches,space-history');
+    if (!response.ok) throw new Error(`HTTP Fehler ${response.status}`);
     const data = await response.json();
     
-    if (data && data.results) {
-      data.results.forEach(item => {
-        const exists = EVENTS.some(e => e.id === `api-${item.id}`);
+    // Verarbeiten der Events aus dem Feed
+    if (data && data.events && Array.isArray(data.events)) {
+      data.events.forEach((item, index) => {
+        const eventId = `sc-${index}-${item.title ? item.title.replace(/\s+/g, '-').toLowerCase() : 'event'}`;
+        const exists = EVENTS.some(e => e.id === eventId);
         if (!exists) {
+          // Icon-Zuweisung je nach Typ/Kategorie
+          let iconName = "star";
+          const titleLower = (item.title || "").toLowerCase();
+          if (titleLower.includes("launch") || titleLower.includes("rocket") || titleLower.includes("artemis")) iconName = "rocket";
+          else if (titleLower.includes("eclipse") || titleLower.includes("moon")) iconName = "eclipse";
+          else if (titleLower.includes("meteor")) iconName = "meteor";
+          else if (titleLower.includes("mars") || titleLower.includes("jupiter") || titleLower.includes("saturn") || titleLower.includes("opposition")) iconName = "planet";
+
           EVENTS.push({
-            id: `api-${item.id}`,
-            name: item.name || "Space Event",
-            date: item.date || new Date().toISOString(),
-            icon: "rocket",
+            id: eventId,
+            name: item.title || "Space Event",
+            date: item.date || item.start || new Date().toISOString(),
+            icon: iconName,
             duration: 12,
-            desc: item.description || "Keine Beschreibung verfügbar.",
-            kind: item.type?.name || "Space Kalender",
+            desc: item.description || item.body || "Keine Beschreibung verfügbar.",
+            kind: item.category || "Space Kalender",
+            source: "Space Calendar (Luke Korth)",
+            status: item.status || "Geplant",
             glostarId: "orbit"
           });
         }
       });
-      // Nach dem Laden sofort automatisch sortieren
-      sortEventsAutomatically();
-      renderEvents();
-      renderHistory();
     }
+
+    lastUpdatedTime = new Date().toLocaleTimeString("de-DE");
+    if(updateInfoEl) updateInfoEl.textContent = `Zuletzt aktualisiert: ${lastUpdatedTime} (Erfolgreich geladen)`;
+    
+    sortEventsAutomatically();
+    renderEvents();
+    renderHistory();
   } catch (err) {
-    console.log("Konnte externen Space-Calendar-Feed nicht laden, nutze lokale Fallbacks.");
+    console.error("Fehler beim Abrufen des Space-Calendar-Feeds:", err);
+    if(updateInfoEl) updateInfoEl.textContent = `Fehler beim Abrufen des Feeds. Nutze lokale Offline-Daten.`;
   }
 }
 
@@ -381,8 +397,8 @@ function openDetail(eventId, viewPrefix){
       <div class="detail-grid">
         <div class="detail-card"><label>Spiraldauer</label><val>~10 Sekunden</val></div>
         <div class="detail-card"><label>Bahnform</label><val>Große Kreise</val></div>
-        <div class="detail-card"><label>Objekte</label><val>8 Stereos</val></div>
-        <div class="detail-card"><label>Status</label><val>Aktiv</val></div>
+        <div class="detail-card"><label>Quelle</label><val>${e.source || 'COSMOS'}</val></div>
+        <div class="detail-card"><label>Status</label><val>${e.status || 'Aktiv'}</val></div>
       </div>
       <p style="color:var(--muted);margin-top:15px;line-height:1.5">${e.desc}</p>
       ${glostarBtn}
@@ -402,8 +418,8 @@ function openDetail(eventId, viewPrefix){
       <div class="detail-grid">
         <div class="detail-card"><label>Breitengrad</label><val id="detailLat">${currentIssLat}°</val></div>
         <div class="detail-card"><label>Längengrad</label><val id="detailLon">${currentIssLon}°</val></div>
-        <div class="detail-card"><label>Geschwindigkeit</label><val>27.500 km/h</val></div>
-        <div class="detail-card"><label>Orbithöhe</label><val>~415 km</val></div>
+        <div class="detail-card"><label>Quelle</label><val>${e.source || 'Wheretheiss.at'}</val></div>
+        <div class="detail-card"><label>Status</label><val>${e.status || 'Aktiv'}</val></div>
       </div>
       <p style="color:var(--muted);margin-top:15px;line-height:1.5">${e.desc}</p>
       ${glostarBtn}
@@ -412,15 +428,15 @@ function openDetail(eventId, viewPrefix){
     return;
   }
 
-  const graphicHtml = e.graphic ? `<div class="detail-hero-graphic">${e.graphic}</div>` : '';
   detailEl.innerHTML = `
     <button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück</button>
-    ${graphicHtml}
-    <div class="eyebrow">${e.kind || 'Ereignis'}</div>
+    <div class="eyebrow">${e.kind || 'Space Kalender'}</div>
     <h1 style="margin-bottom:10px">${e.name}</h1>
     <div class="detail-grid">
-      <div class="detail-card"><label>Zeitpunkt</label><val>${fmtTime(new Date(e.date))}</val></div>
-      <div class="detail-card"><label>Typ / Kategorie</label><val>${e.kind || 'Space Event'}</val></div>
+      <div class="detail-card"><label>Datum & Uhrzeit</label><val>${fmtTime(new Date(e.date))}</val></div>
+      <div class="detail-card"><label>Typ</label><val>${e.kind || 'Event'}</val></div>
+      <div class="detail-card"><label>Status</label><val>${e.status || 'Geplant'}</val></div>
+      <div class="detail-card"><label>Quelle</label><val>${e.source || 'Space Calendar'}</val></div>
     </div>
     <p style="color:var(--muted);margin-top:15px;line-height:1.5">${e.desc}</p>
     ${glostarBtn}
@@ -536,7 +552,11 @@ function renderLiveEvents(){
     const t = timing(e);
     return `<article class="event live" onclick="openDetail('${e.id}', 'live-view')">
       <div class="icon">${SVG_ICONS[e.icon] || SVG_ICONS.star}</div>
-      <div class="meta"><div class="name">${e.name}</div><div class="time">${e.isPermanentLive ? 'Live-Tracking aktiv' : fmtTime(new Date(e.date))}</div></div>
+      <div class="meta">
+        <div class="name">${e.name}</div>
+        <div class="time">${e.isPermanentLive ? 'Live-Tracking aktiv' : fmtTime(new Date(e.date))}</div>
+        <div class="badge-row"><span class="badge">${e.kind || 'Live'}</span><span class="badge">${e.status || 'Aktiv'}</span></div>
+      </div>
       <div class="count"><strong>${t.main}</strong><small>${t.sub}</small></div>
     </article>`;
   }).join("");
@@ -546,11 +566,21 @@ function renderEvents(filterText = ""){
   const list = document.getElementById("eventList");
   const upcoming = EVENTS.filter(e => !e.isPermanentLive && timing(e).state !== "passed" && e.name.toLowerCase().includes(filterText.toLowerCase()));
   document.getElementById("eventCount").textContent = upcoming.length + " gesamt";
+  
+  if(upcoming.length === 0){
+    list.innerHTML = `<div class="empty"><div class="title">Keine kommenden Events</div></div>`;
+    return;
+  }
+
   list.innerHTML = upcoming.map((e)=>{
     const t = timing(e);
     return `<article class="event" onclick="openDetail('${e.id}', 'events')">
       <div class="icon">${SVG_ICONS[e.icon] || SVG_ICONS.star}</div>
-      <div class="meta"><div class="name">${e.name}</div><div class="time">${fmtTime(new Date(e.date))}</div></div>
+      <div class="meta">
+        <div class="name">${e.name}</div>
+        <div class="time">${fmtTime(new Date(e.date))}</div>
+        <div class="badge-row"><span class="badge">${e.kind || 'Event'}</span><span class="badge">${e.source || 'API'}</span></div>
+      </div>
       <div class="count"><strong>${t.main}</strong><small>${t.sub}</small></div>
     </article>`;
   }).join("");
@@ -560,13 +590,17 @@ function renderHistory(filterText = ""){
   const histList = document.getElementById("histList");
   const past = EVENTS.filter(e => !e.isPermanentLive && timing(e).state === "passed" && e.name.toLowerCase().includes(filterText.toLowerCase()));
   if(past.length === 0){
-    histList.innerHTML = `<div class="empty"><div class="title">Keine Einträge gefunden</div></div>`;
+    histList.innerHTML = `<div class="empty"><div class="title">Keine Verlaufseinträge gefunden</div></div>`;
     return;
   }
   histList.innerHTML = past.map((e)=>{
     return `<article class="hist-card" onclick="openDetail('${e.id}', 'history')">
       <div class="hist-thumb">${SVG_ICONS[e.icon] || SVG_ICONS.star}</div>
-      <div class="hist-meta"><div class="name">${e.name}</div><div class="time">${fmtTime(new Date(e.date))}</div></div>
+      <div class="hist-meta">
+        <div class="name">${e.name}</div>
+        <div class="time">${fmtTime(new Date(e.date))}</div>
+        <div class="badge-row"><span class="badge">${e.kind || 'Vergangenes Event'}</span></div>
+      </div>
     </article>`;
   }).join("");
 }
@@ -745,13 +779,13 @@ document.getElementById('searchEvents').addEventListener('input', e => renderEve
 document.getElementById('searchHistory').addEventListener('input', e => renderHistory(e.target.value));
 document.getElementById('searchGloStar').addEventListener('input', e => renderGloStar(e.target.value));
 
-// Initial Sortieren, Rendern & API Laden
+// Initialer Aufruf beim Laden der Seite
 sortEventsAutomatically();
 renderLiveEvents();
 renderEvents();
 renderHistory();
 renderGloStar();
-fetchSpaceCalendarEvents();
+fetchSpaceCalendarFeed();
 </script>
 </body>
 </html>
