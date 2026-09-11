@@ -149,7 +149,7 @@
           <input type="text" class="search-input" id="searchEvents" placeholder="Events durchsuchen..." />
         </div>
         <div class="section-head">
-          <div><div class="eyebrow" style="margin-bottom:9px">Kommende Highlights</div><h1>Ereignisse</h1></div>
+          <div><div class="eyebrow" style="margin-bottom:9px">Kommende Highlights &amp; Space Calendar API</div><h1>Ereignisse</h1></div>
           <span id="eventCount"></span>
         </div>
         <div class="event-list" id="eventList"></div>
@@ -217,6 +217,50 @@ let isDraggingGlobe = false;
 let prevMouseX = 0;
 let activeBlackHoleAnimation = null;
 
+// Dynamische Event-Liste (wird mit API-Daten befüllt)
+let EVENTS = [
+  {id: "blackhole-sim", name: "Black Hole / Orbit Simulation", date: "2024-01-01T00:00:00Z", icon: "blackhole", duration: 999999, desc: "Echtzeit-Simulation: Objekte drehen sich in großen Kreisen und benötigen ~10 Sekunden, um spiralisierend in den inneren Orbit des Schwarzen Lochs zu gelangen.", glostarId: "blackhole", kind: "Kosmische Simulation", isPermanentLive: true, isBlackHoleSim: true},
+  {id: "iss-live", name: "ISS Raumstation Live", date: "2024-01-01T00:00:00Z", icon: "satellite", duration: 999999, desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.", glostarId: "orbit", kind: "Live-Raumfahrt", isPermanentLive: true},
+  {id: "mars-opp", name: "Mars in Opposition", date: "2027-02-19T18:00:00Z", icon: "planet", duration: 48, desc: "Der rote Planet steht der Sonne exakt gegenüber und bietet hervorragende Beobachtungsbedingungen.", glostarId: "opposition", kind: "Planeten-Event"},
+  {id: "perseiden-2026", name: "Perseiden Maximum", date: "2026-08-12T21:00:00Z", icon: "meteor", duration: 24, desc: "Jährlicher Meteorstrom mit bis zu 100 Sternschnuppen pro Stunde am Sommerhimmel.", glostarId: "meteorstrom", kind: "Meteorstrom"},
+  {id: "jupiter-opp-2026", name: "Jupiter in Opposition", date: "2026-12-10T22:00:00Z", icon: "planet", duration: 36, desc: "Der Riesenplanet leuchtet strahlend hell die gesamte Nacht hindurch.", glostarId: "opposition", kind: "Planeten-Event"},
+  {id: "artemis-3", name: "Artemis III Startfenster", date: "2026-09-15T12:00:00Z", icon: "rocket", duration: 72, desc: "Geplante bemannte Landungsmission der NASA in der Südpolregion des Mondes.", glostarId: "orbit", kind: "Raumfahrt-Mission"},
+  {id: "total-solar-eclipse", name: "Totale Sonnenfinsternis", date: "2026-08-12T17:47:00Z", icon: "eclipse", duration: 4, desc: "Spektakuläre totale Sonnenfinsternis über Teilen von Grönland, Island und Spanien.", glostarId: "finsternis", kind: "Finsternis"},
+  {id: "historic-artemis-1", name: "Artemis I Unbemannter Testflug", date: "2022-11-16T06:47:00Z", icon: "rocket", duration: 600, desc: "Erfolgreicher unbemannter Testflug des Space Launch Systems zum Mond und zurück.", glostarId: "orbit", kind: "Vergangene Mission"}
+];
+
+// Funktion zum Laden externer Space-Events über die The Space Devs / Launch Library API (Space Calendar JSON Feed)
+async function fetchSpaceCalendarEvents() {
+  try {
+    const response = await fetch('https://lldev.thespacedevs.com/2.3.0/events/upcoming/');
+    if (!response.ok) return;
+    const data = await response.json();
+    
+    if (data && data.results) {
+      data.results.forEach(item => {
+        // Prüfen, ob das Event bereits existiert, um Duplikate zu vermeiden
+        const exists = EVENTS.some(e => e.id === `api-${item.id}`);
+        if (!exists) {
+          EVENTS.push({
+            id: `api-${item.id}`,
+            name: item.name || "Space Event",
+            date: item.date || new Date().toISOString(),
+            icon: "rocket",
+            duration: 12,
+            desc: item.description || "Keine Beschreibung verfügbar.",
+            kind: item.type?.name || "Space Kalender",
+            glostarId: "orbit"
+          });
+        }
+      });
+      renderEvents();
+      renderHistory();
+    }
+  } catch (err) {
+    console.log("Konnte externen Space-Calendar-Feed nicht laden, nutze lokale Fallbacks.");
+  }
+}
+
 function changeOffset(val){
   tzOffsetHours += val;
   if(tzOffsetHours > 14) tzOffsetHours = 14;
@@ -265,17 +309,6 @@ const GLOSTAR_DATA = [
   {id: "orbit", name: "Orbit & Umlaufbahn", icon: "orbit", summary: "Die Gravitations-Bahn, auf der sich ein Satellit oder Planet um einen Zentralkörper bewegt.", explanation: "Ein Orbit beschreibt die physikalische Flugbahn im Raum. Sie wird durch die Anziehungskraft des Zentralkörpers und die Zentrifugalkraft des sich bewegenden Objekts im perfekten Gleichgewicht gehalten.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="100" cy="50" r="25" fill="none" stroke="#fff" stroke-width="2"/><ellipse cx="100" cy="50" rx="35" ry="10" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="4,4"/></svg>`}
 ];
 
-const EVENTS = [
-  {id: "blackhole-sim", name: "Black Hole / Orbit Simulation", date: "2024-01-01T00:00:00Z", icon: "blackhole", duration: 999999, desc: "Echtzeit-Simulation: Objekte drehen sich in großen Kreisen und benötigen ~10 Sekunden, um spiralisierend in den inneren Orbit des Schwarzen Lochs zu gelangen.", glostarId: "blackhole", kind: "Kosmische Simulation", isPermanentLive: true, isBlackHoleSim: true},
-  {id: "iss-live", name: "ISS Raumstation Live", date: "2024-01-01T00:00:00Z", icon: "satellite", duration: 999999, desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.", glostarId: "orbit", kind: "Live-Raumfahrt", isPermanentLive: true},
-  {id: "mars-opp", name: "Mars in Opposition", date: "2027-02-19T18:00:00Z", icon: "planet", duration: 48, desc: "Der rote Planet steht der Sonne exakt gegenüber und bietet hervorragende Beobachtungsbedingungen.", glostarId: "opposition", kind: "Planeten-Event", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="50" cy="50" r="12" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="6" fill="#fff"/><circle cx="150" cy="50" r="10" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="2,2"/></svg>`},
-  {id: "perseiden-2026", name: "Perseiden Maximum", date: "2026-08-12T21:00:00Z", icon: "meteor", duration: 24, desc: "Jährlicher Meteorstrom mit bis zu 100 Sternschnuppen pro Stunde am Sommerhimmel.", glostarId: "meteorstrom", kind: "Meteorstrom", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><path d="M160 20 L60 60" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="40" cy="70" r="15" fill="none" stroke="#fff" stroke-width="2"/></svg>`},
-  {id: "jupiter-opp-2026", name: "Jupiter in Opposition", date: "2026-12-10T22:00:00Z", icon: "planet", duration: 36, desc: "Der Riesenplanet leuchtet strahlend hell die gesamte Nacht hindurch.", glostarId: "opposition", kind: "Planeten-Event", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="100" cy="50" r="22" fill="none" stroke="#fff" stroke-width="2"/><ellipse cx="100" cy="50" rx="30" ry="8" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="3,3"/></svg>`},
-  {id: "artemis-3", name: "Artemis III Startfenster", date: "2026-09-15T12:00:00Z", icon: "rocket", duration: 72, desc: "Geplante bemannte Landungsmission der NASA in der Südpolregion des Mondes.", glostarId: "orbit", kind: "Raumfahrt-Mission", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><path d="M80 70 L100 30 L120 70 Z" fill="none" stroke="#fff" stroke-width="2"/><line x1="88" y1="70" x2="112" y2="70" stroke="#fff" stroke-width="2"/></svg>`},
-  {id: "total-solar-eclipse", name: "Totale Sonnenfinsternis", date: "2026-08-12T17:47:00Z", icon: "eclipse", duration: 4, desc: "Spektakuläre totale Sonnenfinsternis über Teilen von Grönland, Island und Spanien.", glostarId: "finsternis", kind: "Finsternis", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><circle cx="85" cy="50" r="20" fill="none" stroke="#fff" stroke-width="2"/><circle cx="115" cy="50" r="20" fill="#000" stroke="#fff" stroke-width="1"/></svg>`},
-  {id: "historic-artemis-1", name: "Artemis I Unbemannter Testflug", date: "2022-11-16T06:47:00Z", icon: "rocket", duration: 600, desc: "Erfolgreicher unbemannter Testflug des Space Launch Systems zum Mond und zurück.", glostarId: "orbit", kind: "Vergangene Mission", graphic: `<svg width="200" height="100" viewBox="0 0 200 100"><path d="M80 70 L100 30 L120 70 Z" fill="none" stroke="#fff" stroke-width="2"/><path d="M90 70 L100 85 L110 70" stroke="#fff" stroke-width="2"/></svg>`}
-];
-
 function timing(ev){
   if(ev.isPermanentLive){
     const startMs = new Date("2024-01-01T00:00:00Z").getTime();
@@ -289,6 +322,7 @@ function timing(ev){
   const durMs = (ev.duration || 6) * 3600000;
   const end = start + durMs;
   const now = Date.now();
+  if(isNaN(start)) return {state:"upcoming", main:"T-??", sub:"Ausstehend"};
   if(now < start){
     const ms = start - now, s = Math.floor(ms / 1000);
     const days = Math.floor(s / 86400), hrs = Math.floor((s % 86400) / 3600), mins = Math.floor((s % 3600) / 60);
@@ -375,7 +409,7 @@ function openDetail(eventId, viewPrefix){
     <h1 style="margin-bottom:10px">${e.name}</h1>
     <div class="detail-grid">
       <div class="detail-card"><label>Zeitpunkt</label><val>${fmtTime(new Date(e.date))}</val></div>
-      <div class="detail-card"><label>Dauer / Fenster</label><val>ca. ${e.duration} Stunden</val></div>
+      <div class="detail-card"><label>Typ / Kategorie</label><val>${e.kind || 'Space Event'}</val></div>
     </div>
     <p style="color:var(--muted);margin-top:15px;line-height:1.5">${e.desc}</p>
     ${glostarBtn}
@@ -645,7 +679,6 @@ function initGlobeDetail(){
 const starCanvas = document.getElementById('stars');
 const starCtx = starCanvas.getContext('2d');
 let stars = [];
-let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
 
 function resizeStars(){
   starCanvas.width = window.innerWidth;
@@ -701,11 +734,12 @@ document.getElementById('searchEvents').addEventListener('input', e => renderEve
 document.getElementById('searchHistory').addEventListener('input', e => renderHistory(e.target.value));
 document.getElementById('searchGloStar').addEventListener('input', e => renderGloStar(e.target.value));
 
-// Initial Render
+// Initial Render & API Laden
 renderLiveEvents();
 renderEvents();
 renderHistory();
 renderGloStar();
+fetchSpaceCalendarEvents();
 </script>
 </body>
 </html>
