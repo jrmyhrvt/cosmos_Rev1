@@ -260,7 +260,6 @@ const TRANSLATIONS = {
     iss_name: "ISS Raumstation Live", iss_desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.",
     cat_live_space: "Live-Raumfahrt", cat_space_cal: "Space Kalender", cat_past: "Vergangenes Event",
     
-    // API Fallback Descriptions (German)
     desc_new_moon: "Der Mond befindet sich exakt zwischen Erde und Sonne. Die erdabgewandte Seite ist vollständig beleuchtet.",
     desc_full_moon: "Die Erde steht zwischen Sonne und Mond, wodurch die Mondscheibe von der Erde aus vollständig beleuchtet erscheint.",
     desc_quarter_moon: "Der Mond hat ein Viertel seiner Umlaufbahn um die Erde absolviert und zeigt sich als markanter Halbmond.",
@@ -320,7 +319,6 @@ const TRANSLATIONS = {
     iss_name: "ISS Space Station Live", iss_desc: "Permanent real-time tracking of the International Space Station in low Earth orbit.",
     cat_live_space: "Live Spaceflight", cat_space_cal: "Space Calendar", cat_past: "Past Event",
     
-    // API Fallback Descriptions (English)
     desc_new_moon: "The Moon is positioned directly between the Earth and the Sun. The far side of the Moon is fully illuminated.",
     desc_full_moon: "The Earth is positioned between the Sun and the Moon, making the lunar disk appear fully illuminated from Earth.",
     desc_quarter_moon: "The Moon has completed a quarter of its orbit around the Earth, showing a distinct half-moon shape.",
@@ -380,7 +378,6 @@ const TRANSLATIONS = {
     iss_name: "Estación Espacial ISS en Vivo", iss_desc: "Seguimiento permanente en tiempo real de la Estación Espacial Internacional en órbita terrestre baja.",
     cat_live_space: "Vuelo Espacial en Vivo", cat_space_cal: "Calendario Espacial", cat_past: "Evento Pasado",
     
-    // API Fallback Descriptions (Spanish)
     desc_new_moon: "La Luna se encuentra exactamente entre la Tierra y el Sol. La cara oculta de la Luna está completamente iluminada.",
     desc_full_moon: "La Tierra se encuentra entre el Sol y la Luna, haciendo que el disco lunar aparezca completamente iluminado desde la Tierra.",
     desc_quarter_moon: "La Luna ha completado un cuarto de su órbita alrededor de la Tierra, mostrando una forma de cuarto creciente o menguante.",
@@ -445,7 +442,6 @@ function sortEventsAutomatically() {
   });
 }
 
-// Lokalisierungs- und Übersetzungsfunktion für API-Ereignisse (Titel + Beschreibung)
 function getLocalizedApiText(item) {
   const rawTitle = item.title || "";
   const rawDesc = item.description || item.body || "";
@@ -473,7 +469,6 @@ function getLocalizedApiText(item) {
     else if (lower.includes("equinox")) { translatedTitle = "Equinoccio"; }
     else if (lower.includes("solstice")) { translatedTitle = "Solsticio"; }
   } else {
-    // Englisch Standard-Mapping
     if (lower.includes("new moon")) descKey = "desc_new_moon";
     else if (lower.includes("full moon")) descKey = "desc_full_moon";
     else if (lower.includes("quarter")) descKey = "desc_quarter_moon";
@@ -481,9 +476,7 @@ function getLocalizedApiText(item) {
     else if (lower.includes("meteor shower")) descKey = "desc_meteor";
   }
 
-  // Falls der API-Feed eine eigene Beschreibung hat und diese nicht leer ist, wird sie genutzt, ansonsten das saubere sprachliche Fallback
   let translatedDesc = (rawDesc && rawDesc.length > 15) ? rawDesc : t[descKey];
-
   return { title: translatedTitle, desc: translatedDesc };
 }
 
