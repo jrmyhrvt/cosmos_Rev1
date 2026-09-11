@@ -223,13 +223,13 @@ let prevMouseX = 0;
 let activeBlackHoleAnimation = null;
 let lastUpdatedTime = "--:--:--";
 
-// Dynamische Basis (Live & Simulationen bleiben lokal erhalten)
+// Lokale Live-Simulationen (bleiben als permanente App-Features erhalten)
 let EVENTS = [
   {id: "blackhole-sim", name: "Black Hole / Orbit Simulation", date: "2024-01-01T00:00:00Z", icon: "blackhole", duration: 999999, desc: "Echtzeit-Simulation: Objekte drehen sich in großen Kreisen und benötigen ~10 Sekunden, um spiralisierend in den inneren Orbit des Schwarzen Lochs zu gelangen.", glostarId: "blackhole", kind: "Kosmische Simulation", source: "COSMOS Engine", status: "Aktiv", isPermanentLive: true, isBlackHoleSim: true},
   {id: "iss-live", name: "ISS Raumstation Live", date: "2024-01-01T00:00:00Z", icon: "satellite", duration: 999999, desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.", glostarId: "orbit", kind: "Live-Raumfahrt", source: "Wheretheiss.at", status: "Aktiv", isPermanentLive: true}
 ];
 
-// Automatische Sortierfunktion anhand des ISO-Datums (das zeitlich nächste Event zuerst)
+// Automatische chronologische Sortierung (das zeitlich nächste Event zuerst)
 function sortEventsAutomatically() {
   EVENTS.sort((a, b) => {
     if (a.isPermanentLive) return -1;
@@ -238,7 +238,7 @@ function sortEventsAutomatically() {
   });
 }
 
-// Abruf des Space-Calendar-JSON-Feeds
+// Abruf des Space-Calendar-Feeds für Events & Verlauf
 async function fetchSpaceCalendarFeed() {
   const updateInfoEl = document.getElementById('updateInfo');
   try {
@@ -246,19 +246,28 @@ async function fetchSpaceCalendarFeed() {
     if (!response.ok) throw new Error(`HTTP Fehler ${response.status}`);
     const data = await response.json();
     
-    // Verarbeiten der Events aus dem Feed
     if (data && data.events && Array.isArray(data.events)) {
       data.events.forEach((item, index) => {
         const eventId = `sc-${index}-${item.title ? item.title.replace(/\s+/g, '-').toLowerCase() : 'event'}`;
         const exists = EVENTS.some(e => e.id === eventId);
         if (!exists) {
-          // Icon-Zuweisung je nach Typ/Kategorie
           let iconName = "star";
+          let glostarTarget = "orbit";
           const titleLower = (item.title || "").toLowerCase();
-          if (titleLower.includes("launch") || titleLower.includes("rocket") || titleLower.includes("artemis")) iconName = "rocket";
-          else if (titleLower.includes("eclipse") || titleLower.includes("moon")) iconName = "eclipse";
-          else if (titleLower.includes("meteor")) iconName = "meteor";
-          else if (titleLower.includes("mars") || titleLower.includes("jupiter") || titleLower.includes("saturn") || titleLower.includes("opposition")) iconName = "planet";
+          
+          if (titleLower.includes("launch") || titleLower.includes("rocket") || titleLower.includes("artemis")) {
+            iconName = "rocket";
+            glostarTarget = "orbit";
+          } else if (titleLower.includes("eclipse") || titleLower.includes("moon")) {
+            iconName = "eclipse";
+            glostarTarget = "finsternis";
+          } else if (titleLower.includes("meteor")) {
+            iconName = "meteor";
+            glostarTarget = "meteorstrom";
+          } else if (titleLower.includes("mars") || titleLower.includes("jupiter") || titleLower.includes("saturn") || titleLower.includes("opposition")) {
+            iconName = "planet";
+            glostarTarget = "opposition";
+          }
 
           EVENTS.push({
             id: eventId,
@@ -270,7 +279,7 @@ async function fetchSpaceCalendarFeed() {
             kind: item.category || "Space Kalender",
             source: "Space Calendar (Luke Korth)",
             status: item.status || "Geplant",
-            glostarId: "orbit"
+            glostarId: glostarTarget
           });
         }
       });
@@ -779,7 +788,7 @@ document.getElementById('searchEvents').addEventListener('input', e => renderEve
 document.getElementById('searchHistory').addEventListener('input', e => renderHistory(e.target.value));
 document.getElementById('searchGloStar').addEventListener('input', e => renderGloStar(e.target.value));
 
-// Initialer Aufruf beim Laden der Seite
+// Initialer Aufruf
 sortEventsAutomatically();
 renderLiveEvents();
 renderEvents();
