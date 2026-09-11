@@ -260,7 +260,28 @@ const TRANSLATIONS = {
     date_time: "Datum & Uhrzeit", type: "Typ",
     active: "Aktiv", planned: "Geplant", passed: "Vorbei", countdown: "Countdown", live_tracking: "Live-Tracking aktiv",
     iss_name: "ISS Raumstation Live", iss_desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.",
-    cat_live_space: "Live-Raumfahrt", cat_space_cal: "Space Kalender", cat_past: "Vergangenes Event"
+    cat_live_space: "Live-Raumfahrt", cat_space_cal: "Space Kalender", cat_past: "Vergangenes Event",
+    
+    // GloStar Lexikon Übersetzungen DE
+    gs_blackhole: "Schwarzes Loch & Orbit",
+    gs_blackhole_sum: "Extrem kompakte Masse mit starker Gravitationswirkung.",
+    gs_blackhole_exp: "Ein Schwarzes Loch krümmt die Raumzeit so stark, dass ein Ereignishorizont entsteht. Objekte außerhalb drehen sich auf weiten Spiralbahnen um das Zentrum.",
+    
+    gs_opposition: "Opposition",
+    gs_opposition_sum: "Konstellation, bei der ein Himmelskörper der Sonne gegenübersteht.",
+    gs_opposition_exp: "Eine Opposition tritt auf, wenn die Erde direkt zwischen der Sonne und einem äußeren Himmelskörper steht.",
+    
+    gs_meteor: "Meteorstrom",
+    gs_meteor_sum: "Regelmäßig wiederkehrendes Auftreten zahlreicher Sternschnuppen.",
+    gs_meteor_exp: "Ein Meteorstrom entsteht, wenn die Erde die Bahnkreuzung mit einer Kometenstaubspur durchquert.",
+    
+    gs_eclipse: "Finsternis",
+    gs_eclipse_sum: "Vollständige oder teilweise Verdeckung eines Himmelskörpers.",
+    gs_eclipse_exp: "Eine astronomische Finsternis ereignet sich, wenn Sonne, Erde und Mond exakt auf einer geraden Linie positioniert sind.",
+    
+    gs_orbit: "Orbit & Umlaufbahn",
+    gs_orbit_sum: "Die Gravitations-Bahn von Satelliten oder Planeten.",
+    gs_orbit_exp: "Ein Orbit beschreibt die physikalische Flugbahn im Raum im perfekten Gleichgewicht von Anziehung und Zentrifugalkraft."
   },
   en: {
     eyebrow: "Your window to the universe",
@@ -292,7 +313,28 @@ const TRANSLATIONS = {
     date_time: "Date & Time", type: "Type",
     active: "Active", planned: "Planned", passed: "Passed", countdown: "Countdown", live_tracking: "Live tracking active",
     iss_name: "ISS Space Station Live", iss_desc: "Permanent real-time tracking of the International Space Station in low Earth orbit.",
-    cat_live_space: "Live Spaceflight", cat_space_cal: "Space Calendar", cat_past: "Past Event"
+    cat_live_space: "Live Spaceflight", cat_space_cal: "Space Calendar", cat_past: "Past Event",
+    
+    // GloStar Lexicon Translations EN
+    gs_blackhole: "Black Hole & Orbit",
+    gs_blackhole_sum: "Extremely compact mass with strong gravitational pull.",
+    gs_blackhole_exp: "A black hole warps spacetime so severely that an event horizon forms. External objects orbit in wide spiral paths around the center.",
+    
+    gs_opposition: "Opposition",
+    gs_opposition_sum: "Configuration where a celestial body lies opposite the Sun.",
+    gs_opposition_exp: "An opposition occurs when Earth is positioned directly between the Sun and an outer celestial body.",
+    
+    gs_meteor: "Meteor Shower",
+    gs_meteor_sum: "Regularly recurring appearance of numerous shooting stars.",
+    gs_meteor_exp: "A meteor shower occurs when Earth crosses the orbital path of a comet's dust trail.",
+    
+    gs_eclipse: "Eclipse",
+    gs_eclipse_sum: "Total or partial obscuration of a celestial body.",
+    gs_eclipse_exp: "An astronomical eclipse happens when the Sun, Earth, and Moon are precisely aligned in a straight line.",
+    
+    gs_orbit: "Orbit & Trajectory",
+    gs_orbit_sum: "The gravitational path of satellites or planets.",
+    gs_orbit_exp: "An orbit describes the physical flight path in space in a perfect balance of gravity and centrifugal force."
   },
   es: {
     eyebrow: "Tu ventana al universo",
@@ -324,7 +366,28 @@ const TRANSLATIONS = {
     date_time: "Fecha y hora", type: "Tipo",
     active: "Activo", planned: "Planificado", passed: "Pasado", countdown: "Cuenta atrás", live_tracking: "Seguimiento en vivo activo",
     iss_name: "Estación Espacial ISS en Vivo", iss_desc: "Seguimiento permanente en tiempo real de la Estación Espacial Internacional en órbita terrestre baja.",
-    cat_live_space: "Vuelo Espacial en Vivo", cat_space_cal: "Calendario Espacial", cat_past: "Evento Pasado"
+    cat_live_space: "Vuelo Espacial en Vivo", cat_space_cal: "Calendario Espacial", cat_past: "Evento Pasado",
+    
+    // GloStar Lexicon Translations ES
+    gs_blackhole: "Agujero Negro y Órbita",
+    gs_blackhole_sum: "Masa extremadamente compacta con fuerte atracción gravitatoria.",
+    gs_blackhole_exp: "Un agujero negro deforma el espaciotiempo de forma tan extrema que se forma un horizonte de sucesos. Los objetos exteriores orbitan en amplias trayectorias espirales.",
+    
+    gs_opposition: "Oposición",
+    gs_opposition_sum: "Configuración en la que un cuerpo celeste se sitúa opuesto al Sol.",
+    gs_opposition_exp: "Una oposición ocurre cuando la Tierra se encuentra directamente entre el Sol y un cuerpo celeste exterior.",
+    
+    gs_meteor: "Lluvia de Meteoros",
+    gs_meteor_sum: "Aparición periódica regular de numerosas estrellas fugaces.",
+    gs_meteor_exp: "Una lluvia de meteoros se produce cuando la Tierra cruza la órbita de un rastro de polvo cometario.",
+    
+    gs_eclipse: "Eclipse",
+    gs_eclipse_sum: "Ocultación total o parcial de un cuerpo celeste.",
+    gs_eclipse_exp: "Un eclipse astronómico sucede cuando el Sol, la Tierra y la Luna se alinean exactamente en línea recta.",
+    
+    gs_orbit: "Órbita y Trayectoria",
+    gs_orbit_sum: "La trayectoria gravitatoria de satélites o planetas.",
+    gs_orbit_exp: "Una órbita describe la trayectoria de vuelo física en el espacio en perfecto equilibrio de gravedad y fuerza centrífuga."
   }
 };
 
@@ -339,7 +402,7 @@ function setLanguage(lang) {
     else btn.classList.remove('active');
   });
 
-  // UI static texts translation
+  // Static UI translation
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
     if(TRANSLATIONS[lang][key]) {
@@ -372,7 +435,7 @@ async function fetchSpaceCalendarFeed() {
   const updateInfoEl = document.getElementById('updateInfo');
   try {
     const response = await fetch('https://space-calendar.lukekorth.com/feed.json?c=moon-phases,meteor-showers,eclipses,planetary-events,rocket-launches,space-history');
-    if (!response.ok) throw new Error(`HTTP Fehler ${response.status}`);
+    if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
     const data = await response.json();
     
     if (data && data.events && Array.isArray(data.events)) {
@@ -404,7 +467,7 @@ async function fetchSpaceCalendarFeed() {
             date: item.date || item.start || new Date().toISOString(),
             icon: iconName,
             duration: 12,
-            desc: item.description || item.body || "Keine Beschreibung verfügbar.",
+            desc: item.description || item.body || "",
             kindKey: "cat_space_cal",
             source: "Space Calendar",
             statusKey: "planned",
@@ -422,7 +485,7 @@ async function fetchSpaceCalendarFeed() {
     renderEvents();
     renderHistory();
   } catch (err) {
-    console.error("Fehler beim Abrufen des Feeds:", err);
+    console.error("Feed error:", err);
     if(updateInfoEl) updateInfoEl.textContent = TRANSLATIONS[currentLang].error_feed;
   }
 }
@@ -468,11 +531,11 @@ const SVG_ICONS = {
 };
 
 const GLOSTAR_DATA = [
-  {id: "blackhole", name: "Schwarzes Loch & Orbit", icon: "blackhole", summary: "Extrem kompakte Masse mit starker Gravitationswirkung.", explanation: "Ein Schwarzes Loch krümmt die Raumzeit so stark, dass ein Ereignishorizont entsteht. Objekte außerhalb drehen sich auf weiten Spiralbahnen um das Zentrum.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="100" cy="50" r="15" fill="#fff"/><ellipse cx="100" cy="50" rx="45" ry="14" fill="none" stroke="#fff" stroke-dasharray="3 3"/></svg>`},
-  {id: "opposition", name: "Opposition", icon: "planet", summary: "Konstellation, bei der ein Himmelskörper der Sonne gegenübersteht.", explanation: "Eine Opposition tritt auf, wenn die Erde direkt zwischen der Sonne und einem äußeren Himmelskörper steht.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="40" cy="50" r="14" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="8" fill="#fff"/><circle cx="160" cy="50" r="11" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="3,3"/></svg>`},
-  {id: "meteorstrom", name: "Meteorstrom", icon: "meteor", summary: "Regelmäßig wiederkehrendes Auftreten zahlreicher Sternschnuppen.", explanation: "Ein Meteorstrom entsteht, wenn die Erde die Bahnkreuzung mit einer Kometenstaubspur durchquert.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><path d="M170 20 L70 60" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="70" r="18" fill="none" stroke="#fff" stroke-width="2"/></svg>`},
-  {id: "finsternis", name: "Finsternis", icon: "eclipse", summary: "Vollständige oder teilweise Verdeckung eines Himmelskörpers.", explanation: "Eine astronomische Finsternis ereignet sich, wenn Sonne, Erde und Mond exakt auf einer geraden Linie positioniert sind.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="90" cy="50" r="22" fill="none" stroke="#fff" stroke-width="2"/><circle cx="110" cy="50" r="22" fill="#000" stroke="#fff" stroke-width="1"/></svg>`},
-  {id: "orbit", name: "Orbit & Umlaufbahn", icon: "orbit", summary: "Die Gravitations-Bahn von Satelliten oder Planeten.", explanation: "Ein Orbit beschreibt die physikalische Flugbahn im Raum im perfekten Gleichgewicht von Anziehung und Zentrifugalkraft.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="100" cy="50" r="25" fill="none" stroke="#fff" stroke-width="2"/><ellipse cx="100" cy="50" rx="35" ry="10" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="4,4"/></svg>`}
+  {id: "blackhole", nameKey: "gs_blackhole", icon: "blackhole", sumKey: "gs_blackhole_sum", expKey: "gs_blackhole_exp", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="100" cy="50" r="15" fill="#fff"/><ellipse cx="100" cy="50" rx="45" ry="14" fill="none" stroke="#fff" stroke-dasharray="3 3"/></svg>`},
+  {id: "opposition", nameKey: "gs_opposition", icon: "planet", sumKey: "gs_opposition_sum", expKey: "gs_opposition_exp", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="40" cy="50" r="14" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="8" fill="#fff"/><circle cx="160" cy="50" r="11" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="3,3"/></svg>`},
+  {id: "meteorstrom", nameKey: "gs_meteor", icon: "meteor", sumKey: "gs_meteor_sum", expKey: "gs_meteor_exp", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><path d="M170 20 L70 60" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="70" r="18" fill="none" stroke="#fff" stroke-width="2"/></svg>`},
+  {id: "finsternis", nameKey: "gs_eclipse", icon: "eclipse", sumKey: "gs_eclipse_sum", expKey: "gs_eclipse_exp", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="90" cy="50" r="22" fill="none" stroke="#fff" stroke-width="2"/><circle cx="110" cy="50" r="22" fill="#000" stroke="#fff" stroke-width="1"/></svg>`},
+  {id: "orbit", nameKey: "gs_orbit", icon: "orbit", sumKey: "gs_orbit_sum", expKey: "gs_orbit_exp", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="100" cy="50" r="25" fill="none" stroke="#fff" stroke-width="2"/><ellipse cx="100" cy="50" rx="35" ry="10" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="4,4"/></svg>`}
 ];
 
 function timing(ev){
@@ -529,7 +592,7 @@ function openDetail(eventId, viewPrefix){
   const glostarBtn = e.glostarId ? `<button class="glostar-link-btn" onclick="jumpToGloStar('${e.glostarId}')">${t.lexikon_btn}</button>` : '';
   const eventName = e.nameKey ? t[e.nameKey] : e.name;
   const eventKind = e.kindKey ? t[e.kindKey] : (e.kind || t.cat_space_cal);
-  const eventDesc = e.descKey ? t[e.descKey] : e.desc;
+  const eventDesc = e.descKey ? t[e.descKey] : (e.desc || "");
   const eventStatus = e.statusKey ? t[e.statusKey] : t.active;
 
   if(e.isPermanentLive){
@@ -574,12 +637,15 @@ function openGloStarDetail(index){
   const detailEl = document.getElementById(`glostar-detail`);
   detailEl.classList.add("active");
   const t = TRANSLATIONS[currentLang];
+  const itemName = t[item.nameKey];
+  const itemExp = t[item.expKey];
+  
   detailEl.innerHTML = `
     <button class="back-btn" onclick="closeDetail('glostar')">${t.back}</button>
     <div class="eyebrow">GloStar</div>
-    <h1 style="margin-bottom:16px">${item.name}</h1>
+    <h1 style="margin-bottom:16px">${itemName}</h1>
     <div class="glostar-viewport">${item.graphic}</div>
-    <p style="color:var(--muted);line-height:1.5">${item.explanation}</p>
+    <p style="color:var(--muted);line-height:1.5">${itemExp}</p>
   `;
 }
 
@@ -664,14 +730,21 @@ function renderHistory(filterText = ""){
 
 function renderGloStar(filterText = ""){
   const grid = document.getElementById("glostarGrid");
-  const items = GLOSTAR_DATA.filter(item => item.name.toLowerCase().includes(filterText.toLowerCase()));
+  const t = TRANSLATIONS[currentLang];
+  const items = GLOSTAR_DATA.filter(item => {
+    const itemName = t[item.nameKey].toLowerCase();
+    return itemName.includes(filterText.toLowerCase());
+  });
+  
   grid.innerHTML = items.map((item)=>{
     const idx = GLOSTAR_DATA.indexOf(item);
+    const itemName = t[item.nameKey];
+    const itemSum = t[item.sumKey];
     return `<div class="glostar-card" onclick="openGloStarDetail(${idx})">
       <div class="glostar-icon">${SVG_ICONS[item.icon] || SVG_ICONS.star}</div>
       <div>
-        <div class="glostar-title">${item.name}</div>
-        <div class="glostar-desc">${item.summary}</div>
+        <div class="glostar-title">${itemName}</div>
+        <div class="glostar-desc">${itemSum}</div>
       </div>
     </div>`;
   }).join("");
