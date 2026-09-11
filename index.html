@@ -43,7 +43,6 @@
   .quote em{font-style:normal;color:#fff}
   .sub{margin:20px auto 0;max-width:320px;color:var(--muted);font-size:13.5px;line-height:1.55}
   
-  /* Sprachwahl Box auf der Startseite */
   .lang-selector-box{display:inline-flex;align-items:center;gap:6px;margin-top:28px;padding:5px;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,.03);backdrop-filter:blur(16px)}
   .lang-btn{border:none;background:none;color:var(--muted);font-size:11px;font-weight:600;padding:6px 14px;border-radius:999px;cursor:pointer;transition:.2s}
   .lang-btn.active{background:rgba(255,255,255,.15);color:#fff}
@@ -134,7 +133,6 @@
         <div class="quote" data-i18n="quote">&ldquo;Irgendwo wartet etwas <em>Unglaubliches</em> darauf, entdeckt zu werden.&rdquo;</div>
         <div class="sub" data-i18n="sub">Verfolge kosmische Momente. Tippe auf ein Ereignis, um das Universum zu erkunden.</div>
         
-        <!-- Sprachen Select auf der Startseite -->
         <div class="lang-selector-box">
           <button class="lang-btn active" data-lang="de" onclick="setLanguage('de')">DE</button>
           <button class="lang-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
@@ -249,7 +247,7 @@ const TRANSLATIONS = {
     back: "Zurück",
     lexikon_btn: "Lexikon-Eintrag öffnen",
     no_live: "Keine aktiven Live-Ereignisse",
-    no_live_sub: "Sobald ein Kalender-Event aktiv wird, erscheint es hier automatisch.",
+    no_live_sub: "Sobald ein Kalender-Event aktiv wird, erscheint hier automatisch.",
     no_events: "Keine kommenden Events",
     no_history: "Keine Verlaufseinträge",
     total: "gesamt",
@@ -262,7 +260,6 @@ const TRANSLATIONS = {
     iss_name: "ISS Raumstation Live", iss_desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.",
     cat_live_space: "Live-Raumfahrt", cat_space_cal: "Space Kalender", cat_past: "Vergangenes Event",
     
-    // GloStar Lexikon Übersetzungen DE
     gs_blackhole: "Schwarzes Loch & Orbit",
     gs_blackhole_sum: "Extrem kompakte Masse mit starker Gravitationswirkung.",
     gs_blackhole_exp: "Ein Schwarzes Loch krümmt die Raumzeit so stark, dass ein Ereignishorizont entsteht. Objekte außerhalb drehen sich auf weiten Spiralbahnen um das Zentrum.",
@@ -315,7 +312,6 @@ const TRANSLATIONS = {
     iss_name: "ISS Space Station Live", iss_desc: "Permanent real-time tracking of the International Space Station in low Earth orbit.",
     cat_live_space: "Live Spaceflight", cat_space_cal: "Space Calendar", cat_past: "Past Event",
     
-    // GloStar Lexicon Translations EN
     gs_blackhole: "Black Hole & Orbit",
     gs_blackhole_sum: "Extremely compact mass with strong gravitational pull.",
     gs_blackhole_exp: "A black hole warps spacetime so severely that an event horizon forms. External objects orbit in wide spiral paths around the center.",
@@ -368,7 +364,6 @@ const TRANSLATIONS = {
     iss_name: "Estación Espacial ISS en Vivo", iss_desc: "Seguimiento permanente en tiempo real de la Estación Espacial Internacional en órbita terrestre baja.",
     cat_live_space: "Vuelo Espacial en Vivo", cat_space_cal: "Calendario Espacial", cat_past: "Evento Pasado",
     
-    // GloStar Lexicon Translations ES
     gs_blackhole: "Agujero Negro y Órbita",
     gs_blackhole_sum: "Masa extremadamente compacta con fuerte atracción gravitatoria.",
     gs_blackhole_exp: "Un agujero negro deforma el espaciotiempo de forma tan extrema que se forma un horizonte de sucesos. Los objetos exteriores orbitan en amplias trayectorias espirales.",
@@ -402,7 +397,6 @@ function setLanguage(lang) {
     else btn.classList.remove('active');
   });
 
-  // Static UI translation
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
     if(TRANSLATIONS[lang][key]) {
@@ -429,6 +423,42 @@ function sortEventsAutomatically() {
     if (b.isPermanentLive) return 1;
     return new Date(a.date).getTime() - new Date(b.date).getTime();
   });
+}
+
+// Funktion zur intelligenten Übersetzung und Aufbereitung von API-Titeln & Beschreibungen
+function getLocalizedApiText(item) {
+  const rawTitle = item.title || "";
+  const rawDesc = item.description || item.body || "";
+  const t = TRANSLATIONS[currentLang];
+  
+  let translatedTitle = rawTitle;
+  let translatedDesc = rawDesc;
+  
+  const lower = rawTitle.toLowerCase();
+  
+  if (currentLang === 'de') {
+    if (lower.includes("new moon")) translatedTitle = "Neumond";
+    else if (lower.includes("full moon")) translatedTitle = "Vollmond";
+    else if (lower.includes("first quarter")) translatedTitle = "Zunehmendes Halbmond-Viertel";
+    else if (lower.includes("third quarter")) translatedTitle = "Abnehmendes Halbmond-Viertel";
+    else if (lower.includes("solar eclipse")) translatedTitle = "Sonnenfinsternis";
+    else if (lower.includes("lunar eclipse")) translatedTitle = "Mondfinsternis";
+    else if (lower.includes("meteor shower")) translatedTitle = "Meteorstrom-Spitze";
+    else if (lower.includes("equinox")) translatedTitle = "Tagundnachtgleiche";
+    else if (lower.includes("solstice")) translatedTitle = "Sonnenwende";
+  } else if (currentLang === 'es') {
+    if (lower.includes("new moon")) translatedTitle = "Luna Nueva";
+    else if (lower.includes("full moon")) translatedTitle = "Luna Llena";
+    else if (lower.includes("first quarter")) translatedTitle = "Cuarto Creciente";
+    else if (lower.includes("third quarter")) translatedTitle = "Cuarto Menguante";
+    else if (lower.includes("solar eclipse")) translatedTitle = "Eclipse Solar";
+    else if (lower.includes("lunar eclipse")) translatedTitle = "Eclipse Lunar";
+    else if (lower.includes("meteor shower")) translatedTitle = "Pico de Lluvia de Meteoros";
+    else if (lower.includes("equinox")) translatedTitle = "Equinoccio";
+    else if (lower.includes("solstice")) translatedTitle = "Solsticio";
+  }
+
+  return { title: translatedTitle, desc: translatedDesc };
 }
 
 async function fetchSpaceCalendarFeed() {
@@ -463,11 +493,10 @@ async function fetchSpaceCalendarFeed() {
 
           EVENTS.push({
             id: eventId,
-            name: item.title || "Space Event",
+            rawItem: item,
             date: item.date || item.start || new Date().toISOString(),
             icon: iconName,
             duration: 12,
-            desc: item.description || item.body || "",
             kindKey: "cat_space_cal",
             source: "Space Calendar",
             statusKey: "planned",
@@ -590,9 +619,19 @@ function openDetail(eventId, viewPrefix){
   
   const t = TRANSLATIONS[currentLang];
   const glostarBtn = e.glostarId ? `<button class="glostar-link-btn" onclick="jumpToGloStar('${e.glostarId}')">${t.lexikon_btn}</button>` : '';
-  const eventName = e.nameKey ? t[e.nameKey] : e.name;
-  const eventKind = e.kindKey ? t[e.kindKey] : (e.kind || t.cat_space_cal);
-  const eventDesc = e.descKey ? t[e.descKey] : (e.desc || "");
+  
+  let eventName = "";
+  let eventDesc = "";
+  if(e.nameKey) {
+    eventName = t[e.nameKey];
+    eventDesc = t[e.descKey];
+  } else {
+    const loc = getLocalizedApiText(e.rawItem);
+    eventName = loc.title;
+    eventDesc = loc.desc;
+  }
+
+  const eventKind = e.kindKey ? t[e.kindKey] : t.cat_space_cal;
   const eventStatus = e.statusKey ? t[e.statusKey] : t.active;
 
   if(e.isPermanentLive){
@@ -666,7 +705,7 @@ function renderLiveEvents(){
 
   list.innerHTML = liveEvents.map((e)=>{
     const tm = timing(e);
-    const eventName = e.nameKey ? t[e.nameKey] : e.name;
+    let eventName = e.nameKey ? t[e.nameKey] : getLocalizedApiText(e.rawItem).title;
     const eventKind = e.kindKey ? t[e.kindKey] : t.cat_live_space;
     return `<article class="event live" onclick="openDetail('${e.id}', 'live-view')">
       <div class="icon">${SVG_ICONS[e.icon] || SVG_ICONS.star}</div>
@@ -683,7 +722,14 @@ function renderLiveEvents(){
 function renderEvents(filterText = ""){
   const list = document.getElementById("eventList");
   const t = TRANSLATIONS[currentLang];
-  const upcoming = EVENTS.filter(e => !e.isPermanentLive && timing(e).state === "upcoming" && (e.name || "").toLowerCase().includes(filterText.toLowerCase()));
+  
+  const upcoming = EVENTS.filter(e => {
+    if(e.isPermanentLive) return false;
+    if(timing(e).state !== "upcoming") return false;
+    let nameToCheck = e.nameKey ? t[e.nameKey] : getLocalizedApiText(e.rawItem).title;
+    return nameToCheck.toLowerCase().includes(filterText.toLowerCase());
+  });
+
   document.getElementById("eventCount").textContent = upcoming.length + " " + t.total;
   
   if(upcoming.length === 0){
@@ -693,7 +739,7 @@ function renderEvents(filterText = ""){
 
   list.innerHTML = upcoming.map((e)=>{
     const tm = timing(e);
-    const eventName = e.nameKey ? t[e.nameKey] : e.name;
+    let eventName = e.nameKey ? t[e.nameKey] : getLocalizedApiText(e.rawItem).title;
     const eventKind = e.kindKey ? t[e.kindKey] : t.cat_space_cal;
     return `<article class="event" onclick="openDetail('${e.id}', 'events')">
       <div class="icon">${SVG_ICONS[e.icon] || SVG_ICONS.star}</div>
@@ -710,13 +756,20 @@ function renderEvents(filterText = ""){
 function renderHistory(filterText = ""){
   const histList = document.getElementById("histList");
   const t = TRANSLATIONS[currentLang];
-  const past = EVENTS.filter(e => !e.isPermanentLive && timing(e).state === "passed" && (e.name || "").toLowerCase().includes(filterText.toLowerCase()));
+  
+  const past = EVENTS.filter(e => {
+    if(e.isPermanentLive) return false;
+    if(timing(e).state !== "passed") return false;
+    let nameToCheck = e.nameKey ? t[e.nameKey] : getLocalizedApiText(e.rawItem).title;
+    return nameToCheck.toLowerCase().includes(filterText.toLowerCase());
+  });
+
   if(past.length === 0){
     histList.innerHTML = `<div class="empty"><div class="title">${t.no_history}</div></div>`;
     return;
   }
   histList.innerHTML = past.map((e)=>{
-    const eventName = e.nameKey ? t[e.nameKey] : e.name;
+    let eventName = e.nameKey ? t[e.nameKey] : getLocalizedApiText(e.rawItem).title;
     return `<article class="hist-card" onclick="openDetail('${e.id}', 'history')">
       <div class="hist-thumb">${SVG_ICONS[e.icon] || SVG_ICONS.star}</div>
       <div class="hist-meta">
@@ -872,12 +925,26 @@ function drawStars(){
     if(s.y < 0) s.y = starCanvas.height;
     starCtx.fillStyle = `rgba(255,255,255,${s.alpha})`;
     starCtx.beginPath();
-    starCtx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+    starCtx.arc(s.x, s.y, s.s, 0, Math.PI*2); // fix size prop reference
     starCtx.fill();
   });
   requestAnimationFrame(drawStars);
 }
-drawStars();
+
+// Kleinere Korrektur für Stern-Größe im Loop
+function drawStarsFixed(){
+  starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+  stars.forEach(s => {
+    s.y -= s.speed;
+    if(s.y < 0) s.y = starCanvas.height;
+    starCtx.fillStyle = `rgba(255,255,255,${s.alpha})`;
+    starCtx.beginPath();
+    starCtx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+    starCtx.fill();
+  });
+  requestAnimationFrame(drawStarsFixed);
+}
+drawStarsFixed();
 
 document.querySelectorAll(".tab").forEach(tab => {
   tab.addEventListener("click", () => {
