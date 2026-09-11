@@ -260,6 +260,14 @@ const TRANSLATIONS = {
     iss_name: "ISS Raumstation Live", iss_desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.",
     cat_live_space: "Live-Raumfahrt", cat_space_cal: "Space Kalender", cat_past: "Vergangenes Event",
     
+    // API Fallback Descriptions (German)
+    desc_new_moon: "Der Mond befindet sich exakt zwischen Erde und Sonne. Die erdabgewandte Seite ist vollständig beleuchtet.",
+    desc_full_moon: "Die Erde steht zwischen Sonne und Mond, wodurch die Mondscheibe von der Erde aus vollständig beleuchtet erscheint.",
+    desc_quarter_moon: "Der Mond hat ein Viertel seiner Umlaufbahn um die Erde absolviert und zeigt sich als markanter Halbmond.",
+    desc_eclipse: "Eine geometrische Ausrichtung von Sonne, Erde und Mond führt zu einer spektakulären Verdeckung des Lichts.",
+    desc_meteor: "Die Erde kreuzt die Staubspur eines Kometen, was zu einem vermehrten Auftreten von leuchtenden Sternschnuppen führt.",
+    desc_generic: "Ein faszinierendes astronomisches Himmelsereignis, das im Rahmen des Space-Kalenders dokumentiert wird.",
+
     gs_blackhole: "Schwarzes Loch & Orbit",
     gs_blackhole_sum: "Extrem kompakte Masse mit starker Gravitationswirkung.",
     gs_blackhole_exp: "Ein Schwarzes Loch krümmt die Raumzeit so stark, dass ein Ereignishorizont entsteht. Objekte außerhalb drehen sich auf weiten Spiralbahnen um das Zentrum.",
@@ -312,6 +320,14 @@ const TRANSLATIONS = {
     iss_name: "ISS Space Station Live", iss_desc: "Permanent real-time tracking of the International Space Station in low Earth orbit.",
     cat_live_space: "Live Spaceflight", cat_space_cal: "Space Calendar", cat_past: "Past Event",
     
+    // API Fallback Descriptions (English)
+    desc_new_moon: "The Moon is positioned directly between the Earth and the Sun. The far side of the Moon is fully illuminated.",
+    desc_full_moon: "The Earth is positioned between the Sun and the Moon, making the lunar disk appear fully illuminated from Earth.",
+    desc_quarter_moon: "The Moon has completed a quarter of its orbit around the Earth, showing a distinct half-moon shape.",
+    desc_eclipse: "A geometric alignment of the Sun, Earth, and Moon results in a spectacular obscuration of light.",
+    desc_meteor: "Earth crosses the dust trail of a comet, leading to an increased frequency of glowing shooting stars.",
+    desc_generic: "A fascinating astronomical celestial event documented as part of the space calendar.",
+
     gs_blackhole: "Black Hole & Orbit",
     gs_blackhole_sum: "Extremely compact mass with strong gravitational pull.",
     gs_blackhole_exp: "A black hole warps spacetime so severely that an event horizon forms. External objects orbit in wide spiral paths around the center.",
@@ -364,6 +380,14 @@ const TRANSLATIONS = {
     iss_name: "Estación Espacial ISS en Vivo", iss_desc: "Seguimiento permanente en tiempo real de la Estación Espacial Internacional en órbita terrestre baja.",
     cat_live_space: "Vuelo Espacial en Vivo", cat_space_cal: "Calendario Espacial", cat_past: "Evento Pasado",
     
+    // API Fallback Descriptions (Spanish)
+    desc_new_moon: "La Luna se encuentra exactamente entre la Tierra y el Sol. La cara oculta de la Luna está completamente iluminada.",
+    desc_full_moon: "La Tierra se encuentra entre el Sol y la Luna, haciendo que el disco lunar aparezca completamente iluminado desde la Tierra.",
+    desc_quarter_moon: "La Luna ha completado un cuarto de su órbita alrededor de la Tierra, mostrando una forma de cuarto creciente o menguante.",
+    desc_eclipse: "Una alineación geométrica del Sol, la Tierra y la Luna produce una espectacular ocultación de la luz.",
+    desc_meteor: "La Tierra cruza el rastro de polvo de un cometa, lo que provoca una mayor aparición de estrellas fugaces luminosas.",
+    desc_generic: "Un fascinante evento astronómico celeste documentado como parte del calendario espacial.",
+
     gs_blackhole: "Agujero Negro y Órbita",
     gs_blackhole_sum: "Masa extremadamente compacta con fuerte atracción gravitatoria.",
     gs_blackhole_exp: "Un agujero negro deforma el espaciotiempo de forma tan extrema que se forma un horizonte de sucesos. Los objetos exteriores orbitan en amplias trayectorias espirales.",
@@ -375,10 +399,6 @@ const TRANSLATIONS = {
     gs_meteor: "Lluvia de Meteoros",
     gs_meteor_sum: "Aparición periódica regular de numerosas estrellas fugaces.",
     gs_meteor_exp: "Una lluvia de meteoros se produce cuando la Tierra cruza la órbita de un rastro de polvo cometario.",
-    
-    gs_eclipse: "Eclipse",
-    gs_eclipse_sum: "Ocultación total o parcial de un cuerpo celeste.",
-    gs_eclipse_exp: "Un eclipse astronómico sucede cuando el Sol, la Tierra y la Luna se alinean exactamente en línea recta.",
     
     gs_orbit: "Órbita y Trayectoria",
     gs_orbit_sum: "La trayectoria gravitatoria de satélites o planetas.",
@@ -425,38 +445,44 @@ function sortEventsAutomatically() {
   });
 }
 
-// Funktion zur intelligenten Übersetzung und Aufbereitung von API-Titeln & Beschreibungen
+// Lokalisierungs- und Übersetzungsfunktion für API-Ereignisse (Titel + Beschreibung)
 function getLocalizedApiText(item) {
   const rawTitle = item.title || "";
   const rawDesc = item.description || item.body || "";
   const t = TRANSLATIONS[currentLang];
   
   let translatedTitle = rawTitle;
-  let translatedDesc = rawDesc;
+  let descKey = "desc_generic";
   
   const lower = rawTitle.toLowerCase();
   
   if (currentLang === 'de') {
-    if (lower.includes("new moon")) translatedTitle = "Neumond";
-    else if (lower.includes("full moon")) translatedTitle = "Vollmond";
-    else if (lower.includes("first quarter")) translatedTitle = "Zunehmendes Halbmond-Viertel";
-    else if (lower.includes("third quarter")) translatedTitle = "Abnehmendes Halbmond-Viertel";
-    else if (lower.includes("solar eclipse")) translatedTitle = "Sonnenfinsternis";
-    else if (lower.includes("lunar eclipse")) translatedTitle = "Mondfinsternis";
-    else if (lower.includes("meteor shower")) translatedTitle = "Meteorstrom-Spitze";
-    else if (lower.includes("equinox")) translatedTitle = "Tagundnachtgleiche";
-    else if (lower.includes("solstice")) translatedTitle = "Sonnenwende";
+    if (lower.includes("new moon")) { translatedTitle = "Neumond"; descKey = "desc_new_moon"; }
+    else if (lower.includes("full moon")) { translatedTitle = "Vollmond"; descKey = "desc_full_moon"; }
+    else if (lower.includes("quarter")) { translatedTitle = "Mondviertel"; descKey = "desc_quarter_moon"; }
+    else if (lower.includes("eclipse")) { translatedTitle = "Finsternis-Ereignis"; descKey = "desc_eclipse"; }
+    else if (lower.includes("meteor shower")) { translatedTitle = "Meteorstrom-Spitze"; descKey = "desc_meteor"; }
+    else if (lower.includes("equinox")) { translatedTitle = "Tagundnachtgleiche"; }
+    else if (lower.includes("solstice")) { translatedTitle = "Sonnenwende"; }
   } else if (currentLang === 'es') {
-    if (lower.includes("new moon")) translatedTitle = "Luna Nueva";
-    else if (lower.includes("full moon")) translatedTitle = "Luna Llena";
-    else if (lower.includes("first quarter")) translatedTitle = "Cuarto Creciente";
-    else if (lower.includes("third quarter")) translatedTitle = "Cuarto Menguante";
-    else if (lower.includes("solar eclipse")) translatedTitle = "Eclipse Solar";
-    else if (lower.includes("lunar eclipse")) translatedTitle = "Eclipse Lunar";
-    else if (lower.includes("meteor shower")) translatedTitle = "Pico de Lluvia de Meteoros";
-    else if (lower.includes("equinox")) translatedTitle = "Equinoccio";
-    else if (lower.includes("solstice")) translatedTitle = "Solsticio";
+    if (lower.includes("new moon")) { translatedTitle = "Luna Nueva"; descKey = "desc_new_moon"; }
+    else if (lower.includes("full moon")) { translatedTitle = "Luna Llena"; descKey = "desc_full_moon"; }
+    else if (lower.includes("quarter")) { translatedTitle = "Cuarto Lunar"; descKey = "desc_quarter_moon"; }
+    else if (lower.includes("eclipse")) { translatedTitle = "Evento de Eclipse"; descKey = "desc_eclipse"; }
+    else if (lower.includes("meteor shower")) { translatedTitle = "Pico de Lluvia de Meteoros"; descKey = "desc_meteor"; }
+    else if (lower.includes("equinox")) { translatedTitle = "Equinoccio"; }
+    else if (lower.includes("solstice")) { translatedTitle = "Solsticio"; }
+  } else {
+    // Englisch Standard-Mapping
+    if (lower.includes("new moon")) descKey = "desc_new_moon";
+    else if (lower.includes("full moon")) descKey = "desc_full_moon";
+    else if (lower.includes("quarter")) descKey = "desc_quarter_moon";
+    else if (lower.includes("eclipse")) descKey = "desc_eclipse";
+    else if (lower.includes("meteor shower")) descKey = "desc_meteor";
   }
+
+  // Falls der API-Feed eine eigene Beschreibung hat und diese nicht leer ist, wird sie genutzt, ansonsten das saubere sprachliche Fallback
+  let translatedDesc = (rawDesc && rawDesc.length > 15) ? rawDesc : t[descKey];
 
   return { title: translatedTitle, desc: translatedDesc };
 }
@@ -918,20 +944,6 @@ for(let i=0; i<300; i++){
   });
 }
 
-function drawStars(){
-  starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
-  stars.forEach(s => {
-    s.y -= s.speed;
-    if(s.y < 0) s.y = starCanvas.height;
-    starCtx.fillStyle = `rgba(255,255,255,${s.alpha})`;
-    starCtx.beginPath();
-    starCtx.arc(s.x, s.y, s.s, 0, Math.PI*2); // fix size prop reference
-    starCtx.fill();
-  });
-  requestAnimationFrame(drawStars);
-}
-
-// Kleinere Korrektur für Stern-Größe im Loop
 function drawStarsFixed(){
   starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
   stars.forEach(s => {
