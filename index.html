@@ -260,10 +260,10 @@ const TRANSLATIONS = {
     loading: "Daten werden geladen...",
     error_feed: "Fehler beim Abrufen des Feeds. Nutze lokale Offline-Daten.",
     updated: "Zuletzt aktualisiert:",
-    lat: "Breitengrad", lon: "Längengrad", source: "Quelle", status: "Status",
+    lat: "Breitengrad", lon: "Längengrad", status: "Status",
     date_time: "Datum & Uhrzeit", type: "Typ",
     active: "Aktiv", planned: "Geplant", passed: "Vorbei", countdown: "Countdown", live_tracking: "Live-Tracking aktiv",
-    iss_name: "ISS Raumstation Live", iss_desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.",
+    iss_name: "ISS — Live-Position", iss_desc: "Verfolge die Internationale Raumstation in Echtzeit, während sie die Erde auf ihrer Umlaufbahn umkreist.",
     cat_live_space: "Live-Raumfahrt", cat_space_cal: "Space Kalender", cat_past: "Vergangenes Event",
     cat_moon: "Mondphase", cat_meteor: "Meteorstrom", cat_eclipse: "Finsternis", cat_launch: "Raketenstart", cat_planet: "Planetar", cat_equinox: "Tagundnachtgleiche", cat_solstice: "Sonnenwende", cat_aurora: "Polarlicht", cat_history: "Weltraumgeschichte",
     
@@ -365,10 +365,10 @@ const TRANSLATIONS = {
     loading: "Loading data...",
     error_feed: "Error fetching feed. Using local offline data.",
     updated: "Last updated:",
-    lat: "Latitude", lon: "Longitude", source: "Source", status: "Status",
+    lat: "Latitude", lon: "Longitude", status: "Status",
     date_time: "Date & Time", type: "Type",
     active: "Active", planned: "Planned", passed: "Passed", countdown: "Countdown", live_tracking: "Live tracking active",
-    iss_name: "ISS Space Station Live", iss_desc: "Permanent real-time tracking of the International Space Station in low Earth orbit.",
+    iss_name: "ISS — Live Position", iss_desc: "Follow the International Space Station in real time as it circles Earth in low Earth orbit.",
     cat_live_space: "Live Spaceflight", cat_space_cal: "Space Calendar", cat_past: "Past Event",
     cat_moon: "Moon Phase", cat_meteor: "Meteor Shower", cat_eclipse: "Eclipse", cat_launch: "Rocket Launch", cat_planet: "Planetary", cat_equinox: "Equinox", cat_solstice: "Solstice", cat_aurora: "Aurora", cat_history: "Space History",
     
@@ -470,7 +470,7 @@ const TRANSLATIONS = {
     loading: "Cargando datos...",
     error_feed: "Error al cargar el feed. Usando datos locales fuera de línea.",
     updated: "Última actualización:",
-    lat: "Latitud", lon: "Longitud", source: "Fuente", status: "Estado",
+    lat: "Latitud", lon: "Longitud", status: "Estado",
     date_time: "Fecha y hora", type: "Tipo",
     active: "Activo", planned: "Planificado", passed: "Pasado", countdown: "Cuenta atrás", live_tracking: "Seguimiento en vivo activo",
     iss_name: "Estación Espacial ISS en Vivo", iss_desc: "Seguimiento permanente en tiempo real de la Estación Espacial Internacional en órbita terrestre baja.",
@@ -552,7 +552,7 @@ const TRANSLATIONS = {
 };
 
 let EVENTS = [
-  {id: "iss-live", nameKey: "iss_name", date: "2024-01-01T00:00:00Z", icon: "satellite", duration: 999999, descKey: "iss_desc", glostarId: "orbit", kindKey: "cat_live_space", source: "Wheretheiss.at", statusKey: "active", isPermanentLive: true}
+  {id: "iss-live", nameKey: "iss_name", date: "1998-11-20T06:40:00Z", icon: "satellite", duration: 999999, descKey: "iss_desc", glostarId: "orbit", kindKey: "cat_live_space", statusKey: "active", isPermanentLive: true}
 ];
 
 function setLanguage(lang) {
@@ -686,8 +686,18 @@ function getCategoryMeta(item) {
   return meta[category] || meta.generic;
 }
 
+function cleanFeedText(value){
+  return String(value || '')
+    // Strip emoji and symbol glyphs from live feed titles; COSMOS uses its own pictograms.
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+    .replace(/[\uFE0F\u200D]/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/^[-–—:|·\s]+|[-–—:|·\s]+$/g, '')
+    .trim();
+}
+
 function getLocalizedApiText(item) {
-  const rawTitle = String(item?.title || item?.name || "Space event");
+  const rawTitle = cleanFeedText(item?.title || item?.name || "Space event");
   const t = TRANSLATIONS[currentLang];
   const lower = rawTitle.toLowerCase();
   const category = getEventCategory(item);
@@ -711,32 +721,41 @@ function getLocalizedApiText(item) {
   const familyTitles = {
     de: {
       "new moon":"Neumond", "supermoon":"Supermond", "full moon":"Vollmond",
-      "quarter":"Mondviertel", "eclipse":"Finsternis-Ereignis",
-      "meteor shower":"Meteorstrom-Spitze", "equinox":"Tagundnachtgleiche",
-      "solstice":"Sonnenwende", "conjunction":"Konjunktion", "opposition":"Opposition"
+      "first quarter":"Erstes Viertel", "last quarter":"Letztes Viertel", "quarter":"Mondviertel",
+      "eclipse":"Finsternis", "meteor shower":"Meteorstrom", "equinox":"Tagundnachtgleiche",
+      "solstice":"Sonnenwende", "conjunction":"Konjunktion", "opposition":"Opposition",
+      "launch":"Start", "rocket launch":"Raketenstart", "anniversary":"Jahrestag"
     },
-    en: {},
+    en: {
+      "new moon":"New Moon", "supermoon":"Supermoon", "full moon":"Full Moon",
+      "first quarter":"First Quarter", "last quarter":"Last Quarter", "quarter":"Lunar Quarter",
+      "eclipse":"Eclipse", "meteor shower":"Meteor Shower", "equinox":"Equinox",
+      "solstice":"Solstice", "conjunction":"Conjunction", "opposition":"Opposition",
+      "rocket launch":"Rocket Launch", "launch":"Launch", "anniversary":"Anniversary"
+    },
     es: {
       "new moon":"Luna Nueva", "supermoon":"Superluna", "full moon":"Luna Llena",
-      "quarter":"Cuarto Lunar", "eclipse":"Evento de Eclipse",
-      "meteor shower":"Pico de Lluvia de Meteoros", "equinox":"Equinoccio",
-      "solstice":"Solsticio", "conjunction":"Conjunción", "opposition":"Oposición"
+      "first quarter":"Primer Cuarto", "last quarter":"Último Cuarto", "quarter":"Fase Lunar",
+      "eclipse":"Eclipse", "meteor shower":"Lluvia de Meteoros", "equinox":"Equinoccio",
+      "solstice":"Solsticio", "conjunction":"Conjunción", "opposition":"Oposición",
+      "rocket launch":"Lanzamiento de Cohete", "launch":"Lanzamiento", "anniversary":"Aniversario"
     }
   };
 
   let translatedTitle = rawTitle;
   const replacements = familyTitles[currentLang] || {};
-  for (const [needle, replacement] of Object.entries(replacements)) {
-    if (lower.includes(needle)) {
-      translatedTitle = replacement;
-      break;
-    }
+  for (const [needle, replacement] of Object.entries(replacements).sort((a,b)=>b[0].length-a[0].length)) {
+    const re = new RegExp(`\\b${needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+    translatedTitle = translatedTitle.replace(re, replacement);
   }
+
+  // Some feeds use a generic separator or append a translated/English category.
+  // Keep proper mission/object names, but make the visible event wording COSMOS-localized.
+  translatedTitle = translatedTitle.replace(/\s{2,}/g, ' ').trim();
 
   return {
     title: escapeHtml(translatedTitle),
     desc: escapeHtml(t[descKey] || t.desc_generic),
-    rawTitle: escapeHtml(rawTitle)
   };
 }
 
@@ -762,7 +781,6 @@ async function fetchSpaceCalendarFeed() {
 
       const endDate = getItemEnd(item, startDate);
       const meta = getCategoryMeta(item);
-      const source = item.source || item.publisher || 'Space Calendar';
       const stableId = getStableEventId(item);
 
       feedEvents.push({
@@ -773,7 +791,6 @@ async function fetchSpaceCalendarFeed() {
         duration: endDate ? Math.max(1 / 60, (endDate.getTime() - startDate.getTime()) / 3600000) : (1 / 60),
         icon: meta.icon,
         kindKey: meta.key,
-        source: source,
         statusKey: 'planned',
         glostarId: meta.glostarId
       });
@@ -967,7 +984,6 @@ function openDetail(eventId, viewPrefix){
       <div class="detail-grid">
         <div class="detail-card"><label>${t.lat}</label><val id="detailLat">${currentIssLat}°</val></div>
         <div class="detail-card"><label>${t.lon}</label><val id="detailLon">${currentIssLon}°</val></div>
-        <div class="detail-card"><label>${t.source}</label><val>${e.source || 'Wheretheiss.at'}</val></div>
         <div class="detail-card"><label>${t.status}</label><val>${eventStatus}</val></div>
       </div>
       <p style="color:var(--muted);margin-top:15px;line-height:1.5">${eventDesc}</p>
@@ -985,7 +1001,6 @@ function openDetail(eventId, viewPrefix){
       <div class="detail-card"><label>${t.date_time}</label><val>${fmtTime(new Date(e.date))}</val></div>
       <div class="detail-card"><label>${t.type}</label><val>${eventKind}</val></div>
       <div class="detail-card"><label>${t.status}</label><val>${eventStatus}</val></div>
-      <div class="detail-card"><label>${t.source}</label><val>${e.source || 'Space Calendar'}</val></div>
     </div>
     <p style="color:var(--muted);margin-top:15px;line-height:1.5">${eventDesc}</p>
     ${glostarBtn}
