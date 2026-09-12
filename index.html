@@ -265,7 +265,7 @@ const TRANSLATIONS = {
     active: "Aktiv", planned: "Geplant", passed: "Vorbei", countdown: "Countdown", live_tracking: "Live-Tracking aktiv",
     iss_name: "ISS — Live-Position", iss_desc: "Verfolge die Internationale Raumstation in Echtzeit, während sie die Erde auf ihrer Umlaufbahn umkreist.",
     cat_live_space: "Live-Raumfahrt", cat_space_cal: "Space Kalender", cat_past: "Vergangenes Event",
-    cat_moon: "Mondphase", cat_meteor: "Meteorstrom", cat_eclipse: "Finsternis", cat_launch: "Raketenstart", cat_planet: "Planetar", cat_equinox: "Tagundnachtgleiche", cat_solstice: "Sonnenwende", cat_aurora: "Polarlicht", cat_history: "Weltraumgeschichte",
+    cat_moon: "Mondphase", cat_meteor: "Meteorstrom", cat_eclipse: "Finsternis", cat_launch: "Raketenstart", cat_planet: "Planetar", cat_equinox: "Tagundnachtgleiche", cat_solstice: "Sonnenwende", cat_aurora: "Polarlicht", cat_close_approach: "Erdvorbeiflug", cat_space_weather: "Weltraumwetter", cat_history: "Weltraumgeschichte",
     
     desc_new_moon: "Der Mond befindet sich exakt zwischen Erde und Sonne. Die erdabgewandte Seite ist vollständig beleuchtet.",
     desc_full_moon: "Die Erde steht zwischen Sonne und Mond, wodurch die Mondscheibe von der Erde aus vollständig beleuchtet erscheint.",
@@ -278,6 +278,8 @@ const TRANSLATIONS = {
     desc_launch: "Eine Trägerrakete startet, um Nutzlast wie Satelliten, Raumsonden oder Astronauten ins All zu befördern.",
     desc_conjunction: "Zwei Himmelskörper stehen von der Erde aus gesehen sehr nahe beieinander am Himmel.",
     desc_supermoon: "Der Vollmond fällt mit dem erdnächsten Punkt der Mondbahn zusammen und erscheint dadurch größer und heller.",
+    desc_close_approach: "Ein Asteroid oder Komet passiert die Erde in vergleichsweise geringer Entfernung. Die Entfernung wird aus aktuellen Bahndaten berechnet und ist keine Einschlagprognose.",
+    desc_geomagnetic_forecast: "NOAA erwartet für diesen Zeitraum erhöhte geomagnetische Aktivität. Die Angabe ist eine Prognose und kann sich mit neuen Messungen ändern.",
 
     gs_blackhole: "Schwarzes Loch & Orbit",
     gs_blackhole_sum: "Extrem kompakte Masse mit starker Gravitationswirkung.",
@@ -370,7 +372,7 @@ const TRANSLATIONS = {
     active: "Active", planned: "Planned", passed: "Passed", countdown: "Countdown", live_tracking: "Live tracking active",
     iss_name: "ISS — Live Position", iss_desc: "Follow the International Space Station in real time as it circles Earth in low Earth orbit.",
     cat_live_space: "Live Spaceflight", cat_space_cal: "Space Calendar", cat_past: "Past Event",
-    cat_moon: "Moon Phase", cat_meteor: "Meteor Shower", cat_eclipse: "Eclipse", cat_launch: "Rocket Launch", cat_planet: "Planetary", cat_equinox: "Equinox", cat_solstice: "Solstice", cat_aurora: "Aurora", cat_history: "Space History",
+    cat_moon: "Moon Phase", cat_meteor: "Meteor Shower", cat_eclipse: "Eclipse", cat_launch: "Rocket Launch", cat_planet: "Planetary", cat_equinox: "Equinox", cat_solstice: "Solstice", cat_aurora: "Aurora", cat_close_approach: "Earth Flyby", cat_space_weather: "Space Weather", cat_history: "Space History",
     
     desc_new_moon: "The Moon is positioned directly between the Earth and the Sun. The far side of the Moon is fully illuminated.",
     desc_full_moon: "The Earth is positioned between the Sun and the Moon, making the lunar disk appear fully illuminated from Earth.",
@@ -383,6 +385,8 @@ const TRANSLATIONS = {
     desc_launch: "A launch vehicle lifts off to carry payloads such as satellites, probes, or astronauts into space.",
     desc_conjunction: "Two celestial bodies appear very close to each other in the sky as seen from Earth.",
     desc_supermoon: "The full Moon coincides with the closest point of its orbit to Earth, appearing larger and brighter than usual.",
+    desc_close_approach: "An asteroid or comet will pass Earth at a comparatively close distance. The distance is calculated from current orbital data and is not an impact prediction.",
+    desc_geomagnetic_forecast: "NOAA forecasts elevated geomagnetic activity for this period. This is a forecast and may change as new measurements arrive.",
 
     gs_blackhole: "Black Hole & Orbit",
     gs_blackhole_sum: "Extremely compact mass with strong gravitational pull.",
@@ -475,7 +479,7 @@ const TRANSLATIONS = {
     active: "Activo", planned: "Planificado", passed: "Pasado", countdown: "Cuenta atrás", live_tracking: "Seguimiento en vivo activo",
     iss_name: "Estación Espacial ISS en Vivo", iss_desc: "Seguimiento permanente en tiempo real de la Estación Espacial Internacional en órbita terrestre baja.",
     cat_live_space: "Vuelo Espacial en Vivo", cat_space_cal: "Calendario Espacial", cat_past: "Evento Pasado",
-    cat_moon: "Fase Lunar", cat_meteor: "Lluvia de Meteoros", cat_eclipse: "Eclipse", cat_launch: "Lanzamiento", cat_planet: "Planetario", cat_equinox: "Equinoccio", cat_solstice: "Solsticio", cat_aurora: "Aurora", cat_history: "Historia Espacial",
+    cat_moon: "Fase Lunar", cat_meteor: "Lluvia de Meteoros", cat_eclipse: "Eclipse", cat_launch: "Lanzamiento", cat_planet: "Planetario", cat_equinox: "Equinoccio", cat_solstice: "Solsticio", cat_aurora: "Aurora", cat_close_approach: "Sobrevuelo de la Tierra", cat_space_weather: "Clima Espacial", cat_history: "Historia Espacial",
     
     desc_new_moon: "La Luna se encuentra exactamente entre la Tierra y el Sol. La cara oculta de la Luna está completamente iluminada.",
     desc_full_moon: "La Tierra se encuentra entre el Sol y la Luna, haciendo que el disco lunar aparezca completamente iluminado desde la Tierra.",
@@ -488,6 +492,8 @@ const TRANSLATIONS = {
     desc_launch: "Un cohete lanzador despega para llevar cargas como satélites, sondas o astronautas al espacio.",
     desc_conjunction: "Dos cuerpos celestes aparecen muy cerca el uno del otro en el cielo visto desde la Tierra.",
     desc_supermoon: "La Luna llena coincide con el punto más cercano de su órbita a la Tierra, apareciendo más grande y brillante de lo habitual.",
+    desc_close_approach: "Un asteroide o cometa pasará cerca de la Tierra. La distancia se calcula a partir de datos orbitales actuales y no es una predicción de impacto.",
+    desc_geomagnetic_forecast: "NOAA prevé una actividad geomagnética elevada durante este periodo. Es una previsión y puede cambiar con nuevas mediciones.",
 
     gs_blackhole: "Agujero Negro y Órbita",
     gs_blackhole_sum: "Masa extremadamente compacta con fuerte atracción gravitatoria.",
@@ -552,7 +558,7 @@ const TRANSLATIONS = {
 };
 
 let EVENTS = [
-  {id: "iss-live", nameKey: "iss_name", date: "1998-11-20T06:40:00Z", icon: "satellite", duration: 999999, descKey: "iss_desc", glostarId: "orbit", kindKey: "cat_live_space", statusKey: "active", isPermanentLive: true}
+  {id: "iss-live", nameKey: "iss_name", date: "1998-11-20T06:40:00Z", icon: "satellite", duration: 999999, descKey: "iss_desc", glostarId: "orbit", kindKey: "cat_live_space", statusKey: "active", isPermanentLive: true, liveOnly: true, sources:["Wheretheiss.at"]}
 ];
 
 function setLanguage(lang) {
@@ -664,6 +670,8 @@ function getEventCategory(item) {
   if (text.includes("equinox")) return "equinox";
   if (text.includes("solstice")) return "solstice";
   if (text.includes("opposition") || text.includes("elongation") || text.includes("conjunction") || text.includes("planet") || text.includes("mercury") || text.includes("venus") || text.includes("mars") || text.includes("jupiter") || text.includes("saturn")) return "planet";
+  if (text.includes("close approach") || text.includes("near-earth") || text.includes("asteroid flyby") || text.includes("earth flyby") || text.includes("erdvorbeiflug") || text.includes("nahvorbeiflug")) return "close-approach";
+  if (text.includes("geomagnetic") || text.includes("kp index") || text.includes("solar storm") || text.includes("magnetic storm")) return "space-weather";
   if (text.includes("aurora")) return "aurora";
   if (text.includes("history") || text.includes("anniversary")) return "history";
   return "generic";
@@ -680,6 +688,8 @@ function getCategoryMeta(item) {
     equinox: {icon:"planet", glostarId:"orbit", key:"cat_equinox"},
     solstice: {icon:"planet", glostarId:"orbit", key:"cat_solstice"},
     aurora: {icon:"star", glostarId:"orbit", key:"cat_aurora"},
+    "close-approach": {icon:"asteroid", glostarId:"asteroid", key:"cat_close_approach"},
+    "space-weather": {icon:"star", glostarId:"solarwind", key:"cat_space_weather"},
     history: {icon:"star", glostarId:"orbit", key:"cat_history"},
     generic: {icon:"star", glostarId:"orbit", key:"cat_space_cal"}
   };
@@ -698,7 +708,23 @@ function cleanFeedText(value){
 
 function getLocalizedApiText(item) {
   const rawTitle = cleanFeedText(item?.title || item?.name || "Space event");
+  const itemType = String(item?.type || item?.category || "").toLowerCase();
   const t = TRANSLATIONS[currentLang];
+
+  // These internally generated records contain language-neutral metadata.
+  // Build their visible title from the currently selected language every time,
+  // so switching DE/EN/ES never leaves a stale translated string behind.
+  if(itemType === "close-approach") {
+    const objectName = cleanFeedText(item?.fullname || item?.name || "Near-Earth Object");
+    const title = currentLang === "de" ? `Asteroiden-Vorbeiflug: ${objectName}` : currentLang === "es" ? `Sobrevuelo de asteroide: ${objectName}` : `Asteroid flyby: ${objectName}`;
+    return {title: escapeHtml(title), desc: escapeHtml(t.desc_close_approach)};
+  }
+  if(itemType === "space-weather") {
+    const kp = Number(item?.kp);
+    const title = currentLang === "de" ? "Prognose: Geomagnetischer Sturm" : currentLang === "es" ? "Pronóstico: Tormenta Geomagnética" : "Forecast: Geomagnetic Storm";
+    const suffix = Number.isFinite(kp) ? ` · Kp ${kp.toFixed(1)}` : "";
+    return {title: escapeHtml(title + suffix), desc: escapeHtml(t.desc_geomagnetic_forecast)};
+  }
   const lower = rawTitle.toLowerCase();
   const category = getEventCategory(item);
 
@@ -762,55 +788,124 @@ function getLocalizedApiText(item) {
 async function fetchSpaceCalendarFeed() {
   const updateInfoEl = document.getElementById('updateInfo');
   const feedUrl = 'https://space-calendar.lukekorth.com/feed.json?c=moon-phases,meteor-showers,eclipses,planetary-events,rocket-launches,space-history';
+  const jplUrl = 'https://ssd-api.jpl.nasa.gov/cad.api?date-min=now&date-max=%2B365&dist-max=0.05&neo=true&fullname=true&diameter=true&limit=100&sort=date';
+  const noaaUrl = 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json';
 
   try {
-    const response = await fetch(`${feedUrl}&_=${Date.now()}`, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
-    const data = await response.json();
-    if (!data || !Array.isArray(data.events)) throw new Error('Invalid Space Calendar response');
+    const results = await Promise.allSettled([
+      fetch(`${feedUrl}&_=${Date.now()}`, {cache:'no-store'}).then(r => { if(!r.ok) throw new Error(`Space Calendar HTTP ${r.status}`); return r.json(); }),
+      fetch(`${jplUrl}&_=${Date.now()}`, {cache:'no-store'}).then(r => { if(!r.ok) throw new Error(`JPL HTTP ${r.status}`); return r.json(); }),
+      fetch(`${noaaUrl}?_=${Date.now()}`, {cache:'no-store'}).then(r => { if(!r.ok) throw new Error(`NOAA HTTP ${r.status}`); return r.json(); })
+    ]);
 
-    // Keep COSMOS' permanent ISS event, but replace the old Space Calendar
-    // snapshot with the newest feed snapshot. This prevents duplicates, keeps
-    // changed events current, and automatically adds newly published events.
-    const issEvent = EVENTS.find(e => e.isPermanentLive);
-    const feedEvents = [];
+    const feed = results[0].status === 'fulfilled' ? results[0].value : null;
+    const jpl = results[1].status === 'fulfilled' ? results[1].value : null;
+    const noaa = results[2].status === 'fulfilled' ? results[2].value : null;
 
-    data.events.forEach(item => {
-      const startDate = getItemStart(item);
-      if (!startDate) return;
+    const merged = [];
+    const pushEvent = (event) => {
+      if(!event || !event.date) return;
+      const t = new Date(event.date).getTime();
+      if(isNaN(t)) return;
 
-      const endDate = getItemEnd(item, startDate);
-      const meta = getCategoryMeta(item);
-      const stableId = getStableEventId(item);
-
-      feedEvents.push({
-        id: stableId,
-        rawItem: item,
-        date: startDate.toISOString(),
-        endDate: endDate ? endDate.toISOString() : null,
-        duration: endDate ? Math.max(1 / 60, (endDate.getTime() - startDate.getTime()) / 3600000) : (1 / 60),
-        icon: meta.icon,
-        kindKey: meta.key,
-        statusKey: 'planned',
-        glostarId: meta.glostarId
+      // Merge records from different providers when they describe the same event.
+      const existing = merged.find(e => {
+        if(e.category !== event.category) return false;
+        const dt = Math.abs(new Date(e.date).getTime() - t);
+        const a = cleanFeedText(e.displayTitle || e.rawItem?.title || e.rawItem?.name || '').toLowerCase();
+        const b = cleanFeedText(event.displayTitle || event.rawItem?.title || event.rawItem?.name || '').toLowerCase();
+        const da = cleanFeedText(e.rawItem?.fullname || e.rawItem?.designation || '').toLowerCase();
+        const db = cleanFeedText(event.rawItem?.fullname || event.rawItem?.designation || '').toLowerCase();
+        return dt <= 24*3600000 && (a === b || a.includes(b) || b.includes(a) || (da && db && (da === db || da.includes(db) || db.includes(da))));
       });
-    });
+      if(existing){
+        existing.sources = Array.from(new Set([...(existing.sources||[]), ...(event.sources||[])]));
+        existing.rawItems = [...(existing.rawItems||[existing.rawItem]), ...(event.rawItems||[event.rawItem])];
+        return;
+      }
+      merged.push(event);
+    };
 
+    // Primary calendar: eclipses, moon phases, meteor showers, planetary events,
+    // notable comets/asteroids, launches and selected history milestones.
+    if(feed && Array.isArray(feed.events)) {
+      feed.events.forEach(item => {
+        const startDate = getItemStart(item);
+        if(!startDate) return;
+        const endDate = getItemEnd(item, startDate);
+        const meta = getCategoryMeta(item);
+        pushEvent({
+          id:getStableEventId(item), rawItem:item, rawItems:[item], date:startDate.toISOString(),
+          endDate:endDate ? endDate.toISOString() : null,
+          duration:endDate ? Math.max(1/60,(endDate-startDate)/3600000) : 1/60,
+          icon:meta.icon, kindKey:meta.key, statusKey:'planned', glostarId:meta.glostarId,
+          category:getEventCategory(item), sources:['Space Calendar']
+        });
+      });
+    }
+
+    // NASA/JPL CNEOS: real future NEO close approaches. These are calendar events,
+    // not live tracking data, and are kept separate from the Live tab.
+    if(jpl && Array.isArray(jpl.data) && Array.isArray(jpl.fields)) {
+      const idx = Object.fromEntries(jpl.fields.map((f,i)=>[f,i]));
+      jpl.data.forEach(row => {
+        const dateText = row[idx.cd];
+        const date = dateText ? new Date(String(dateText).replace(' ','T')+'Z') : null;
+        if(!date || isNaN(date.getTime())) return;
+        const name = String(row[idx.fullname] || row[idx.des] || '').trim();
+        const distAu = Number(row[idx.dist]);
+        const diameter = row[idx.diameter] == null ? null : Number(row[idx.diameter]);
+        const safeName = name || 'Near-Earth Object';
+        const label = currentLang === 'de' ? `Asteroiden-Vorbeiflug: ${safeName}` : currentLang === 'es' ? `Sobrevuelo de asteroide: ${safeName}` : `Asteroid flyby: ${safeName}`;
+        const item = {title:label,type:'close-approach',category:'close-approach',fullname:safeName,dist:distAu,diameter};
+        const desc = `JPL_CAD:${safeName}:${date.toISOString()}`;
+        pushEvent({
+          id:`jpl-cad-${desc.replace(/[^a-z0-9]+/gi,'-').slice(0,150)}`,
+          rawItem:item, rawItems:[item], displayTitle:label, date:date.toISOString(), endDate:new Date(date.getTime()+60000).toISOString(), duration:1/60,
+          icon:'asteroid', kindKey:'cat_close_approach', statusKey:'planned', glostarId:'asteroid', category:'close-approach',
+          sources:['NASA/JPL CNEOS SBDB Close Approach API'], meta:{distanceAu:distAu,diameterKm:diameter,designation:safeName}
+        });
+      });
+    }
+
+    // NOAA: turn only elevated predicted planetary K-index periods into explicit
+    // forecast events. Ordinary forecasts are not shown as fake "events".
+    if(Array.isArray(noaa) && noaa.length > 1) {
+      const header = noaa[0].map(v => String(v).toLowerCase());
+      const timeI = header.indexOf('time_tag');
+      const kpI = header.indexOf('kp');
+      const scaleI = header.indexOf('noaa_scale');
+      noaa.slice(1).forEach(row => {
+        const date = new Date(row[timeI]);
+        const kp = Number(row[kpI]);
+        if(isNaN(date.getTime()) || !isFinite(kp) || kp < 5) return;
+        const scale = scaleI >= 0 ? String(row[scaleI] || '').trim() : '';
+        const item = {title:'Geomagnetic Storm Forecast', type:'space-weather', category:'space-weather', kp, noaaScale:scale};
+        pushEvent({
+          id:`noaa-kp-${date.toISOString()}`,
+          rawItem:item, rawItems:[item], displayTitle:'Geomagnetic Storm Forecast', date:date.toISOString(), endDate:new Date(date.getTime()+3*3600000).toISOString(), duration:3,
+          icon:'star', kindKey:'cat_space_weather', statusKey:'forecast', glostarId:'solarwind', category:'space-weather',
+          sources:['NOAA Space Weather Prediction Center'], meta:{kp,scale,forecast:true}
+        });
+      });
+    }
+
+    const issEvent = EVENTS.find(e => e.isPermanentLive);
+    const feedEvents = merged.map(e => ({...e, rawItem:e.rawItem || e.rawItems?.[0]}));
     EVENTS = [issEvent, ...feedEvents].filter(Boolean);
     sortEventsAutomatically();
 
-    lastUpdatedTime = new Date().toLocaleTimeString(currentLang === 'es' ? 'es-ES' : currentLang === 'en' ? 'en-US' : 'de-DE', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    lastUpdatedTime = new Date().toLocaleTimeString(currentLang === 'es' ? 'es-ES' : currentLang === 'en' ? 'en-US' : 'de-DE', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
     if(updateInfoEl) updateInfoEl.textContent = `${TRANSLATIONS[currentLang].updated} ${lastUpdatedTime} · ${feedEvents.length} ${TRANSLATIONS[currentLang].total}`;
 
     renderLiveEvents();
     renderEvents(document.getElementById('searchEvents')?.value || '');
     renderHistory(document.getElementById('searchHistory')?.value || '');
-  } catch (err) {
-    console.error('Space Calendar feed error:', err);
+  } catch(err) {
+    console.error('Space Calendar sync error:', err);
     if(updateInfoEl) updateInfoEl.textContent = TRANSLATIONS[currentLang].error_feed;
   }
 }
-
 function changeOffset(val){
   tzOffsetHours += val;
   if(tzOffsetHours > 14) tzOffsetHours = 14;
@@ -970,7 +1065,7 @@ function openDetail(eventId, viewPrefix){
 
   const eventKind = e.kindKey ? t[e.kindKey] : t.cat_space_cal;
   const eventTiming = timing(e);
-  const eventStatus = eventTiming.state === "live" ? t.active : eventTiming.state === "passed" ? t.passed : t.planned;
+  const eventStatus = e.meta?.forecast ? (currentLang === 'de' ? 'Prognose' : currentLang === 'es' ? 'Pronóstico' : 'Forecast') : (eventTiming.state === "live" ? t.active : eventTiming.state === "passed" ? t.passed : t.planned);
 
   if(e.isPermanentLive){
     detailEl.innerHTML = `
@@ -1001,6 +1096,8 @@ function openDetail(eventId, viewPrefix){
       <div class="detail-card"><label>${t.date_time}</label><val>${fmtTime(new Date(e.date))}</val></div>
       <div class="detail-card"><label>${t.type}</label><val>${eventKind}</val></div>
       <div class="detail-card"><label>${t.status}</label><val>${eventStatus}</val></div>
+      ${e.meta?.distanceAu != null ? `<div class="detail-card"><label>${currentLang==='de'?'Distanz':currentLang==='es'?'Distancia':'Distance'}</label><val>${Number(e.meta.distanceAu).toPrecision(3)} AU</val></div>` : ''}
+      ${e.meta?.kp != null ? `<div class="detail-card"><label>Kp</label><val>${Number(e.meta.kp).toFixed(1)}</val></div>` : ''}
     </div>
     <p style="color:var(--muted);margin-top:15px;line-height:1.5">${eventDesc}</p>
     ${glostarBtn}
@@ -1037,7 +1134,7 @@ function closeDetail(viewPrefix){
 
 function renderLiveEvents(){
   const list = document.getElementById("liveEventList");
-  const liveEvents = EVENTS.filter(e => timing(e).state === "live");
+  const liveEvents = EVENTS.filter(e => e.liveOnly === true && timing(e).state === "live");
   const t = TRANSLATIONS[currentLang];
   
   if(liveEvents.length === 0){
