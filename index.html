@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="de">
 <head>
@@ -10,108 +11,110 @@
     --accent:#ffffff;
     --accent-rgb:255,255,255;
     --bg:#000000;
-    --panel:rgba(255,255,255,.055);
-    --border:rgba(255,255,255,.12);
-    --muted:rgba(255,255,255,.55);
+    --panel:rgba(255,255,255,.05);
+    --border:rgba(255,255,255,.15);
+    --muted:rgba(255,255,255,.5);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;height:100%;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,system-ui,sans-serif;overflow:hidden}
   body{background:var(--bg)}
-  
+
   canvas#stars{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-  
-  .aurora{position:fixed;inset:-20%;z-index:0;pointer-events:none;opacity:.2;
-    background:radial-gradient(circle at 50% 35%, rgba(255,255,255,.08), transparent 30%),
-               radial-gradient(circle at 20% 85%, rgba(255,255,255,.04), transparent 25%);
-    filter:blur(50px)}
-  
+
   .app{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding-top:max(18px,env(safe-area-inset-top))}
   header{display:flex;align-items:center;justify-content:space-between;padding:10px 22px 6px;position:relative;z-index:2}
-  
-  .brand{font-size:12px;font-weight:700;letter-spacing:.28em;color:rgba(255,255,255,.82);cursor:pointer;user-select:none}
+
+  .brand{font-size:12px;font-weight:700;letter-spacing:.28em;color:#fff;cursor:pointer;user-select:none}
   .brand:hover{opacity:.6}
 
-  .utc-container{display:flex;align-items:center;gap:6px;border:1px solid var(--border);padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.35);backdrop-filter:blur(18px)}
+  .utc-container{display:flex;align-items:center;gap:6px;border:1px solid var(--border);padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.5);backdrop-filter:blur(18px)}
   .utc-pill{font-size:11px;letter-spacing:.08em;color:var(--muted);user-select:none}
-  .tz-btn{border:none;background:rgba(255,255,255,0.08);color:#fff;width:20px;height:20px;border-radius:50%;font-size:11px;font-weight:700;display:grid;place-items:center;cursor:pointer}
-  .tz-btn:active{transform:scale(0.9);background:rgba(255,255,255,0.2)}
-  .tz-display{font-size:11px;font-weight:600;color:var(--accent);min-width:32px;text-align:center}
-  
+  .tz-btn{border:none;background:rgba(255,255,255,0.1);color:#fff;width:20px;height:20px;border-radius:50%;font-size:11px;font-weight:700;display:grid;place-items:center;cursor:pointer}
+  .tz-btn:active{transform:scale(0.9);background:rgba(255,255,255,0.25)}
+  .tz-display{font-size:11px;font-weight:600;color:#fff;min-width:32px;text-align:center}
+
   main{flex:1;position:relative;overflow:hidden}
   .view{position:absolute;inset:0;padding:22px 20px 140px;overflow:auto;opacity:0;transform:translateY(8px) scale(.995);pointer-events:none;transition:.32s ease}
   .view.active{opacity:1;transform:none;pointer-events:auto}
   .home{display:flex;align-items:center;justify-content:center;text-align:center}
-  .hero{max-width:520px;margin-top:-8vh}
-  .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin-bottom:22px}
-  .quote{font-size:clamp(32px,8vw,58px);line-height:.98;font-weight:650;letter-spacing:-.05em;text-wrap:balance}
-  .quote em{font-style:normal;color:var(--accent)}
-  .sub{margin:24px auto 0;max-width:320px;color:var(--muted);font-size:14px;line-height:1.55}
-  
-  .search-sticky{position:sticky;top:-22px;z-index:10;padding:12px 20px;background:rgba(0,0,0,.85);backdrop-filter:blur(18px);margin:-22px -20px 15px}
-  .search-input{width:100%;padding:10px 16px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.07);color:#fff;font-size:14px;outline:none}
+  .hero{max-width:520px;margin-top:-6vh}
+  .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+  .quote{font-size:clamp(30px,7.5vw,52px);line-height:.98;font-weight:650;letter-spacing:-.05em;text-wrap:balance}
+  .quote em{font-style:normal;color:#fff}
+  .sub{margin:20px auto 0;max-width:320px;color:var(--muted);font-size:13.5px;line-height:1.55}
+
+  .lang-selector-box{display:inline-flex;align-items:center;gap:6px;margin-top:28px;padding:5px;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,.03);backdrop-filter:blur(16px)}
+  .lang-btn{border:none;background:none;color:var(--muted);font-size:11px;font-weight:600;padding:6px 14px;border-radius:999px;cursor:pointer;transition:.2s}
+  .lang-btn.active{background:rgba(255,255,255,.15);color:#fff}
+
+  .search-sticky{position:sticky;top:-22px;z-index:10;padding:12px 20px;background:rgba(0,0,0,.9);backdrop-filter:blur(18px);margin:-22px -20px 15px}
+  .search-input{width:100%;padding:10px 16px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:#fff;font-size:14px;outline:none}
   .search-input::placeholder{color:var(--muted)}
 
   .section-head{display:flex;align-items:end;justify-content:space-between;margin:8px 3px 12px}
-  h1{font-size:34px;line-height:1;margin:0;letter-spacing:-.045em}
+  h1{font-size:34px;line-height:1;margin:0;letter-spacing:-.045em;color:#fff}
   .section-head span{font-size:12px;color:var(--muted)}
+  .update-info{font-size:10px;color:var(--muted);margin-bottom:12px;letter-spacing:.05em}
+
   .event-list{display:grid;gap:11px}
-  .event{position:relative;display:grid;grid-template-columns:54px 1fr auto;gap:13px;align-items:center;padding:14px;border:1px solid var(--border);background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.01));border-radius:20px;backdrop-filter:blur(20px);cursor:pointer}
-  .event.live{border-color:rgba(255,255,255,.4);box-shadow:0 0 25px rgba(255,255,255,.08)}
-  .icon{width:54px;height:54px;border-radius:17px;display:grid;place-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
+  .event{position:relative;display:grid;grid-template-columns:54px 1fr auto;gap:13px;align-items:center;padding:14px;border:1px solid var(--border);background:rgba(255,255,255,.02);border-radius:20px;backdrop-filter:blur(20px);cursor:pointer}
+  .event.live{border-color:#fff;box-shadow:0 0 20px rgba(255,255,255,.07)}
+  .icon{width:54px;height:54px;border-radius:17px;display:grid;place-items:center;background:rgba(255,255,255,.04);border:1px solid var(--border)}
   .icon svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:1.8}
   .meta{min-width:0}
-  .name{font-size:16px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .name{font-size:16px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
   .time{font-size:11px;color:var(--muted);margin-top:5px}
+  .badge-row{display:flex;gap:6px;margin-top:4px}
+  .badge{font-size:9px;background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:6px;color:var(--muted);text-transform:uppercase;border:1px solid var(--border)}
+
   .count{text-align:right}
-  .count strong{display:block;font-size:13px;font-weight:700}
+  .count strong{display:block;font-size:13px;font-weight:700;color:#fff}
   .count small{display:block;margin-top:3px;font-size:9.5px;color:var(--muted);text-transform:uppercase}
-  
-  .globe-container{position:relative;width:100%;height:320px;border-radius:20px;background:radial-gradient(circle at center, rgba(15,15,25,0.9), #000);border:1px solid var(--border);overflow:hidden;margin-bottom:16px;display:grid;place-items:center}
+
+  .globe-container{position:relative;width:100%;height:320px;border-radius:20px;background:#000;border:1px solid var(--border);overflow:hidden;margin-bottom:16px;display:grid;place-items:center}
   #globeCanvasDetail{cursor:grab}
   #globeCanvasDetail:active{cursor:grabbing}
 
   .detail-page{display:none;padding-bottom:30px}
   .detail-page.active{display:block}
-  .back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.08);color:#fff;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:16px}
-  
-  .detail-hero-graphic{width:100%;height:220px;border-radius:20px;border:1px solid var(--border);background:radial-gradient(circle at center, rgba(255,255,255,0.04), rgba(0,0,0,0.9));display:grid;place-items:center;margin-bottom:16px;overflow:hidden}
-  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
-  .detail-card{padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
-  .detail-card label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
-  .detail-card val{display:block;font-size:13px;font-weight:650}
+  .back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:#fff;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:16px}
 
-  .glostar-link-btn{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:10px 16px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:#fff;font-size:13px;font-weight:600;cursor:pointer}
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+  .detail-card{padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.03)}
+  .detail-card label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+  .detail-card val{display:block;font-size:13px;font-weight:650;word-break:break-all;color:#fff}
+
+  .glostar-link-btn{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:10px 16px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:#fff;font-size:13px;font-weight:600;cursor:pointer}
   .glostar-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));gap:12px}
-  .glostar-card{border:1px solid var(--border);border-radius:18px;background:rgba(255,255,255,.04);padding:16px;cursor:pointer;display:flex;flex-direction:column;gap:12px}
-  .glostar-icon{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.05);display:grid;place-items:center;border:1px solid rgba(255,255,255,.1)}
+  .glostar-card{border:1px solid var(--border);border-radius:18px;background:rgba(255,255,255,.03);padding:16px;cursor:pointer;display:flex;flex-direction:column;gap:12px}
+  .glostar-icon{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.04);display:grid;place-items:center;border:1px solid var(--border)}
   .glostar-icon svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.8}
-  .glostar-title{font-size:15px;font-weight:650}
+  .glostar-title{font-size:15px;font-weight:650;color:#fff}
   .glostar-desc{font-size:12px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
-  .glostar-viewport{width:100%;height:220px;border-radius:20px;border:1px solid var(--border);background:radial-gradient(circle at center, rgba(255,255,255,0.04), rgba(0,0,0,0.9));display:grid;place-items:center;margin-bottom:20px;overflow:hidden}
+  .glostar-viewport{width:100%;height:220px;border-radius:20px;border:1px solid var(--border);background:#000;display:grid;place-items:center;margin-bottom:20px;overflow:hidden}
 
-  .tabbar{position:fixed;left:10px;right:10px;bottom:calc(12px + var(--safe-bottom));height:72px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:rgba(8,8,8,.75);backdrop-filter:blur(32px);display:grid;grid-template-columns:repeat(5,1fr);padding:5px;z-index:100}
-  .tab{border:0;background:none;color:rgba(255,255,255,.42);border-radius:18px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer}
+  .tabbar{position:fixed;left:10px;right:10px;bottom:calc(12px + var(--safe-bottom));height:72px;border:1px solid var(--border);border-radius:24px;background:rgba(0,0,0,.85);backdrop-filter:blur(32px);display:grid;grid-template-columns:repeat(5,1fr);padding:5px;z-index:100}
+  .tab{border:0;background:none;color:var(--muted);border-radius:18px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer}
   .tab svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}
   .tab span{font-size:9px;font-weight:600}
-  .tab.active{color:var(--accent);background:rgba(var(--accent-rgb),.08)}
-  
+  .tab.active{color:#fff;background:rgba(255,255,255,.08)}
+
   .empty{text-align:center;color:var(--muted);padding-top:15vh}
   .empty .title{font-size:20px;font-weight:650;color:#fff}
 
   .hist-list{display:grid;gap:12px}
-  .hist-card{border:1px solid var(--border);border-radius:20px;background:rgba(255,255,255,.04);overflow:hidden;cursor:pointer;display:grid;grid-template-columns:64px 1fr;gap:13px;padding:12px}
-  .hist-thumb{width:64px;height:64px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--border);display:grid;place-items:center}
+  .hist-card{border:1px solid var(--border);border-radius:20px;background:rgba(255,255,255,.03);overflow:hidden;cursor:pointer;display:grid;grid-template-columns:64px 1fr;gap:13px;padding:12px}
+  .hist-thumb{width:64px;height:64px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--border);display:grid;place-items:center}
   .hist-thumb svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:1.8}
-  .hist-meta .name{font-size:14.5px}
+  .hist-meta .name{font-size:14.5px;color:#fff}
   .hist-meta .time{margin-top:4px}
   ::-webkit-scrollbar{display:none}
 </style>
 </head>
 <body>
 <canvas id="stars"></canvas>
-<div class="aurora"></div>
 
 <div class="app">
   <header>
@@ -127,16 +130,22 @@
   <main>
     <section class="view home active" id="home">
       <div class="hero">
-        <div class="eyebrow">Dein Fenster ins Universum</div>
-        <div class="quote">“Irgendwo wartet etwas <em>Unglaubliches</em> darauf, entdeckt zu werden.”</div>
-        <div class="sub">Verfolge kosmische Momente. Tippe auf ein Ereignis, um das Universum zu erkunden.</div>
+        <div class="eyebrow" data-i18n="eyebrow">Dein Fenster ins Universum</div>
+        <div class="quote" data-i18n="quote">&ldquo;Irgendwo wartet etwas <em>Unglaubliches</em> darauf, entdeckt zu werden.&rdquo;</div>
+        <div class="sub" data-i18n="sub">Verfolge kosmische Momente. Tippe auf ein Ereignis, um das Universum zu erkunden.</div>
+
+        <div class="lang-selector-box">
+          <button class="lang-btn active" data-lang="de" onclick="setLanguage('de')">DE</button>
+          <button class="lang-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
+          <button class="lang-btn" data-lang="es" onclick="setLanguage('es')">ES</button>
+        </div>
       </div>
     </section>
 
     <section class="view" id="live-view">
       <div id="live-view-main">
         <div class="section-head">
-          <div><div class="eyebrow" style="margin-bottom:9px">Dauerhaft &amp; Aktiv</div><h1>Live Events</h1></div>
+          <div><div class="eyebrow" style="margin-bottom:9px" data-i18n="sec_live_eyebrow">Echtzeit & Aktiv</div><h1 data-i18n="sec_live_title">Live Events</h1></div>
         </div>
         <div class="event-list" id="liveEventList"></div>
       </div>
@@ -146,12 +155,13 @@
     <section class="view" id="events">
       <div id="events-main">
         <div class="search-sticky">
-          <input type="text" class="search-input" id="searchEvents" placeholder="Events durchsuchen..." />
+          <input type="text" class="search-input" id="searchEvents" data-i18n-placeholder="search_events" placeholder="Events durchsuchen..." />
         </div>
         <div class="section-head">
-          <div><div class="eyebrow" style="margin-bottom:9px">Kommende Highlights &amp; Space Calendar API</div><h1>Ereignisse</h1></div>
+          <div><div class="eyebrow" style="margin-bottom:9px" data-i18n="sec_events_eyebrow">Space-Calendar-Feed</div><h1 data-i18n="sec_events_title">Ereignisse</h1></div>
           <span id="eventCount"></span>
         </div>
+        <div class="update-info" id="updateInfo" data-i18n="loading">Daten werden geladen...</div>
         <div class="event-list" id="eventList"></div>
       </div>
       <div class="detail-page" id="events-detail"></div>
@@ -160,10 +170,10 @@
     <section class="view" id="history">
       <div id="history-main">
         <div class="search-sticky">
-          <input type="text" class="search-input" id="searchHistory" placeholder="Verlauf durchsuchen..." />
+          <input type="text" class="search-input" id="searchHistory" data-i18n-placeholder="search_history" placeholder="Verlauf durchsuchen..." />
         </div>
         <div class="section-head">
-          <div><div class="eyebrow" style="margin-bottom:9px">Vergangene Meilensteine</div><h1>Verlauf</h1></div>
+          <div><div class="eyebrow" style="margin-bottom:9px" data-i18n="sec_hist_eyebrow">Vergangene Meilensteine</div><h1 data-i18n="sec_hist_title">Verlauf</h1></div>
         </div>
         <div class="hist-list" id="histList"></div>
       </div>
@@ -173,10 +183,10 @@
     <section class="view" id="glostar">
       <div id="glostar-main">
         <div class="search-sticky">
-          <input type="text" class="search-input" id="searchGloStar" placeholder="Begriffe im GloStar suchen..." />
+          <input type="text" class="search-input" id="searchGloStar" data-i18n-placeholder="search_glostar" placeholder="Begriffe im GloStar suchen..." />
         </div>
         <div class="section-head">
-          <div><div class="eyebrow" style="margin-bottom:9px">Astro-Lexikon</div><h1>GloStar</h1></div>
+          <div><div class="eyebrow" style="margin-bottom:9px" data-i18n="sec_glostar_eyebrow">Astro-Lexikon</div><h1 data-i18n="sec_glostar_title">GloStar</h1></div>
         </div>
         <div class="glostar-grid" id="glostarGrid"></div>
       </div>
@@ -187,547 +197,252 @@
   <nav class="tabbar">
     <button class="tab active" data-tab="home">
       <svg viewBox="0 0 24 24"><path d="M3.5 11.2 12 4l8.5 7.2v8.3a1.5 1.5 0 0 1-1.5 1.5h-5v-6H10v6H5a1.5 1.5 0 0 1-1.5-1.5z"/></svg>
-      <span>Home</span>
+      <span data-i18n="home">Home</span>
     </button>
     <button class="tab" data-tab="live-view">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 1 0 10 10"/></svg>
-      <span>Live</span>
+      <span data-i18n="live">Live</span>
     </button>
     <button class="tab" data-tab="events">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></svg>
-      <span>Ereignisse</span>
+      <span data-i18n="events">Ereignisse</span>
     </button>
     <button class="tab" data-tab="history">
       <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4.5H7.5"/><path d="M12 7.5v5l3.2 2"/></svg>
-      <span>Verlauf</span>
+      <span data-i18n="history">Verlauf</span>
     </button>
     <button class="tab" data-tab="glostar">
       <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      <span>GloStar</span>
+      <span data-i18n="glostar">GloStar</span>
     </button>
   </nav>
 </div>
 
 <script>
+let currentLang = 'de';
 let tzOffsetHours = 2; 
 let currentIssLat = 48.20;
 let currentIssLon = 16.37;
 let globeRotation = 0;
 let isDraggingGlobe = false;
 let prevMouseX = 0;
-let activeBlackHoleAnimation = null;
+let lastUpdatedTime = "--:--:--";
 
-// Dynamische Event-Liste (Basis-Einträge)
-let EVENTS = [
-  {id: "blackhole-sim", name: "Black Hole / Orbit Simulation", date: "2024-01-01T00:00:00Z", icon: "blackhole", duration: 999999, desc: "Echtzeit-Simulation: Objekte drehen sich in großen Kreisen und benötigen ~10 Sekunden, um spiralisierend in den inneren Orbit des Schwarzen Lochs zu gelangen.", glostarId: "blackhole", kind: "Kosmische Simulation", isPermanentLive: true, isBlackHoleSim: true},
-  {id: "iss-live", name: "ISS Raumstation Live", date: "2024-01-01T00:00:00Z", icon: "satellite", duration: 999999, desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.", glostarId: "orbit", kind: "Live-Raumfahrt", isPermanentLive: true},
-  {id: "mars-opp", name: "Mars in Opposition", date: "2027-02-19T18:00:00Z", icon: "planet", duration: 48, desc: "Der rote Planet steht der Sonne exakt gegenüber und bietet hervorragende Beobachtungsbedingungen.", glostarId: "opposition", kind: "Planeten-Event"},
-  {id: "perseiden-2026", name: "Perseiden Maximum", date: "2026-08-12T21:00:00Z", icon: "meteor", duration: 24, desc: "Jährlicher Meteorstrom mit bis zu 100 Sternschnuppen pro Stunde am Sommerhimmel.", glostarId: "meteorstrom", kind: "Meteorstrom"},
-  {id: "jupiter-opp-2026", name: "Jupiter in Opposition", date: "2026-12-10T22:00:00Z", icon: "planet", duration: 36, desc: "Der Riesenplanet leuchtet strahlend hell die gesamte Nacht hindurch.", glostarId: "opposition", kind: "Planeten-Event"},
-  {id: "artemis-3", name: "Artemis III Startfenster", date: "2026-09-15T12:00:00Z", icon: "rocket", duration: 72, desc: "Geplante bemannte Landungsmission der NASA in der Südpolregion des Mondes.", glostarId: "orbit", kind: "Raumfahrt-Mission"},
-  {id: "total-solar-eclipse", name: "Totale Sonnenfinsternis", date: "2026-08-12T17:47:00Z", icon: "eclipse", duration: 4, desc: "Spektakuläre totale Sonnenfinsternis über Teilen von Grönland, Island und Spanien.", glostarId: "finsternis", kind: "Finsternis"},
-  {id: "historic-artemis-1", name: "Artemis I Unbemannter Testflug", date: "2022-11-16T06:47:00Z", icon: "rocket", duration: 600, desc: "Erfolgreicher unbemannter Testflug des Space Launch Systems zum Mond und zurück.", glostarId: "orbit", kind: "Vergangene Mission"}
-];
+const TRANSLATIONS = {
+  de: {
+    eyebrow: "Dein Fenster ins Universum",
+    quote: "&ldquo;Irgendwo wartet etwas <em>Unglaubliches</em> darauf, entdeckt zu werden.&rdquo;",
+    sub: "Verfolge kosmische Momente. Tippe auf ein Ereignis, um das Universum zu erkunden.",
+    home: "Home", live: "Live", events: "Ereignisse", history: "Verlauf", glostar: "GloStar",
+    search_events: "Events durchsuchen...",
+    search_history: "Verlauf durchsuchen...",
+    search_glostar: "Begriffe im GloStar suchen...",
+    sec_live_title: "Live Events",
+    sec_live_eyebrow: "Echtzeit & Aktiv",
+    sec_events_title: "Ereignisse",
+    sec_events_eyebrow: "Space-Calendar-Feed",
+    sec_hist_title: "Verlauf",
+    sec_hist_eyebrow: "Vergangene Meilensteine",
+    sec_glostar_title: "GloStar",
+    sec_glostar_eyebrow: "Astro-Lexikon",
+    back: "Zurück",
+    lexikon_btn: "Lexikon-Eintrag öffnen",
+    no_live: "Keine aktiven Live-Ereignisse",
+    no_live_sub: "Sobald ein Kalender-Event aktiv wird, erscheint hier automatisch.",
+    no_events: "Keine kommenden Events",
+    no_history: "Keine Verlaufseinträge",
+    total: "gesamt",
+    loading: "Daten werden geladen...",
+    error_feed: "Fehler beim Abrufen des Feeds. Nutze lokale Offline-Daten.",
+    updated: "Zuletzt aktualisiert:",
+    lat: "Breitengrad", lon: "Längengrad", source: "Quelle", status: "Status",
+    date_time: "Datum & Uhrzeit", type: "Typ",
+    active: "Aktiv", planned: "Geplant", passed: "Vorbei", countdown: "Countdown", live_tracking: "Live-Tracking aktiv",
+    iss_name: "ISS Raumstation Live", iss_desc: "Permanentes Echtzeit-Tracking der Internationalen Raumstation im erdnahen Orbit.",
+    cat_live_space: "Live-Raumfahrt", cat_space_cal: "Space Kalender", cat_past: "Vergangenes Event",
 
-// Automatische Sortierfunktion anhand des JSON-Datums
-function sortEventsAutomatically() {
-  EVENTS.sort((a, b) => {
-    if (a.isPermanentLive) return -1;
-    if (b.isPermanentLive) return 1;
-    return new Date(a.date).getTime() - new Date(b.date).getTime();
+    // API Fallback Descriptions (German)
+    desc_new_moon: "Der Mond befindet sich exakt zwischen Erde und Sonne. Die erdabgewandte Seite ist vollständig beleuchtet.",
+    desc_full_moon: "Die Erde steht zwischen Sonne und Mond, wodurch die Mondscheibe von der Erde aus vollständig beleuchtet erscheint.",
+    desc_quarter_moon: "Der Mond hat ein Viertel seiner Umlaufbahn um die Erde absolviert und zeigt sich als markanter Halbmond.",
+    desc_eclipse: "Eine geometrische Ausrichtung von Sonne, Erde und Mond führt zu einer spektakulären Verdeckung des Lichts.",
+    desc_meteor: "Die Erde kreuzt die Staubspur eines Kometen, was zu einem vermehrten Auftreten von leuchtenden Sternschnuppen führt.",
+    desc_generic: "Ein faszinierendes astronomisches Himmelsereignis, das im Rahmen des Space-Kalenders dokumentiert wird.",
+
+    gs_blackhole: "Schwarzes Loch & Orbit",
+    gs_blackhole_sum: "Extrem kompakte Masse mit starker Gravitationswirkung.",
+    gs_blackhole_exp: "Ein Schwarzes Loch krümmt die Raumzeit so stark, dass ein Ereignishorizont entsteht. Objekte außerhalb drehen sich auf weiten Spiralbahnen um das Zentrum.",
+@@ -312,6 +320,14 @@
+    iss_name: "ISS Space Station Live", iss_desc: "Permanent real-time tracking of the International Space Station in low Earth orbit.",
+    cat_live_space: "Live Spaceflight", cat_space_cal: "Space Calendar", cat_past: "Past Event",
+
+    // API Fallback Descriptions (English)
+    desc_new_moon: "The Moon is positioned directly between the Earth and the Sun. The far side of the Moon is fully illuminated.",
+    desc_full_moon: "The Earth is positioned between the Sun and the Moon, making the lunar disk appear fully illuminated from Earth.",
+    desc_quarter_moon: "The Moon has completed a quarter of its orbit around the Earth, showing a distinct half-moon shape.",
+    desc_eclipse: "A geometric alignment of the Sun, Earth, and Moon results in a spectacular obscuration of light.",
+    desc_meteor: "Earth crosses the dust trail of a comet, leading to an increased frequency of glowing shooting stars.",
+    desc_generic: "A fascinating astronomical celestial event documented as part of the space calendar.",
+
+    gs_blackhole: "Black Hole & Orbit",
+    gs_blackhole_sum: "Extremely compact mass with strong gravitational pull.",
+    gs_blackhole_exp: "A black hole warps spacetime so severely that an event horizon forms. External objects orbit in wide spiral paths around the center.",
+@@ -364,6 +380,14 @@
+    iss_name: "Estación Espacial ISS en Vivo", iss_desc: "Seguimiento permanente en tiempo real de la Estación Espacial Internacional en órbita terrestre baja.",
+    cat_live_space: "Vuelo Espacial en Vivo", cat_space_cal: "Calendario Espacial", cat_past: "Evento Pasado",
+
+    // API Fallback Descriptions (Spanish)
+    desc_new_moon: "La Luna se encuentra exactamente entre la Tierra y el Sol. La cara oculta de la Luna está completamente iluminada.",
+    desc_full_moon: "La Tierra se encuentra entre el Sol y la Luna, haciendo que el disco lunar aparezca completamente iluminado desde la Tierra.",
+    desc_quarter_moon: "La Luna ha completado un cuarto de su órbita alrededor de la Tierra, mostrando una forma de cuarto creciente o menguante.",
+    desc_eclipse: "Una alineación geométrica del Sol, la Tierra y la Luna produce una espectacular ocultación de la luz.",
+    desc_meteor: "La Tierra cruza el rastro de polvo de un cometa, lo que provoca una mayor aparición de estrellas fugaces luminosas.",
+    desc_generic: "Un fascinante evento astronómico celeste documentado como parte del calendario espacial.",
+
+    gs_blackhole: "Agujero Negro y Órbita",
+    gs_blackhole_sum: "Masa extremadamente compacta con fuerte atracción gravitatoria.",
+    gs_blackhole_exp: "Un agujero negro deforma el espaciotiempo de forma tan extrema que se forma un horizonte de sucesos. Los objetos exteriores orbitan en amplias trayectorias espirales.",
+@@ -376,10 +400,6 @@
+    gs_meteor_sum: "Aparición periódica regular de numerosas estrellas fugaces.",
+    gs_meteor_exp: "Una lluvia de meteoros se produce cuando la Tierra cruza la órbita de un rastro de polvo cometario.",
+
+    gs_eclipse: "Eclipse",
+    gs_eclipse_sum: "Ocultación total o parcial de un cuerpo celeste.",
+    gs_eclipse_exp: "Un eclipse astronómico sucede cuando el Sol, la Tierra y la Luna se alinean exactamente en línea recta.",
+    
+    gs_orbit: "Órbita y Trayectoria",
+    gs_orbit_sum: "La trayectoria gravitatoria de satélites o planetas.",
+    gs_orbit_exp: "Una órbita describe la trayectoria de vuelo física en el espacio en perfecto equilibrio de gravedad y fuerza centrífuga."
+@@ -425,39 +445,45 @@
   });
 }
 
-// Funktion zum Laden externer Space-Events
-async function fetchSpaceCalendarEvents() {
-  try {
-    const response = await fetch('https://lldev.thespacedevs.com/2.3.0/events/upcoming/');
-    if (!response.ok) return;
-    const data = await response.json();
-    
-    if (data && data.results) {
-      data.results.forEach(item => {
-        const exists = EVENTS.some(e => e.id === `api-${item.id}`);
-        if (!exists) {
-          EVENTS.push({
-            id: `api-${item.id}`,
-            name: item.name || "Space Event",
-            date: item.date || new Date().toISOString(),
-            icon: "rocket",
-            duration: 12,
-            desc: item.description || "Keine Beschreibung verfügbar.",
-            kind: item.type?.name || "Space Kalender",
-            glostarId: "orbit"
-          });
-        }
-      });
-      sortEventsAutomatically();
-      renderEvents();
-      renderHistory();
-    }
-  } catch (err) {
-    console.log("Konnte externen Space-Calendar-Feed nicht laden, nutze lokale Fallbacks.");
+// Funktion zur intelligenten Übersetzung und Aufbereitung von API-Titeln & Beschreibungen
+// Lokalisierungs- und Übersetzungsfunktion für API-Ereignisse (Titel + Beschreibung)
+function getLocalizedApiText(item) {
+  const rawTitle = item.title || "";
+  const rawDesc = item.description || item.body || "";
+  const t = TRANSLATIONS[currentLang];
+
+  let translatedTitle = rawTitle;
+  let translatedDesc = rawDesc;
+  let descKey = "desc_generic";
+
+  const lower = rawTitle.toLowerCase();
+
+  if (currentLang === 'de') {
+    if (lower.includes("new moon")) translatedTitle = "Neumond";
+    else if (lower.includes("full moon")) translatedTitle = "Vollmond";
+    else if (lower.includes("first quarter")) translatedTitle = "Zunehmendes Halbmond-Viertel";
+    else if (lower.includes("third quarter")) translatedTitle = "Abnehmendes Halbmond-Viertel";
+    else if (lower.includes("solar eclipse")) translatedTitle = "Sonnenfinsternis";
+    else if (lower.includes("lunar eclipse")) translatedTitle = "Mondfinsternis";
+    else if (lower.includes("meteor shower")) translatedTitle = "Meteorstrom-Spitze";
+    else if (lower.includes("equinox")) translatedTitle = "Tagundnachtgleiche";
+    else if (lower.includes("solstice")) translatedTitle = "Sonnenwende";
+    if (lower.includes("new moon")) { translatedTitle = "Neumond"; descKey = "desc_new_moon"; }
+    else if (lower.includes("full moon")) { translatedTitle = "Vollmond"; descKey = "desc_full_moon"; }
+    else if (lower.includes("quarter")) { translatedTitle = "Mondviertel"; descKey = "desc_quarter_moon"; }
+    else if (lower.includes("eclipse")) { translatedTitle = "Finsternis-Ereignis"; descKey = "desc_eclipse"; }
+    else if (lower.includes("meteor shower")) { translatedTitle = "Meteorstrom-Spitze"; descKey = "desc_meteor"; }
+    else if (lower.includes("equinox")) { translatedTitle = "Tagundnachtgleiche"; }
+    else if (lower.includes("solstice")) { translatedTitle = "Sonnenwende"; }
+  } else if (currentLang === 'es') {
+    if (lower.includes("new moon")) translatedTitle = "Luna Nueva";
+    else if (lower.includes("full moon")) translatedTitle = "Luna Llena";
+    else if (lower.includes("first quarter")) translatedTitle = "Cuarto Creciente";
+    else if (lower.includes("third quarter")) translatedTitle = "Cuarto Menguante";
+    else if (lower.includes("solar eclipse")) translatedTitle = "Eclipse Solar";
+    else if (lower.includes("lunar eclipse")) translatedTitle = "Eclipse Lunar";
+    else if (lower.includes("meteor shower")) translatedTitle = "Pico de Lluvia de Meteoros";
+    else if (lower.includes("equinox")) translatedTitle = "Equinoccio";
+    else if (lower.includes("solstice")) translatedTitle = "Solsticio";
+    if (lower.includes("new moon")) { translatedTitle = "Luna Nueva"; descKey = "desc_new_moon"; }
+    else if (lower.includes("full moon")) { translatedTitle = "Luna Llena"; descKey = "desc_full_moon"; }
+    else if (lower.includes("quarter")) { translatedTitle = "Cuarto Lunar"; descKey = "desc_quarter_moon"; }
+    else if (lower.includes("eclipse")) { translatedTitle = "Evento de Eclipse"; descKey = "desc_eclipse"; }
+    else if (lower.includes("meteor shower")) { translatedTitle = "Pico de Lluvia de Meteoros"; descKey = "desc_meteor"; }
+    else if (lower.includes("equinox")) { translatedTitle = "Equinoccio"; }
+    else if (lower.includes("solstice")) { translatedTitle = "Solsticio"; }
+  } else {
+    // Englisch Standard-Mapping
+    if (lower.includes("new moon")) descKey = "desc_new_moon";
+    else if (lower.includes("full moon")) descKey = "desc_full_moon";
+    else if (lower.includes("quarter")) descKey = "desc_quarter_moon";
+    else if (lower.includes("eclipse")) descKey = "desc_eclipse";
+    else if (lower.includes("meteor shower")) descKey = "desc_meteor";
   }
+
+  // Falls der API-Feed eine eigene Beschreibung hat und diese nicht leer ist, wird sie genutzt, ansonsten das saubere sprachliche Fallback
+  let translatedDesc = (rawDesc && rawDesc.length > 15) ? rawDesc : t[descKey];
+
+  return { title: translatedTitle, desc: translatedDesc };
 }
 
-function changeOffset(val){
-  tzOffsetHours += val;
-  if(tzOffsetHours > 14) tzOffsetHours = 14;
-  if(tzOffsetHours < -12) tzOffsetHours = -12;
-  document.getElementById('tzDisplay').textContent = `UTC${tzOffsetHours>=0?'+':''}${tzOffsetHours}`;
-  renderLiveEvents();
-  renderEvents(document.getElementById('searchEvents').value);
-  renderHistory(document.getElementById('searchHistory').value);
+@@ -918,66 +944,52 @@
+  });
 }
 
-function fmtTime(d){
-  const adjusted = new Date(d.getTime() + tzOffsetHours * 3600000);
-  return new Intl.DateTimeFormat("de-DE",{timeZone:"UTC",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(adjusted) + ` (UTC${tzOffsetHours>=0?'+':''}${tzOffsetHours})`;
+function drawStars(){
+  starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+  stars.forEach(s => {
+    s.y -= s.speed;
+    if(s.y < 0) s.y = starCanvas.height;
+    starCtx.fillStyle = `rgba(255,255,255,${s.alpha})`;
+    starCtx.beginPath();
+    starCtx.arc(s.x, s.y, s.s, 0, Math.PI*2); // fix size prop reference
+    starCtx.fill();
+  });
+  requestAnimationFrame(drawStars);
 }
 
-function pad(n){ return String(n).padStart(2,"0"); }
-
-function updateUtcClock(){
-  const now = new Date();
-  const adjusted = new Date(now.getTime() + tzOffsetHours * 3600000);
-  const h = pad(adjusted.getUTCHours());
-  const m = pad(adjusted.getUTCMinutes());
-  const s = pad(adjusted.getUTCSeconds());
-  const clockEl = document.getElementById('utcClock');
-  if(clockEl) clockEl.textContent = `${h}:${m}:${s}`;
+// Kleinere Korrektur für Stern-Größe im Loop
+function drawStarsFixed(){
+  starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+  stars.forEach(s => {
+    s.y -= s.speed;
+    if(s.y < 0) s.y = starCanvas.height;
+    starCtx.fillStyle = `rgba(255,255,255,${s.alpha})`;
+    starCtx.beginPath();
+    starCtx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+    starCtx.fill();
+  });
+  requestAnimationFrame(drawStarsFixed);
 }
-setInterval(updateUtcClock, 1000);
-updateUtcClock();
+drawStarsFixed();
 
-const SVG_ICONS = {
-  satellite: `<svg viewBox="0 0 24 24"><path d="M2 12h5"/><path d="M17 12h5"/><path d="M7 8l5-5 5 5"/><path d="M7 16l5 5 5-5"/><rect x="7" y="10" width="10" height="4" rx="1"/></svg>`,
-  planet: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M3 12h18"/><path d="M5 8c4 2 10 2 14 0"/></svg>`,
-  meteor: `<svg viewBox="0 0 24 24"><path d="M19 5L5 19"/><circle cx="17" cy="7" r="2"/><path d="M14 10l-4-4"/></svg>`,
-  rocket: `<svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.5-2 3-2 3s1.5-.5 3-2l7-7-3-3-7 7z"/><path d="M12 15l5 5"/><path d="M15 9l3-3"/><path d="M9 15l-3 3"/></svg>`,
-  eclipse: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z"/></svg>`,
-  star: `<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
-  orbit: `<svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="10" ry="4"/><circle cx="12" cy="8" r="2"/></svg>`,
-  blackhole: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="#fff"/><circle cx="12" cy="12" r="10" stroke="#fff" stroke-dasharray="2 2" fill="none"/></svg>`
-};
-
-const GLOSTAR_DATA = [
-  {id: "blackhole", name: "Schwarzes Loch & Orbit", icon: "blackhole", summary: "Extrem kompakte Masse mit so starker Gravitation, dass nichts ihr entkommen kann.", explanation: "Ein Schwarzes Loch krümmt die Raumzeit so stark, dass ein Ereignishorizont entsteht. Objekte außerhalb drehen sich auf weiten Spiralbahnen um das Zentrum und benötigen durch die immense Entfernung viele Sekunden oder Jahre, bis sie den inneren Orbit erreichen.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="100" cy="50" r="15" fill="#000" stroke="#fff" stroke-width="2"/><ellipse cx="100" cy="50" rx="45" ry="14" fill="none" stroke="#fff" stroke-dasharray="3 3"/></svg>`},
-  {id: "opposition", name: "Opposition", icon: "planet", summary: "Konstellation, bei der ein Himmelskörper der Sonne von der Erde aus gesehen genau gegenübersteht.", explanation: "Eine Opposition tritt auf, wenn die Erde auf ihrer Umlaufbahn direkt zwischen der Sonne und einem äußeren Himmelskörper (wie Mars oder Jupiter) steht. In dieser Phase ist das Objekt der Erde besonders nah, erscheint am Nachthimmel maximal groß und leuchtet extrem hell.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="40" cy="50" r="14" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="8" fill="#fff"/><circle cx="160" cy="50" r="11" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="3,3"/></svg>`},
-  {id: "meteorstrom", name: "Meteorstrom", icon: "meteor", summary: "Regelmäßig wiederkehrendes Auftreten zahlreicher Sternschnuppen in einem bestimmten Himmelsareal.", explanation: "Ein Meteorstrom entsteht, wenn die Erde die Bahnkreuzung mit einer Kometenstaubspur durchquert. Die winzigen Staubkörner verglühen beim Eintritt in die Erdatmosphäre und erzeugen dabei helle Leuchtspuren am Nachthimmel.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><path d="M170 20 L70 60" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="70" r="18" fill="none" stroke="#fff" stroke-width="2"/></svg>`},
-  {id: "finsternis", name: "Finsternis (Solar / Lunar)", icon: "eclipse", summary: "Vollständige oder teilweise Verdeckung eines Himmelskörpers durch einen Schattenwurf.", explanation: "Eine astronomische Finsternis ereignet sich, wenn Sonne, Erde und Mond exakt auf einer geraden Linie positioniert sind. Bei einer Sonnenfinsternis schiebt sich der Mond vor die Sonnenscheibe; bei einer Mondfinsternis wandert der Mond durch den Kernschatten der Erde.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="90" cy="50" r="22" fill="none" stroke="#fff" stroke-width="2"/><circle cx="110" cy="50" r="22" fill="#000" stroke="#fff" stroke-width="1"/></svg>`},
-  {id: "orbit", name: "Orbit & Umlaufbahn", icon: "orbit", summary: "Die Gravitations-Bahn, auf der sich ein Satellit oder Planet um einen Zentralkörper bewegt.", explanation: "Ein Orbit beschreibt die physikalische Flugbahn im Raum. Sie wird durch die Anziehungskraft des Zentralkörpers und die Zentrifugalkraft des sich bewegenden Objekts im perfekten Gleichgewicht gehalten.", graphic: `<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="100" cy="50" r="25" fill="none" stroke="#fff" stroke-width="2"/><ellipse cx="100" cy="50" rx="35" ry="10" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="4,4"/></svg>`}
-];
-
-function timing(ev){
-  if(ev.isPermanentLive){
-    const startMs = new Date("2024-01-01T00:00:00Z").getTime();
-    const diff = Math.floor((Date.now() - startMs) / 1000);
-    const days = Math.floor(diff / 86400);
-    const hrs = Math.floor((diff % 86400) / 3600);
-    const mins = Math.floor((diff % 3600) / 60);
-    return {state:"live", main:`T+${days}d ${pad(hrs)}:${pad(mins)}`, sub:"Live Aktiv"};
-  }
-  const start = new Date(ev.date).getTime();
-  const durMs = (ev.duration || 6) * 3600000;
-  const end = start + durMs;
-  const now = Date.now();
-  if(isNaN(start)) return {state:"upcoming", main:"T-??", sub:"Ausstehend"};
-  if(now < start){
-    const ms = start - now, s = Math.floor(ms / 1000);
-    const days = Math.floor(s / 86400), hrs = Math.floor((s % 86400) / 3600), mins = Math.floor((s % 3600) / 60);
-    if(days > 0) return {state:"upcoming", main:`T-${days}d ${pad(hrs)}h`, sub:`${pad(mins)}m`};
-    return {state:"upcoming", main:`T-${pad(hrs)}:${pad(mins)}`, sub:"Countdown"};
-  }
-  if(now <= end){
-    const liveDiff = Math.floor((now - start) / 1000);
-    const lHrs = Math.floor(liveDiff / 3600), lMins = Math.floor((liveDiff % 3600) / 60);
-    return {state:"live", main:`T+${pad(lHrs)}:${pad(lMins)}`, sub:"jetzt aktiv"};
-  }
-  return {state:"passed", main:"Vorbei", sub:fmtTime(new Date(start))};
-}
-
-function jumpToGloStar(glostarId){
-  const itemIndex = GLOSTAR_DATA.findIndex(item => item.id === glostarId);
-  if(itemIndex !== -1){
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelector('.tab[data-tab="glostar"]').classList.add("active");
+    tab.classList.add("active");
+    const target = tab.dataset.tab;
     document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-    document.getElementById("glostar").classList.add("active");
-    openGloStarDetail(itemIndex);
-  }
-}
-
-function openDetail(eventId, viewPrefix){
-  if(activeBlackHoleAnimation) cancelAnimationFrame(activeBlackHoleAnimation);
-  const e = EVENTS.find(item => item.id === eventId);
-  if(!e) return;
-  const mainEl = document.getElementById(`${viewPrefix}-main`);
-  const detailEl = document.getElementById(`${viewPrefix}-detail`);
-  mainEl.style.display = "none";
-  detailEl.classList.add("active");
-  
-  const glostarBtn = e.glostarId ? `<button class="glostar-link-btn" onclick="jumpToGloStar('${e.glostarId}')">📖 Im GloStar nachschlagen</button>` : '';
-
-  if(e.isBlackHoleSim){
-    detailEl.innerHTML = `
-      <button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück</button>
-      <div class="globe-container">
-        <canvas id="blackHoleCanvas" width="400" height="320"></canvas>
-      </div>
-      <div class="eyebrow">${e.kind || 'Ereignis'}</div>
-      <h1 style="margin-bottom:10px">${e.name}</h1>
-      <div class="detail-grid">
-        <div class="detail-card"><label>Spiraldauer</label><val>~10 Sekunden</val></div>
-        <div class="detail-card"><label>Bahnform</label><val>Große Kreise</val></div>
-        <div class="detail-card"><label>Objekte</label><val>8 Stereos</val></div>
-        <div class="detail-card"><label>Status</label><val>Aktiv</val></div>
-      </div>
-      <p style="color:var(--muted);margin-top:15px;line-height:1.5">${e.desc}</p>
-      ${glostarBtn}
-    `;
-    initBlackHoleSimulation();
-    return;
-  }
-
-  if(e.isPermanentLive){
-    detailEl.innerHTML = `
-      <button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück</button>
-      <div class="globe-container">
-        <canvas id="globeCanvasDetail" width="400" height="320"></canvas>
-      </div>
-      <div class="eyebrow">${e.kind || 'Ereignis'}</div>
-      <h1 style="margin-bottom:10px">${e.name}</h1>
-      <div class="detail-grid">
-        <div class="detail-card"><label>Breitengrad</label><val id="detailLat">${currentIssLat}°</val></div>
-        <div class="detail-card"><label>Längengrad</label><val id="detailLon">${currentIssLon}°</val></div>
-        <div class="detail-card"><label>Geschwindigkeit</label><val>27.500 km/h</val></div>
-        <div class="detail-card"><label>Orbithöhe</label><val>~415 km</val></div>
-      </div>
-      <p style="color:var(--muted);margin-top:15px;line-height:1.5">${e.desc}</p>
-      ${glostarBtn}
-    `;
-    initGlobeDetail();
-    return;
-  }
-
-  const graphicHtml = e.graphic ? `<div class="detail-hero-graphic">${e.graphic}</div>` : '';
-  detailEl.innerHTML = `
-    <button class="back-btn" onclick="closeDetail('${viewPrefix}')">← Zurück</button>
-    ${graphicHtml}
-    <div class="eyebrow">${e.kind || 'Ereignis'}</div>
-    <h1 style="margin-bottom:10px">${e.name}</h1>
-    <div class="detail-grid">
-      <div class="detail-card"><label>Zeitpunkt</label><val>${fmtTime(new Date(e.date))}</val></div>
-      <div class="detail-card"><label>Typ / Kategorie</label><val>${e.kind || 'Space Event'}</val></div>
-    </div>
-    <p style="color:var(--muted);margin-top:15px;line-height:1.5">${e.desc}</p>
-    ${glostarBtn}
-  `;
-}
-
-function initBlackHoleSimulation(){
-  const canvas = document.getElementById('blackHoleCanvas');
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-  const blackHoleRadius = 25;
-  const numParticles = 8;
-  const particles = [];
-
-  function createParticle(index) {
-    const startRadius = 150;
-    const targetRadius = 38;
-    const durationInSeconds = 10;
-    const fps = 60;
-    return {
-      angle: (index * (2 * Math.PI / numParticles)) + Math.random() * 0.4,
-      radius: startRadius,
-      startRadius: startRadius,
-      targetRadius: targetRadius,
-      rotationSpeed: 0.008 + Math.random() * 0.003,
-      inwardSpeed: (startRadius - targetRadius) / (durationInSeconds * fps),
-      size: 4,
-      color: `hsl(${index * (360 / numParticles)}, 85%, 65%)`
-    };
-  }
-
-  for (let i = 0; i < numParticles; i++) {
-    particles.push(createParticle(i));
-  }
-
-  function animate() {
-    ctx.fillStyle = 'rgba(3, 3, 8, 0.2)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const glowGradient = ctx.createRadialGradient(
-      centerX, centerY, blackHoleRadius,
-      centerX, centerY, blackHoleRadius + 20
-    );
-    glowGradient.addColorStop(0, 'rgba(255, 140, 0, 0.8)');
-    glowGradient.addColorStop(0.5, 'rgba(255, 60, 0, 0.3)');
-    glowGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
-
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, blackHoleRadius + 20, 0, Math.PI * 2);
-    ctx.fillStyle = glowGradient;
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, blackHoleRadius, 0, Math.PI * 2);
-    ctx.fillStyle = '#000000';
-    ctx.fill();
-    ctx.strokeStyle = '#ff8c00';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    particles.forEach((p) => {
-      p.angle += p.rotationSpeed;
-      if (p.radius > p.targetRadius) {
-        p.radius -= p.inwardSpeed;
-      } else {
-        p.radius = p.startRadius;
-      }
-
-      const x = centerX + Math.cos(p.angle) * p.radius;
-      const y = centerY + Math.sin(p.angle) * p.radius;
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(x, y, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = p.color;
-      ctx.shadowColor = p.color;
-      ctx.shadowBlur = 10;
-      ctx.fill();
-      ctx.restore();
-    });
-
-    activeBlackHoleAnimation = requestAnimationFrame(animate);
-  }
-  animate();
-}
-
-function initGlobeDetail(){
-  const canvas = document.getElementById('globeCanvasDetail');
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-
-  canvas.onmousedown = (e) => { isDraggingGlobe = true; prevMouseX = e.clientX; };
-  window.onmouseup = () => { isDraggingGlobe = false; };
-  canvas.onmousemove = (e) => {
-    if(isDraggingGlobe){
-      const delta = e.clientX - prevMouseX;
-      globeRotation += delta * 0.01;
-      prevMouseX = e.clientX;
-    }
-  };
-
-  function drawGlobe(){
-    if(!canvas.getContext) return;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    const cx = canvas.width/2, cy = canvas.height/2, r = 100;
-    
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI*2);
-    ctx.fillStyle = '#080d1a';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-    ctx.lineWidth = 1;
-    for(let i = -60; i <= 60; i += 30){
-      const rad = (i * Math.PI) / 180;
-      const yr = cy + Math.sin(rad) * r;
-      const xr = Math.cos(rad) * r;
-      ctx.beginPath();
-      ctx.ellipse(cx, yr, xr, xr * 0.2, 0, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-
-    if(!isDraggingGlobe) globeRotation += 0.003;
-    const issRadLon = (currentIssLon * Math.PI) / 180 + globeRotation;
-    const issRadLat = (currentIssLat * Math.PI) / 180;
-    
-    const x = cx + Math.cos(issRadLat) * Math.sin(issRadLon) * r;
-    const y = cy - Math.sin(issRadLat) * r * 0.9;
-    
-    if(Math.cos(issRadLon) > -0.2){
-      ctx.beginPath();
-      ctx.arc(x, y, 6, 0, Math.PI * 2);
-      ctx.fillStyle = '#ff4500';
-      ctx.fill();
-      ctx.shadowColor = '#ff4500';
-      ctx.shadowBlur = 12;
-      ctx.stroke();
-    }
-
-    requestAnimationFrame(drawGlobe);
-  }
-  drawGlobe();
-}
-
-function openGloStarDetail(index){
-  const item = GLOSTAR_DATA[index];
-  document.getElementById(`glostar-main`).style.display = "none";
-  const detailEl = document.getElementById(`glostar-detail`);
-  detailEl.classList.add("active");
-  detailEl.innerHTML = `
-    <button class="back-btn" onclick="closeDetail('glostar')">← Zurück</button>
-    <div class="eyebrow">GloStar Lexikon</div>
-    <h1 style="margin-bottom:16px">${item.name}</h1>
-    <div class="glostar-viewport">${item.graphic}</div>
-    <p style="color:var(--muted);line-height:1.5">${item.explanation}</p>
-  `;
-}
-
-function closeDetail(viewPrefix){
-  if(activeBlackHoleAnimation) cancelAnimationFrame(activeBlackHoleAnimation);
-  document.getElementById(`${viewPrefix}-main`).style.display = "block";
-  document.getElementById(`${viewPrefix}-detail`).classList.remove("active");
-}
-
-function renderLiveEvents(){
-  const list = document.getElementById("liveEventList");
-  const liveEvents = EVENTS.filter(e => timing(e).state === "live");
-  list.innerHTML = liveEvents.map((e)=>{
-    const t = timing(e);
-    return `<article class="event live" onclick="openDetail('${e.id}', 'live-view')">
-      <div class="icon">${SVG_ICONS[e.icon] || SVG_ICONS.star}</div>
-      <div class="meta"><div class="name">${e.name}</div><div class="time">${e.isPermanentLive ? 'Live-Tracking aktiv' : fmtTime(new Date(e.date))}</div></div>
-      <div class="count"><strong>${t.main}</strong><small>${t.sub}</small></div>
-    </article>`;
-  }).join("");
-}
-
-function renderEvents(filterText = ""){
-  const list = document.getElementById("eventList");
-  const upcoming = EVENTS.filter(e => !e.isPermanentLive && timing(e).state !== "passed" && e.name.toLowerCase().includes(filterText.toLowerCase()));
-  document.getElementById("eventCount").textContent = upcoming.length + " gesamt";
-  list.innerHTML = upcoming.map((e)=>{
-    const t = timing(e);
-    return `<article class="event" onclick="openDetail('${e.id}', 'events')">
-      <div class="icon">${SVG_ICONS[e.icon] || SVG_ICONS.star}</div>
-      <div class="meta"><div class="name">${e.name}</div><div class="time">${fmtTime(new Date(e.date))}</div></div>
-      <div class="count"><strong>${t.main}</strong><small>${t.sub}</small></div>
-    </article>`;
-  }).join("");
-}
-
-function renderHistory(filterText = ""){
-  const histList = document.getElementById("histList");
-  const past = EVENTS.filter(e => !e.isPermanentLive && timing(e).state === "passed" && e.name.toLowerCase().includes(filterText.toLowerCase()));
-  if(past.length === 0){
-    histList.innerHTML = `<div class="empty"><div class="title">Keine Eintragsverläufe</div><p style="margin-top:8px">Es wurden bisher keine abgelaufenen Meilensteine gefunden.</p></div>`;
-    return;
-  }
-  histList.innerHTML = past.map((e)=>{
-    return `<article class="hist-card" onclick="openDetail('${e.id}', 'history')">
-      <div class="hist-thumb">${SVG_ICONS[e.icon] || SVG_ICONS.star}</div>
-      <div class="hist-meta">
-        <div class="name">${e.name}</div>
-        <div class="time">${fmtTime(new Date(e.date))}</div>
-      </div>
-    </article>`;
-  }).join("");
-}
-
-function renderGloStar(filterText = ""){
-  const grid = document.getElementById("glostarGrid");
-  const items = GLOSTAR_DATA.filter(item => item.name.toLowerCase().includes(filterText.toLowerCase()) || item.summary.toLowerCase().includes(filterText.toLowerCase()));
-  grid.innerHTML = items.map((item, idx)=>{
-    return `<div class="glostar-card" onclick="openGloStarDetail(${idx})">
-      <div class="glostar-icon">${SVG_ICONS[item.icon] || SVG_ICONS.star}</div>
-      <div class="glostar-title">${item.name}</div>
-      <div class="glostar-desc">${item.summary}</div>
-    </div>`;
-  }).join("");
-}
-
-// Background Sternenfeld Animation
-function initStars() {
-  const canvas = document.getElementById('stars');
-  const ctx = canvas.getContext('2d');
-  let stars = [];
-
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    stars = [];
-    for(let i = 0; i < 120; i++) {
-      stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 1.5,
-        alpha: Math.random(),
-        speed: 0.005 + Math.random() * 0.015
-      });
-    }
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    stars.forEach(s => {
-      s.alpha += s.speed;
-      if(s.alpha > 1 || s.alpha < 0) s.speed = -s.speed;
-      ctx.fillStyle = `rgba(255, 255, 255, ${Math.abs(s.alpha)})`;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-      ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  }
-
-  window.addEventListener('resize', resize);
-  resize();
-  draw();
-}
-
-// Navigation & Tab Management
-document.addEventListener('DOMContentLoaded', () => {
-  initStars();
-  sortEventsAutomatically();
-  fetchSpaceCalendarEvents();
-
-  renderLiveEvents();
-  renderEvents();
-  renderHistory();
-  renderGloStar();
-
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const targetTab = tab.getAttribute('data-tab');
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      
-      tab.classList.add('active');
-      document.getElementById(targetTab).classList.add('active');
-      
-      // Details zurücksetzen beim Tab-Wechsel
-      closeDetail('live-view');
-      closeDetail('events');
-      closeDetail('history');
-      closeDetail('glostar');
-    });
-  });
-
-  document.getElementById('brandBtn').addEventListener('click', () => {
-    document.querySelector('.tab[data-tab="home"]').click();
-  });
-
-  document.getElementById('searchEvents').addEventListener('input', (e) => {
-    renderEvents(e.target.value);
-  });
-
-  document.getElementById('searchHistory').addEventListener('input', (e) => {
-    renderHistory(e.target.value);
-  });
-
-  document.getElementById('searchGloStar').addEventListener('input', (e) => {
-    renderGloStar(e.target.value);
+    document.getElementById(target).classList.add("active");
+    if(target === 'live-view') renderLiveEvents();
   });
 });
+
+document.getElementById('brandBtn').addEventListener('click', () => {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelector('.tab[data-tab="home"]').classList.add("active");
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById('home').classList.add("active");
+});
+
+document.getElementById('searchEvents').addEventListener('input', e => renderEvents(e.target.value));
+document.getElementById('searchHistory').addEventListener('input', e => renderHistory(e.target.value));
+document.getElementById('searchGloStar').addEventListener('input', e => renderGloStar(e.target.value));
+
+sortEventsAutomatically();
+renderLiveEvents();
+renderEvents();
+renderHistory();
+renderGloStar();
+fetchSpaceCalendarFeed();
+
+setInterval(() => {
+  renderLiveEvents();
+}, 30000);
 </script>
 </body>
 </html>
