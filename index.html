@@ -72,6 +72,11 @@
   .count small{display:block;margin-top:3px;font-size:9.5px;color:var(--muted);text-transform:uppercase}
   
   .globe-container{position:relative;width:100%;height:320px;border-radius:20px;background:#000;border:1px solid var(--border);overflow:hidden;margin-bottom:16px;display:grid;place-items:center}
+  /* Die Canvas muss exakt den Container fuellen. Ohne diese Regel waere ihre
+     Layout-Breite gleich der Attribut-Breite, sizeGlobeCanvas() wuerde sie
+     bei jedem Aufruf um devicePixelRatio vergroessern und die Kugel ragte
+     aus dem ueber overflow:hidden abgeschnittenen Rahmen. */
+  .globe-container canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   #globeCanvasDetail{cursor:grab}
   #globeCanvasDetail:active{cursor:grabbing}
 
@@ -186,7 +191,7 @@
           <input type="text" class="search-input" id="searchHistory" data-i18n-placeholder="search_history" placeholder="Verlauf durchsuchen..." />
         </div>
         <div class="section-head">
-          <div><div class="eyebrow" style="margin-bottom:9px" data-i18n="sec_hist_eyebrow">Vergangene Meilensteine</div><h1 data-i18n="sec_hist_title">Verlauf</h1></div>
+          <div><div class="eyebrow" style="margin-bottom:9px" data-i18n="sec_hist_eyebrow">Vergangene Meilensteile</div><h1 data-i18n="sec_hist_title">Verlauf</h1></div>
         </div>
         <div class="hist-list" id="histList"></div>
       </div>
@@ -203,8 +208,7 @@
         </div>
         <div class="glostar-viewport" style="height:260px">
           <canvas id="globeCanvasGloStar"></canvas>
-          <div class="globe-hint" data-i18n="glostar_globe_hint">Ziehen zum Drehen · Live-Position der ISS</div>
-          <div class="globe-status" id="globeIssStatusGloStar"><strong>ISS</strong> -- / --</div>
+          <div class="globe-hint" data-i18n="glostar_globe_hint">Ziehen zum Drehen</div>
         </div>
         <div class="glostar-grid" id="glostarGrid"></div>
       </div>
@@ -287,7 +291,7 @@ const TRANSLATIONS = {
     diameter: "Durchmesser",
     altitude: "Höhe",
     velocity: "Geschwindigkeit",
-    glostar_globe_hint: "Ziehen zum Drehen · Live-Position der ISS",
+    glostar_globe_hint: "Ziehen zum Drehen",
     iss_orbit: "ISS-Bahn",
     error_globe: "Weltkarte nicht verfügbar",
     lat: "Breitengrad", lon: "Längengrad", status: "Status",
@@ -313,7 +317,7 @@ const TRANSLATIONS = {
     desc_occultation: "Der Mond oder ein Planet zieht vor einem hellen Stern oder Planeten vorbei und verdeckt ihn kurzzeitig.",
     desc_comet: "Ein Komet nähert sich der Sonne, verdampft an der Oberfläche und bildet dabei den typischen Schweif.",
     desc_mission: "Eine Raumsonde oder ein Mission-Meilenstein: Manöver, Schwerkraftunterstützung, Anflug oder Orbit-Insertion einer aktiven Mission.",
-    desc_deep_sky: "Beobachtungsfenster für Objekte außerhalb unseres Sonnensystems, etwa der Messier-Marathon.",
+    desc_deep_sky: "Beobachtungsfenster für Objekte außerhalb unseres Sonnensystems, etwa die Messier-Marathon.",
     desc_geomagnetic_forecast: "NOAA erwartet für diesen Zeitraum erhöhte geomagnetische Aktivität. Die Angabe ist eine Prognose und kann sich mit neuen Messungen ändern.",
 
     gs_blackhole: "Schwarzes Loch & Orbit",
@@ -414,7 +418,7 @@ const TRANSLATIONS = {
     diameter: "Diameter",
     altitude: "Altitude",
     velocity: "Velocity",
-    glostar_globe_hint: "Drag to rotate · live ISS position",
+    glostar_globe_hint: "Drag to rotate",
     iss_orbit: "ISS orbit",
     error_globe: "World map unavailable",
     lat: "Latitude", lon: "Longitude", status: "Status",
@@ -541,7 +545,7 @@ const TRANSLATIONS = {
     diameter: "Diámetro",
     altitude: "Altitud",
     velocity: "Velocidad",
-    glostar_globe_hint: "Arrastra para girar · posición en vivo de la ISS",
+    glostar_globe_hint: "Arrastra para girar",
     iss_orbit: "Órbita de la ISS",
     error_globe: "Mapa del mundo no disponible",
     lat: "Latitud", lon: "Longitud", status: "Estado",
@@ -635,7 +639,7 @@ const TRANSLATIONS = {
 /* ==========================================================================
    COSMOS Event-Pipeline
    Quelle -> Abruf -> Normalisierung -> Validierung -> Duplikatpruefung
-         -> COSMOS-Event -> Live / Ereignisse / Verlauf
+          -> COSMOS-Event -> Live / Ereignisse / Verlauf
    ========================================================================== */
 
 let EVENTS = [
@@ -799,15 +803,15 @@ function isAllDayItem(item){
 
 function getItemStart(item) {
   return parseCosmosDate(pickRaw(item, START_KEYS));
-}
-
-function getItemEnd(item, startDate) {
+}function getItemEnd(item, startDate) {
   // 1) Ausdrueckliches Enddatum - aber nur wenn es nach dem Start liegt.
   const endValue = pickRaw(item, END_KEYS);
   if(endValue !== null){
     const parsed = parseCosmosDate(endValue);
     if(parsed && (!startDate || parsed.getTime() > startDate.getTime())) return parsed;
-  }  // 2) Ausdrueckliche Dauer
+  }
+
+  // 2) Ausdrueckliche Dauer
   if(startDate){
     const hours = Number(pickRaw(item, DURATION_H));
     if(Number.isFinite(hours) && hours > 0) return new Date(startDate.getTime() + hours * 3600000);
@@ -1617,8 +1621,7 @@ const GLOSTAR_DATA = [
   {id:"gravitational-waves",icon:"orbit",name_de:"Gravitationswellen",sum_de:"Wellenförmige Veränderungen der Raumzeit.",exp_de:"Beschleunigte massive Objekte können Gravitationswellen erzeugen. Detektoren messen winzige Änderungen von Abständen, die durch diese Wellen verursacht werden.",name_en:"Gravitational Waves",sum_en:"Ripples in spacetime that propagate through the universe.",exp_en:"Accelerating massive objects can generate gravitational waves. Detectors measure tiny changes in distance caused by them.",name_es:"Ondas Gravitacionales",sum_es:"Ondulaciones del espacio-tiempo que se propagan por el universo.",exp_es:"Los objetos masivos acelerados pueden generar ondas gravitacionales. Los detectores miden cambios diminutos de distancia producidos por ellas.",graphic:`<svg width="220" height="120" viewBox="0 0 200 100"><path d="M10 50c15-30 25 30 40 0s25-30 40 0 25 30 40 0 25-30 60 0" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="3" fill="#fff"/></svg>`},
   {id:"big-bang",icon:"supernova",name_de:"Urknall",sum_de:"Modell der Entwicklung des Universums aus einem heißen, dichten frühen Zustand.",exp_de:"Der Urknall beschreibt die Entwicklung des Universums aus einem extrem heißen und dichten frühen Zustand. Es war keine Explosion in einen bereits vorhandenen Raum; der Raum selbst expandiert.",name_en:"Big Bang",sum_en:"Model of the universe evolving from a hot, dense early state.",exp_en:"The Big Bang describes the universe evolving from an extremely hot and dense early state. It was not an explosion into pre-existing space; space itself expands.",name_es:"Big Bang",sum_es:"Modelo de la evolución del universo desde un estado temprano caliente y denso.",exp_es:"El Big Bang describe la evolución del universo desde un estado inicial extremadamente caliente y denso. No fue una explosión dentro de un espacio preexistente; el propio espacio se expande.",graphic:`<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="100" cy="50" r="9" fill="#fff"/><path d="M100 50L25 20M100 50L175 20M100 50L25 80M100 50L175 80" stroke="#fff" stroke-width="2"/><circle cx="25" cy="20" r="3" fill="#fff"/><circle cx="175" cy="20" r="3" fill="#fff"/><circle cx="25" cy="80" r="3" fill="#fff"/><circle cx="175" cy="80" r="3" fill="#fff"/></svg>`}
 
-]; 
-function timing(ev){
+];function timing(ev){
   if(ev.isPermanentLive){
     const startMs = new Date("1998-11-20T06:40:00Z").getTime();
     const diff = Math.max(0, Math.floor((Date.now() - startMs) / 1000));
@@ -1739,7 +1742,7 @@ function openDetail(eventId, viewPrefix){
       ${renderSourceBlock(e)}
       ${glostarBtn}
     `;
-    mountGlobe("globeCanvasDetail", "globeIssStatus", {radiusFactor: 0.34, autoRotate: true});
+    mountGlobe("globeCanvasDetail", "globeIssStatus", {radiusFactor: 0.45, autoRotate: true});
     updateIssReadouts();
     return;
   }
@@ -1807,17 +1810,29 @@ function openGloStarDetail(index){
   pruneGlobes();
 }
 
+// Bringt eine Ansicht auf ihre Grunduebersicht zurueck: Detailseite wird
+// geschlossen und die Hauptliste wieder eingeblendet. Gibt true zurueck,
+// wenn vorher eine Detailseite offen war.
+function resetDetail(viewPrefix){
+  const detailEl = document.getElementById(`${viewPrefix}-detail`);
+  if(!detailEl) return false;
+  const mainEl = document.getElementById(`${viewPrefix}-main`);
+  const wasOpen = detailEl.classList.contains("active");
+  if(mainEl) mainEl.style.display = "block";
+  detailEl.classList.remove("active");
+  detailEl.innerHTML = "";
+  delete detailEl.dataset.openId;
+  return wasOpen;
+}
+
 function closeDetail(viewPrefix){
-  document.getElementById(`${viewPrefix}-main`).style.display = "block";
-  const d = document.getElementById(`${viewPrefix}-detail`);
-  d.classList.remove("active");
-  delete d.dataset.openId;
+  resetDetail(viewPrefix);
   pruneGlobes();
   if(viewPrefix === "glostar"){
-    mountGlobe("globeCanvasGloStar", "globeIssStatusGloStar", {radiusFactor: 0.42, autoRotate: true});
+    mountGlobe("globeCanvasGloStar", null, {radiusFactor: 0.42, autoRotate: true, showIss: false});
   }
 }
- 
+
 function renderLiveEvents(){
   const list = document.getElementById("liveEventList");
   const t = TRANSLATIONS[currentLang];
@@ -1962,7 +1977,7 @@ function formatIssLon(){
   return Number.isFinite(currentIssLon) ? `${currentIssLon.toFixed(2)}°` : "--";
 }
 
-// Alle Anzeigen der ISS-Position aktualisieren (Detailseite + GloStar).
+// Alle Anzeigen der ISS-Position aktualisieren (nur die Live-Detailseite).
 function updateIssReadouts(){
   const latEl = document.getElementById("detailLat");
   const lonEl = document.getElementById("detailLon");
@@ -1973,7 +1988,7 @@ function updateIssReadouts(){
 
   const status = `<strong>ISS</strong> ${formatIssLat()} / ${formatIssLon()}` +
     (Number.isFinite(currentIssAlt) ? ` · ${Math.round(currentIssAlt)} km` : "");
-  ["globeIssStatus", "globeIssStatusGloStar"].forEach(id => {
+  ["globeIssStatus"].forEach(id => {
     const el = document.getElementById(id);
     if(el) el.innerHTML = status;
   });
@@ -2092,8 +2107,9 @@ function drawGlobeFrame(instance, world){
   ctx.fill();
   ctx.stroke();
 
-  // ISS-Bahn (Bodenspur) - nur der sichtbare Teil der Erdkugel
-  if(Number.isFinite(currentIssLat) && Number.isFinite(currentIssLon)){
+  // ISS-Bahn (Bodenspur) - nur der sichtbare Teil der Erdkugel.
+  // GloStar zeigt den Globus ohne ISS: dort gehoert sie thematisch nicht hin.
+  if(instance.showIss && Number.isFinite(currentIssLat) && Number.isFinite(currentIssLon)){
     const track = issGroundTrack(currentIssLat, currentIssLon);
     ctx.beginPath();
     let drawing = false;
@@ -2161,7 +2177,8 @@ function globeLoop(){
 
     if(instance.world){
       if(!instance.dragging && instance.autoRotate) instance.userRotation += 0.035;
-      const lon = Number.isFinite(currentIssLon) ? currentIssLon : 0;
+      // Nur der ISS-Globus zentriert sich auf die Station, GloStar rotiert frei.
+      const lon = instance.showIss && Number.isFinite(currentIssLon) ? currentIssLon : 0;
       instance.projection.rotate([-lon + instance.userRotation, -8, 0]);
       drawGlobeFrame(instance, instance.world);
     } else {
@@ -2232,6 +2249,8 @@ function mountGlobe(canvasId, statusId, options = {}){
   instance.statusId = statusId || null;
   instance.radiusFactor = options.radiusFactor ?? 0.34;
   instance.autoRotate = options.autoRotate !== false;
+  // ISS-Marker und Bodenspur erscheinen nur auf dem ISS-Globus der Live-Seite.
+  instance.showIss = options.showIss !== false;
   instance.path = d3.geoPath(instance.projection, ctx);
   globes.set(canvasId, instance);
 
@@ -2357,9 +2376,12 @@ function switchView(target){
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   const view = document.getElementById(target);
   if(view) view.classList.add("active");
+  // Ein erneuter Tippen auf denselben Tab schliesst die Detailseite und
+  // zeigt wieder die Grunduebersicht - genau wie der Zurueck-Knopf.
+  resetDetail(target);
   pruneGlobes();
   renderAll();
-  if(target === "glostar") mountGlobe("globeCanvasGloStar", "globeIssStatusGloStar", {radiusFactor: 0.42, autoRotate: true});
+  if(target === "glostar") mountGlobe("globeCanvasGloStar", null, {radiusFactor: 0.42, autoRotate: true, showIss: false});
   return view;
 }
 
@@ -2376,7 +2398,7 @@ document.getElementById('searchHistory').addEventListener('input', e => renderHi
 document.getElementById('searchGloStar').addEventListener('input', e => renderGloStar(e.target.value));
 
 // Globus im GloStar-Bereich vorab laden, damit er sofort da ist.
-mountGlobe("globeCanvasGloStar", "globeIssStatusGloStar", {radiusFactor: 0.42, autoRotate: true});
+mountGlobe("globeCanvasGloStar", null, {radiusFactor: 0.42, autoRotate: true, showIss: false});
 
 loadEventCache();
 sortEventsAutomatically();
