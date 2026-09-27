@@ -71,7 +71,7 @@
   .count strong{display:block;font-size:13px;font-weight:700;color:#fff}
   .count small{display:block;margin-top:3px;font-size:9.5px;color:var(--muted);text-transform:uppercase}
   
-  .globe-container{position:relative;width:100%;height:320px;border-radius:20px;background:#000;border:1px solid var(--border);overflow:hidden;margin-bottom:16px;display:grid;place-items:center}
+  .globe-container{position:relative;width:100%;height:clamp(260px,46vh,460px);border-radius:20px;background:#000;border:1px solid var(--border);overflow:hidden;margin-bottom:16px;display:grid;place-items:center}
   /* Die Canvas muss exakt den Container fuellen. Ohne diese Regel waere ihre
      Layout-Breite gleich der Attribut-Breite, sizeGlobeCanvas() wuerde sie
      bei jedem Aufruf um devicePixelRatio vergroessern und die Kugel ragte
@@ -97,7 +97,7 @@
   .glostar-title{font-size:15px;font-weight:650;color:#fff}
   .glostar-desc{font-size:12px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
-  .glostar-viewport{position:relative;width:100%;height:220px;border-radius:20px;border:1px solid var(--border);background:#000;display:grid;place-items:center;margin-bottom:20px;overflow:hidden}
+  .glostar-viewport{position:relative;width:100%;height:clamp(240px,42vh,430px);border-radius:20px;border:1px solid var(--border);background:#000;display:grid;place-items:center;margin-bottom:20px;overflow:hidden}
   .glostar-viewport canvas{width:100%;height:100%;display:block}
   .globe-hint{position:absolute;right:14px;top:12px;font-size:10px;color:var(--muted);letter-spacing:.04em}
 
@@ -106,6 +106,19 @@
   .src-note-label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
   .src-note p{color:var(--muted);font-size:12.5px;line-height:1.55;margin:0 0 8px}
   .src-note p:last-child{margin-bottom:0}
+  /* Messdaten in der aktuell gewaehlten Sprache */
+  .feed-facts{margin-top:16px;padding:12px 14px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.03)}
+  .feed-facts dl{margin:0;display:grid;gap:7px}
+  .feed-facts dl>div{display:flex;justify-content:space-between;gap:14px;align-items:baseline}
+  .feed-facts dt{color:var(--muted);font-size:12px}
+  .feed-facts dd{margin:0;font-size:12.5px;font-weight:600;text-align:right}
+  /* Original-Fliesstext der Quelle bleibt Englisch und ist einklappbar */
+  .src-original{margin-top:12px}
+  .src-original summary{cursor:pointer;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;padding:6px 0;list-style:none}
+  .src-original summary::-webkit-details-marker{display:none}
+  .src-original summary::before{content:"▸ ";display:inline-block;transition:transform .15s}
+  .src-original[open] summary::before{content:"▾ "}
+  .src-original .src-note{margin-top:4px}
 
   .tabbar{position:fixed;left:10px;right:10px;bottom:calc(12px + var(--safe-bottom));height:72px;border:1px solid var(--border);border-radius:24px;background:rgba(0,0,0,.85);backdrop-filter:blur(32px);display:grid;grid-template-columns:repeat(5,1fr);padding:5px;z-index:100}
   .tab{border:0;background:none;color:var(--muted);border-radius:18px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer}
@@ -191,7 +204,7 @@
           <input type="text" class="search-input" id="searchHistory" data-i18n-placeholder="search_history" placeholder="Verlauf durchsuchen..." />
         </div>
         <div class="section-head">
-          <div><div class="eyebrow" style="margin-bottom:9px" data-i18n="sec_hist_eyebrow">Vergangene Meilensteile</div><h1 data-i18n="sec_hist_title">Verlauf</h1></div>
+          <div><div class="eyebrow" style="margin-bottom:9px" data-i18n="sec_hist_eyebrow">Vergangene Meilensteine</div><h1 data-i18n="sec_hist_title">Verlauf</h1></div>
         </div>
         <div class="hist-list" id="histList"></div>
       </div>
@@ -206,7 +219,7 @@
         <div class="section-head">
           <div><div class="eyebrow" style="margin-bottom:9px" data-i18n="sec_glostar_eyebrow">Astro-Lexikon</div><h1 data-i18n="sec_glostar_title">GloStar</h1></div>
         </div>
-        <div class="glostar-viewport" style="height:260px">
+        <div class="glostar-viewport">
           <canvas id="globeCanvasGloStar"></canvas>
           <div class="globe-hint" data-i18n="glostar_globe_hint">Ziehen zum Drehen</div>
         </div>
@@ -317,7 +330,7 @@ const TRANSLATIONS = {
     desc_occultation: "Der Mond oder ein Planet zieht vor einem hellen Stern oder Planeten vorbei und verdeckt ihn kurzzeitig.",
     desc_comet: "Ein Komet nähert sich der Sonne, verdampft an der Oberfläche und bildet dabei den typischen Schweif.",
     desc_mission: "Eine Raumsonde oder ein Mission-Meilenstein: Manöver, Schwerkraftunterstützung, Anflug oder Orbit-Insertion einer aktiven Mission.",
-    desc_deep_sky: "Beobachtungsfenster für Objekte außerhalb unseres Sonnensystems, etwa die Messier-Marathon.",
+    desc_deep_sky: "Beobachtungsfenster für Objekte außerhalb unseres Sonnensystems, etwa der Messier-Marathon.",
     desc_geomagnetic_forecast: "NOAA erwartet für diesen Zeitraum erhöhte geomagnetische Aktivität. Die Angabe ist eine Prognose und kann sich mit neuen Messungen ändern.",
 
     gs_blackhole: "Schwarzes Loch & Orbit",
@@ -639,7 +652,7 @@ const TRANSLATIONS = {
 /* ==========================================================================
    COSMOS Event-Pipeline
    Quelle -> Abruf -> Normalisierung -> Validierung -> Duplikatpruefung
-          -> COSMOS-Event -> Live / Ereignisse / Verlauf
+         -> COSMOS-Event -> Live / Ereignisse / Verlauf
    ========================================================================== */
 
 let EVENTS = [
@@ -803,7 +816,9 @@ function isAllDayItem(item){
 
 function getItemStart(item) {
   return parseCosmosDate(pickRaw(item, START_KEYS));
-}function getItemEnd(item, startDate) {
+}
+
+function getItemEnd(item, startDate) {
   // 1) Ausdrueckliches Enddatum - aber nur wenn es nach dem Start liegt.
   const endValue = pickRaw(item, END_KEYS);
   if(endValue !== null){
@@ -938,6 +953,250 @@ function cleanFeedText(value){
     .trim();
 }
 
+/* --------------------------------------------------------------------------
+   LIVE-KALENDERDATEN IN DIE GEWAEHLTE SPRACHE
+   Der Feed liefert englische Titel und englische Fliesstexte. Einzelne
+   Woerter zu ersetzen erzeugte Mischsprachen wie "Lyrids Meteorstrom -
+   Peak Night" oder "Lyrids Lluvia de Meteoros". Deshalb laufen zwei
+   Stufen: zuerst vollstaendige Satzmuster, danach nur die Restwoerter.
+   Eigennamen stehen in keinem Muster und bleiben unangetastet -
+   "Falcon 9", "Hayabusa2", "Shenzhou 24" und "2019 UT6" bleiben wie sie
+   sind, unabhaengig von der gewaehlten Sprache.
+   -------------------------------------------------------------------------- */
+const FEED_I18N = {
+  de: {
+    labels: {
+      distance:"Entfernung", moonDistances:"in Mond-Distanzen", magnitude:"Absolute Helligkeit (H)",
+      diameter:"Durchmesser", velocity:"Vorbeifluggeschwindigkeit", visibleFrom:"Sichtbar von",
+      facts:"Messdaten", original:"Originalbeschreibung (EN)", noOriginal:"Die Quelle liefert keinen Fließtext."
+    },
+    regions: {
+      americas:"Amerika", asia:"Asien", australia:"Australien", pacific:"Pazifik", europe:"Europa",
+      africa:"Afrika", "north america":"Nordamerika", "south america":"Südamerika",
+      antarctica:"Antarktis", greenland:"Grönland", worldwide:"Weltweit", none:"Nicht sichtbar"
+    },
+    phrases: [
+      [/^(\d+)\s+Years Ago:\s*(.+?)\s+—\s+(.+?)\s*\(((?:19|20)\d\d)\)$/i, "Vor $1 Jahren: $2 — $3 ($4)"],
+      [/^Asteroid (.+?) — Close Earth Flyby$/i, "Asteroid $1 — Erdnaher Vorbeiflug"],
+      [/^Planet Parade — Four Planets Visible in the Evening Sky$/i, "Planetenparade — Vier Planeten am Abendhimmel sichtbar"],
+      [/^Mars Launch Window — Optimal Transfer Orbit to Mars$/i, "Mars-Startfenster — Optimale Transferbahn zum Mars"],
+      [/^Mars Launch Window — Optimal Transfer Orbit to (.+)$/i, "Mars-Startfenster — Optimale Transferbahn zur $1"],
+      [/^Total Lunar Eclipse — Blood Moon$/i, "Totale Mondfinsternis — Blutmond"],
+      [/^Total Lunar Eclipse$/i, "Totale Mondfinsternis"],
+      [/^Partial Lunar Eclipse$/i, "Partielle Mondfinsternis"],
+      [/^Penumbral Lunar Eclipse$/i, "Penumbrale Mondfinsternis"],
+      [/^Total Solar Eclipse$/i, "Totale Sonnenfinsternis"],
+      [/^Annular Solar Eclipse$/i, "Ringförmige Sonnenfinsternis"],
+      [/^Partial Solar Eclipse$/i, "Partielle Sonnenfinsternis"],
+      [/^Hybrid Solar Eclipse$/i, "Hybride Sonnenfinsternis"],
+      [/^Lunar Occultation — Moon covers (.+)$/i, "Mondverdeckung — Der Mond verdeckt $1"],
+      [/^Planetary Conjunction — (.+?) \(([\d.,]+)° apart\)$/i, "Planetenkonjunktion — $1 (Abstand $2°)"],
+      [/^(.+?) Meteor Shower — Peak Night$/i, "$1-Meteorstrom — Maximumsnacht"],
+      [/^(.+?) at Greatest Western Elongation — Morning Star$/i, "$1 in größter westlicher Elongation — Morgenstern"],
+      [/^(.+?) at Greatest Eastern Elongation — Evening Star$/i, "$1 in größter östlicher Elongation — Abendstern"],
+      [/^(.+?) at Opposition — Closest & Brightest$/i, "$1 in Opposition — Nächster & Hellster"],
+      [/^(\S+) Earth Flyby$/i, "$1: Erdvorbeiflug"],
+      [/^(\S+) Venus Flyby$/i, "$1: Venus-Vorbeiflug"],
+      [/^(\S+) Mars Flyby$/i, "$1: Mars-Vorbeiflug"],
+      [/^(\S+) Mercury Orbit Insertion$/i, "$1: Merkur-Orbit-Insertion"],
+      [/^(\S+) Landing$/i, "$1: Landung"],
+      [/\bMaiden Flight\b/i, "Erstflug"],
+      [/\bFlight (\d+)\b/i, "Flug $1"],
+      [/\bTrojan Asteroid\b/i, "Trojanischer Asteroid"],
+      [/\bFirst Liquid-Fueled Rocket Launch\b/i, "Erststart einer Rakete mit Flüssigtreibstoff"],
+      [/\bLongest-Operating Mars Spacecraft\b/i, "Längstbetriebene Mars-Raumsonde"],
+      [/\bFirst Space Tourist\b/i, "Erster Weltraumtourist"],
+      [/\bFirst Successful Landing on (.+)$/i, "Erste erfolgreiche Landung auf $1"],
+      [/\bSecond Mars Landing\b/i, "Zweite Marslandung"],
+      [/\bGrand Tour of the Outer Planets\b/i, "Große Reise durch die äußeren Planeten"],
+      [/\bPluto Reclassified as a Dwarf Planet\b/i, "Pluto als Zwergplanet eingestuft"],
+      [/\(Northern Hemisphere\)/i, "(Nördliche Halbkugel)"],
+      [/\(Southern Hemisphere\)/i, "(Südliche Halbkugel)"],
+      [/\bVernal Equinox\b/i, "Frühlings-Tagundnachtgleiche"],
+      [/\bAutumnal Equinox\b/i, "Herbst-Tagundnachtgleiche"],
+      [/\bMarch Equinox\b/i, "März-Tagundnachtgleiche"],
+      [/\bSeptember Equinox\b/i, "September-Tagundnachtgleiche"],
+      [/\bSummer Solstice\b/i, "Sommersonnenwende"],
+      [/\bWinter Solstice\b/i, "Wintersonnenwende"],
+      [/\bJune Solstice\b/i, "Juni-Sonnenwende"],
+      [/\bDecember Solstice\b/i, "Dezember-Sonnenwende"],
+      [/\bSupermoon\b/i, "Supermond"],
+      [/\bNew Moon\b/i, "Neumond"],
+      [/\bFull Moon\b/i, "Vollmond"],
+      [/\bFirst Quarter\b/i, "Erstes Viertel"],
+      [/\bLast Quarter\b/i, "Letztes Viertel"],
+      [/\bThird Quarter\b/i, "Drittes Viertel"],
+      [/\bWorm Moon\b/i, "Wurm-Mond"],
+      [/\bPink Moon\b/i, "Rosamond"],
+      [/\bFlower Moon\b/i, "Blumenmond"],
+      [/\bBlue Moon\b/i, "Blaumond"],
+      [/\bStrawberry Moon\b/i, "Erdbeermond"],
+      [/\bBuck Moon\b/i, "Hirschmond"],
+      [/\bSturgeon Moon\b/i, "Störmond"],
+      [/\bHarvest Moon\b/i, "Erntemond"],
+      [/\bWolf Moon\b/i, "Wolfsmond"],
+      [/\bBeaver Moon\b/i, "Bibermond"],
+      [/\bCold Moon\b/i, "Kalter Mond"],
+      [/\bSnow Moon\b/i, "Schneemond"],
+      [/\bMessier Marathon\b/i, "Messier-Marathon"],
+      [/\bMeteor Shower\b/i, "Meteorstrom"],
+      [/\bPeak Night\b/i, "Maximumsnacht"],
+      [/\bMorning Star\b/i, "Morgenstern"],
+      [/\bEvening Star\b/i, "Abendstern"],
+      [/\bMercury\b/i, "Merkur"],
+      [/\bNeptune\b/i, "Neptun"]
+    ]
+  },
+  es: {
+    labels: {
+      distance:"Distancia", moonDistances:"en distancias lunares", magnitude:"Magnitud absoluta (H)",
+      diameter:"Diámetro", velocity:"Velocidad del sobrevuelo", visibleFrom:"Visible desde",
+      facts:"Datos medidos", original:"Descripción original (EN)", noOriginal:"La fuente no ofrece texto."
+    },
+    regions: {
+      americas:"América", asia:"Asia", australia:"Australia", pacific:"Pacífico", europe:"Europa",
+      africa:"África", "north america":"Norteamérica", "south america":"Sudamérica",
+      antarctica:"Antártida", greenland:"Groenlandia", worldwide:"Todo el mundo", none:"No visible"
+    },
+    phrases: [
+      [/^(\d+)\s+Years Ago:\s*(.+?)\s+—\s+(.+?)\s*\(((?:19|20)\d\d)\)$/i, "Hace $1 años: $2 — $3 ($4)"],
+      [/^Asteroid (.+?) — Close Earth Flyby$/i, "Asteroide $1 — Sobrevuelo cercano a la Tierra"],
+      [/^Planet Parade — Four Planets Visible in the Evening Sky$/i, "Desfile de planetas — Cuatro planetas visibles en el cielo nocturno"],
+      [/^Mars Launch Window — Optimal Transfer Orbit to Mars$/i, "Ventana de lanzamiento a Marte — Órbita de transferencia óptima a Marte"],
+      [/^Mars Launch Window — Optimal Transfer Orbit to (.+)$/i, "Ventana de lanzamiento a Marte — Órbita de transferencia óptima hacia $1"],
+      [/^Total Lunar Eclipse — Blood Moon$/i, "Eclipse lunar total — Luna de sangre"],
+      [/^Total Lunar Eclipse$/i, "Eclipse lunar total"],
+      [/^Partial Lunar Eclipse$/i, "Eclipse lunar parcial"],
+      [/^Penumbral Lunar Eclipse$/i, "Eclipse lunar penumbral"],
+      [/^Total Solar Eclipse$/i, "Eclipse solar total"],
+      [/^Annular Solar Eclipse$/i, "Eclipse solar anular"],
+      [/^Partial Solar Eclipse$/i, "Eclipse solar parcial"],
+      [/^Hybrid Solar Eclipse$/i, "Eclipse solar híbrido"],
+      [/^Lunar Occultation — Moon covers (.+)$/i, "Ocultación lunar — La Luna tapa a $1"],
+      [/^Planetary Conjunction — (.+?) \(([\d.,]+)° apart\)$/i, "Conjunción planetaria — $1 (separación de $2°)"],
+      [/^(.+?) Meteor Shower — Peak Night$/i, "Lluvia de meteoros $1 — Noche de máximo"],
+      [/^(.+?) at Greatest Western Elongation — Morning Star$/i, "$1 en máxima elongación occidental — Estrella matutina"],
+      [/^(.+?) at Greatest Eastern Elongation — Evening Star$/i, "$1 en máxima elongación oriental — Estrella vespertina"],
+      [/^(.+?) at Opposition — Closest & Brightest$/i, "$1 en oposición — Más cercano y más brillante"],
+      [/^(\S+) Earth Flyby$/i, "$1: sobrevuelo de la Tierra"],
+      [/^(\S+) Venus Flyby$/i, "$1: sobrevuelo de Venus"],
+      [/^(\S+) Mars Flyby$/i, "$1: sobrevuelo de Marte"],
+      [/^(\S+) Mercury Orbit Insertion$/i, "$1: inserción en órbita de Mercurio"],
+      [/^(\S+) Landing$/i, "$1: aterrizaje"],
+      [/\bMaiden Flight\b/i, "Primer vuelo"],
+      [/\bFlight (\d+)\b/i, "Vuelo $1"],
+      [/\bTrojan Asteroid\b/i, "Asteroide troyano"],
+      [/\bFirst Liquid-Fueled Rocket Launch\b/i, "Primer lanzamiento de cohete de combustible líquido"],
+      [/\bLongest-Operating Mars Spacecraft\b/i, "Sonda marciana más longeva"],
+      [/\bFirst Space Tourist\b/i, "Primer turista espacial"],
+      [/\bFirst Successful Landing on (.+)$/i, "Primer aterrizaje exitoso en $1"],
+      [/\bSecond Mars Landing\b/i, "Segundo aterrizaje en Marte"],
+      [/\bGrand Tour of the Outer Planets\b/i, "Gran viaje por los planetas exteriores"],
+      [/\bPluto Reclassified as a Dwarf Planet\b/i, "Pluto reclasificado como planeta enano"],
+      [/\(Northern Hemisphere\)/i, "(Hemisferio norte)"],
+      [/\(Southern Hemisphere\)/i, "(Hemisferio sur)"],
+      [/\bVernal Equinox\b/i, "Equinoccio de primavera"],
+      [/\bAutumnal Equinox\b/i, "Equinoccio de otoño"],
+      [/\bMarch Equinox\b/i, "Equinoccio de marzo"],
+      [/\bSeptember Equinox\b/i, "Equinoccio de septiembre"],
+      [/\bSummer Solstice\b/i, "Solsticio de verano"],
+      [/\bWinter Solstice\b/i, "Solsticio de invierno"],
+      [/\bJune Solstice\b/i, "Solsticio de junio"],
+      [/\bDecember Solstice\b/i, "Solsticio de diciembre"],
+      [/\bSupermoon\b/i, "Superluna"],
+      [/\bNew Moon\b/i, "Luna Nueva"],
+      [/\bFull Moon\b/i, "Luna Llena"],
+      [/\bFirst Quarter\b/i, "Primer Cuarto"],
+      [/\bLast Quarter\b/i, "Último Cuarto"],
+      [/\bThird Quarter\b/i, "Tercer Cuarto"],
+      [/\bWorm Moon\b/i, "Luna de Gusanos"],
+      [/\bPink Moon\b/i, "Luna Rosa"],
+      [/\bFlower Moon\b/i, "Luna de Flores"],
+      [/\bBlue Moon\b/i, "Luna Azul"],
+      [/\bStrawberry Moon\b/i, "Luna de Fresa"],
+      [/\bBuck Moon\b/i, "Luna del Ciervo"],
+      [/\bSturgeon Moon\b/i, "Luna del Esturión"],
+      [/\bHarvest Moon\b/i, "Luna de la Cosecha"],
+      [/\bWolf Moon\b/i, "Luna del Lobo"],
+      [/\bBeaver Moon\b/i, "Luna del Castor"],
+      [/\bCold Moon\b/i, "Luna Fría"],
+      [/\bSnow Moon\b/i, "Luna de Nieve"],
+      [/\bMessier Marathon\b/i, "Maratón Messier"],
+      [/\bMeteor Shower\b/i, "Lluvia de Meteoros"],
+      [/\bPeak Night\b/i, "Noche de Máximo"],
+      [/\bMorning Star\b/i, "Estrella Matutina"],
+      [/\bEvening Star\b/i, "Estrella Vespertina"],
+      [/\bMercury\b/i, "Mercurio"],
+      [/\bNeptune\b/i, "Neptuno"],
+      [/\bMars\b/i, "Marte"],
+      [/\bJupiter\b/i, "Júpiter"],
+      [/\bSaturn\b/i, "Saturno"],
+      [/\bUranus\b/i, "Urano"],
+      [/\bPluto\b/i, "Plutón"],
+      [/\bMoon\b/i, "Luna"],
+      [/\bEarth\b/i, "Tierra"]
+    ]
+  }
+};
+
+// Zahlen im Titel an die Zielsprache anpassen (0.9 -> 0,9 in DE).
+function localizeDecimal(text, lang){
+  return String(text).replace(/(\d)\.(\d)/g, (m, a, b) => lang === "de" ? `${a},${b}` : `${a}.${b}`);
+}
+
+// Zwei Stufen: Satzmuster zuerst, danach einzelne Woerter.
+function translateFeedTitle(rawTitle, lang){
+  const clean = cleanFeedText(rawTitle);
+  if(!clean || lang === "en" || !FEED_I18N[lang]) return clean;
+  let out = localizeDecimal(clean, lang);
+  for(const [pattern, template] of FEED_I18N[lang].phrases){
+    out = out.replace(pattern, template);
+  }
+  // Nur Leerraum auffangen, der zwischen zwei Wörtern entstanden ist.
+  // Der Abstand vor einem Gedankenstrich gehört zum Text und bleibt stehen.
+  return out
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .replace(/\s{2,}/g, " ")
+    .replace(/\s+—/g, " —")
+    .trim();
+}
+
+// Sichtbare Regionen uebersetzen.
+function localizeRegions(text, lang){
+  const map = FEED_I18N[lang]?.regions;
+  if(!map) return text;
+  let out = String(text);
+  for(const [needle, replacement] of Object.entries(map)){
+    out = out.replace(new RegExp(`\\b${needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "gi"), replacement);
+  }
+  return out;
+}
+
+// Aus dem englischen Fliesstext die eigentlichen Messdaten ziehen. Die
+// Zahlen bleiben unveraendert, nur die Bezeichnungen kommen aus der
+// aktuell gewaehlten Sprache.
+function extractFeedFacts(description){
+  const text = String(description || "");
+  const facts = {};
+  const push = (key, value) => { if(value && facts[key] === undefined) facts[key] = value; };
+
+  // Eigene Zahlform statt [0-9.,]+ - sonst schluckt der Treffer das
+  // Satzzeichen mit ("21.9," statt "21.9").
+  let m = text.match(/passing at\s+(\d+(?:[.,]\d+)?)\s+lunar distances/i);
+  if(m) push("moonDistances", m[1]);
+  m = text.match(/\(([\d.,]*\d)\s*km\)/i);
+  if(m) push("distanceKm", m[1]);
+  m = text.match(/absolute magnitude \(H\) of\s+(\d+(?:[.,]\d+)?)/i);
+  if(m) push("magnitude", m[1]);
+  m = text.match(/diameter of roughly\s+(\d+(?:[.,]\d+)?)\s*m/i);
+  if(m) push("diameterM", m[1]);
+  m = text.match(/flyby velocity of\s+(\d+(?:[.,]\d+)?)\s*km\/s/i);
+  if(m) push("velocity", m[1]);
+  m = text.match(/Visible from:\s*([^\n.]+)/i);
+  if(m) push("visibleFrom", m[1].trim());
+  return facts;
+}
+
 function getLocalizedApiText(item) {
   const rawTitle = cleanFeedText(item?.title || item?.name || "Space event");
   const itemType = String(item?.type || item?.category || "").toLowerCase();
@@ -977,51 +1236,22 @@ function getLocalizedApiText(item) {
   else if (category === "launch") descKey = "desc_launch";
   else if (category === "planet" && lower.includes("conjunction")) descKey = "desc_conjunction";
 
-  // Translate well-known event families while keeping unique mission/object
-  // names from the source intact. This means COSMOS adapts the feed instead
-  // of simply copying its English title.
-  const familyTitles = {
-    de: {
-      "new moon":"Neumond", "supermoon":"Supermond", "full moon":"Vollmond",
-      "first quarter":"Erstes Viertel", "last quarter":"Letztes Viertel", "quarter":"Mondviertel",
-      "eclipse":"Finsternis", "meteor shower":"Meteorstrom", "equinox":"Tagundnachtgleiche",
-      "solstice":"Sonnenwende", "conjunction":"Konjunktion", "opposition":"Opposition",
-      "launch":"Start", "rocket launch":"Raketenstart", "anniversary":"Jahrestag"
-    },
-    en: {
-      "new moon":"New Moon", "supermoon":"Supermoon", "full moon":"Full Moon",
-      "first quarter":"First Quarter", "last quarter":"Last Quarter", "quarter":"Lunar Quarter",
-      "eclipse":"Eclipse", "meteor shower":"Meteor Shower", "equinox":"Equinox",
-      "solstice":"Solstice", "conjunction":"Conjunction", "opposition":"Opposition",
-      "rocket launch":"Rocket Launch", "launch":"Launch", "anniversary":"Anniversary"
-    },
-    es: {
-      "new moon":"Luna Nueva", "supermoon":"Superluna", "full moon":"Luna Llena",
-      "first quarter":"Primer Cuarto", "last quarter":"Último Cuarto", "quarter":"Fase Lunar",
-      "eclipse":"Eclipse", "meteor shower":"Lluvia de Meteoros", "equinox":"Equinoccio",
-      "solstice":"Solsticio", "conjunction":"Conjunción", "opposition":"Oposición",
-      "rocket launch":"Lanzamiento de Cohete", "launch":"Lanzamiento", "anniversary":"Aniversario"
-    }
-  };
+  // Vollstaendige Satzmuster statt Einzelwoerter - siehe FEED_I18N oben.
+  const translatedTitle = translateFeedTitle(rawTitle, currentLang);
 
-  let translatedTitle = rawTitle;
-  const replacements = familyTitles[currentLang] || {};
-  for (const [needle, replacement] of Object.entries(replacements).sort((a,b)=>b[0].length-a[0].length)) {
-    const re = new RegExp(`\\b${needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
-    translatedTitle = translatedTitle.replace(re, replacement);
-  }
-
-  // Some feeds use a generic separator or append a translated/English category.
-  // Keep proper mission/object names, but make the visible event wording COSMOS-localized.
-  translatedTitle = translatedTitle.replace(/\s{2,}/g, ' ').trim();
+  // Der englische Fliesstext bleibt als Original erhalten, die Messdaten
+  // werden herausgeloest und in der gewaehlten Sprache beschriftet.
+  const sourceText = String(item?.description || "").trim();
+  const facts = extractFeedFacts(sourceText);
+  if(facts.visibleFrom) facts.visibleFrom = localizeRegions(facts.visibleFrom, currentLang);
 
   return {
     title: escapeHtml(translatedTitle),
     desc: escapeHtml(t[descKey] || t.desc_generic),
+    sourceText,
+    facts
   };
-}
-
-/* --------------------------------------------------------------------------
+}/* --------------------------------------------------------------------------
    DATENQUELLEN
    Bestehende Quellen bleiben erhalten. Jede wird einzeln geladen und
    geprueft: faellt eine aus, laufen die anderen weiter.
@@ -1530,12 +1760,14 @@ function changeOffset(val){
 }
 
 function fmtTime(d){
+  if(!(d instanceof Date) || !Number.isFinite(d.getTime())) return "--";
   const adjusted = new Date(d.getTime() + tzOffsetHours * 3600000);
   return new Intl.DateTimeFormat(currentLang === 'es' ? 'es-ES' : currentLang === 'en' ? 'en-US' : 'de-DE',{timeZone:"UTC",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(adjusted) + ` (UTC${tzOffsetHours>=0?'+':''}${tzOffsetHours})`;
 }
 
 // Ganztaegige Ereignisse bekommen nur das Datum - eine Uhrzeit waere erfunden.
 function fmtDate(d){
+  if(!(d instanceof Date) || !Number.isFinite(d.getTime())) return "--";
   const adjusted = new Date(d.getTime() + tzOffsetHours * 3600000);
   return new Intl.DateTimeFormat(currentLang === 'es' ? 'es-ES' : currentLang === 'en' ? 'en-US' : 'de-DE',{timeZone:"UTC",day:"2-digit",month:"short",year:"numeric"}).format(adjusted);
 }
@@ -1543,6 +1775,9 @@ function fmtDate(d){
 function fmtEventTime(ev){
   if(!ev) return "--";
   if(ev.isPermanentLive) return TRANSLATIONS[currentLang].live_tracking;
+  // Ein defekter Zeitstempel darf die ganze Liste nicht mit einem
+  // RangeError abwuergen - der Datensatz wird uebersprungen.
+  if(!Number.isFinite(ev.startMs)) return "--";
   return ev.allDay ? fmtDate(new Date(ev.startMs)) : fmtTime(new Date(ev.startMs));
 }
 
@@ -1621,7 +1856,9 @@ const GLOSTAR_DATA = [
   {id:"gravitational-waves",icon:"orbit",name_de:"Gravitationswellen",sum_de:"Wellenförmige Veränderungen der Raumzeit.",exp_de:"Beschleunigte massive Objekte können Gravitationswellen erzeugen. Detektoren messen winzige Änderungen von Abständen, die durch diese Wellen verursacht werden.",name_en:"Gravitational Waves",sum_en:"Ripples in spacetime that propagate through the universe.",exp_en:"Accelerating massive objects can generate gravitational waves. Detectors measure tiny changes in distance caused by them.",name_es:"Ondas Gravitacionales",sum_es:"Ondulaciones del espacio-tiempo que se propagan por el universo.",exp_es:"Los objetos masivos acelerados pueden generar ondas gravitacionales. Los detectores miden cambios diminutos de distancia producidos por ellas.",graphic:`<svg width="220" height="120" viewBox="0 0 200 100"><path d="M10 50c15-30 25 30 40 0s25-30 40 0 25 30 40 0 25-30 60 0" fill="none" stroke="#fff" stroke-width="2"/><circle cx="100" cy="50" r="3" fill="#fff"/></svg>`},
   {id:"big-bang",icon:"supernova",name_de:"Urknall",sum_de:"Modell der Entwicklung des Universums aus einem heißen, dichten frühen Zustand.",exp_de:"Der Urknall beschreibt die Entwicklung des Universums aus einem extrem heißen und dichten frühen Zustand. Es war keine Explosion in einen bereits vorhandenen Raum; der Raum selbst expandiert.",name_en:"Big Bang",sum_en:"Model of the universe evolving from a hot, dense early state.",exp_en:"The Big Bang describes the universe evolving from an extremely hot and dense early state. It was not an explosion into pre-existing space; space itself expands.",name_es:"Big Bang",sum_es:"Modelo de la evolución del universo desde un estado temprano caliente y denso.",exp_es:"El Big Bang describe la evolución del universo desde un estado inicial extremadamente caliente y denso. No fue una explosión dentro de un espacio preexistente; el propio espacio se expande.",graphic:`<svg width="220" height="120" viewBox="0 0 200 100"><circle cx="100" cy="50" r="9" fill="#fff"/><path d="M100 50L25 20M100 50L175 20M100 50L25 80M100 50L175 80" stroke="#fff" stroke-width="2"/><circle cx="25" cy="20" r="3" fill="#fff"/><circle cx="175" cy="20" r="3" fill="#fff"/><circle cx="25" cy="80" r="3" fill="#fff"/><circle cx="175" cy="80" r="3" fill="#fff"/></svg>`}
 
-];function timing(ev){
+];
+
+function timing(ev){
   if(ev.isPermanentLive){
     const startMs = new Date("1998-11-20T06:40:00Z").getTime();
     const diff = Math.max(0, Math.floor((Date.now() - startMs) / 1000));
@@ -1742,7 +1979,7 @@ function openDetail(eventId, viewPrefix){
       ${renderSourceBlock(e)}
       ${glostarBtn}
     `;
-    mountGlobe("globeCanvasDetail", "globeIssStatus", {radiusFactor: 0.45, autoRotate: true});
+    mountGlobe("globeCanvasDetail", "globeIssStatus", {radiusFactor: 0.47, autoRotate: true});
     updateIssReadouts();
     return;
   }
@@ -1772,6 +2009,27 @@ function openDetail(eventId, viewPrefix){
 
 // Welche Quelle liefert dieses Event? Wird direkt am Event angezeigt,
 // damit sich jede Angabe zurueckverfolgen laesst.
+// Messdaten aus dem englischen Fliesstext in der aktuellen Sprache zeigen.
+function renderFeedFacts(facts){
+  if(!facts) return "";
+  const l = FEED_I18N[currentLang]?.labels;
+  if(!l) return "";
+  const num = value => String(value).replace(/(\d)\.(\d)/g,
+    (m, a, b) => currentLang === "de" ? `${a},${b}` : `${a}.${b}`);
+  const rows = [];
+  if(facts.moonDistances != null) rows.push([l.moonDistances, num(facts.moonDistances)]);
+  if(facts.distanceKm != null) rows.push([l.distance, `${num(facts.distanceKm)} km`]);
+  if(facts.diameterM != null) rows.push([l.diameter, `${num(facts.diameterM)} m`]);
+  if(facts.magnitude != null) rows.push([l.magnitude, num(facts.magnitude)]);
+  if(facts.velocity != null) rows.push([l.velocity, `${num(facts.velocity)} km/s`]);
+  if(facts.visibleFrom) rows.push([l.visibleFrom, escapeHtml(facts.visibleFrom)]);
+  if(!rows.length) return "";
+  return `<div class="feed-facts">
+    <div class="src-note-label">${l.facts}</div>
+    <dl>${rows.map(([k, v]) => `<div><dt>${escapeHtml(k)}</dt><dd>${v}</dd></div>`).join("")}</dl>
+  </div>`;
+}
+
 function renderSourceBlock(e){
   const t = TRANSLATIONS[currentLang];
   const sources = e.sources && e.sources.length ? e.sources : ["COSMOS"];
@@ -1779,13 +2037,19 @@ function renderSourceBlock(e){
   const link = e.sourceUrl
     ? `<div><a class="src-link" href="${escapeHtml(e.sourceUrl)}" target="_blank" rel="noopener noreferrer">${t.source_open} ↗</a></div>`
     : "";
-  const note = e.description
-    ? `<div class="src-note"><span class="src-note-label">${t.source_text}</span>${String(e.description)
-        .split(/\n{2,}/)
-        .map(paragraph => `<p>${escapeHtml(paragraph).replace(/\n/g, "<br>")}</p>`)
-        .join("")}</div>`
+  const loc = e.rawItem ? getLocalizedApiText(e.rawItem) : null;
+  const facts = renderFeedFacts(loc?.facts);
+  // Der Fliesstext der Quelle ist englisch. Er wird deshalb nicht als
+  // COSMOS-Text ausgegeben, sondern klar als Original gekennzeichnet -
+  // die uebersetzten Begriffe und Messdaten stehen weiter oben.
+  const original = e.description
+    ? `<details class="src-original"><summary>${FEED_I18N[currentLang]?.labels?.original || t.source_text}</summary>
+        <div class="src-note">${String(e.description)
+          .split(/\n{2,}/)
+          .map(paragraph => `<p>${escapeHtml(paragraph).replace(/\n/g, "<br>")}</p>`)
+          .join("")}</div></details>`
     : "";
-  return `<div class="badge-row" style="margin-top:16px">${badges}</div>${link}${note}`;
+  return `<div class="badge-row" style="margin-top:16px">${badges}</div>${link}${facts}${original}`;
 }
 
 function openGloStarDetail(index){
@@ -1829,7 +2093,7 @@ function closeDetail(viewPrefix){
   resetDetail(viewPrefix);
   pruneGlobes();
   if(viewPrefix === "glostar"){
-    mountGlobe("globeCanvasGloStar", null, {radiusFactor: 0.42, autoRotate: true, showIss: false});
+    mountGlobe("globeCanvasGloStar", null, {radiusFactor: 0.47, autoRotate: true, showIss: false});
   }
 }
 
@@ -2020,9 +2284,7 @@ async function fetchISS(){
 }
 setInterval(fetchISS, 5000);
 document.addEventListener("visibilitychange", () => { if(!document.hidden) fetchISS(); });
-fetchISS();
-
-/* --- GloStar / Erdglobus --------------------------------------------------
+fetchISS();/* --- GloStar / Erdglobus --------------------------------------------------
    Ein Globus, zwei Verwendungen: Live-Detail der ISS und GloStar.
    weisse Landflaechen auf schwarzem Grund, ISS-Bahn und Live-Position.
    -------------------------------------------------------------------------- */
@@ -2079,6 +2341,19 @@ function issGroundTrack(lat, lon, samples = 180){
   return points;
 }
 
+// d3.geoOrthographic() liefert auch fuer Punkte auf der Rueckseite
+// Koordinaten zurueck - man muss also selbst pruefen, ob der Punkt ueber
+// dem Horizont liegt. Sonst waere die ISS sichtbar, obwohl sie hinter der
+// Erde steht.
+function globePointOnNearSide(instance, lon, lat){
+  const rot = instance.projection.rotate();
+  const toRad = Math.PI / 180;
+  const sinP = Math.sin(lat * toRad) * Math.sin((rot[1] || 0) * toRad);
+  const cosP = Math.cos(lat * toRad) * Math.cos((rot[1] || 0) * toRad)
+             * Math.cos((lon - (rot[0] || 0)) * toRad);
+  return (sinP + cosP) > 0;
+}
+
 function drawGlobeFrame(instance, world){
   const {ctx, width, height, center, radius} = instance;
   const projection = instance.projection;
@@ -2102,7 +2377,7 @@ function drawGlobeFrame(instance, world){
   ctx.beginPath();
   ctx.fillStyle = "#fff";
   ctx.strokeStyle = "rgba(0,0,0,.35)";
-  ctx.lineWidth = .35;
+  ctx.lineWidth = instance.px(.35);
   instance.path(world);
   ctx.fill();
   ctx.stroke();
@@ -2115,32 +2390,70 @@ function drawGlobeFrame(instance, world){
     let drawing = false;
     for(const point of track){
       const projected = projection(point);
-      if(!projected){ drawing = false; continue; }   // ueber den Horizont hinaus
+      if(!projected || !globePointOnNearSide(instance, point[0], point[1])){
+        drawing = false; continue;                    // ueber den Horizont hinaus
+      }
       if(!drawing){ ctx.moveTo(projected[0], projected[1]); drawing = true; }
       else ctx.lineTo(projected[0], projected[1]);
     }
-    ctx.strokeStyle = "rgba(255,255,255,.55)";
-    ctx.lineWidth = 1;
-    ctx.setLineDash([3, 3]);
+    // Die Spur bleibt weiss - rot ist ausschliesslich fuer die aktuelle
+    // Position reserviert, sonst weiss man nicht mehr, was der Punkt ist.
+    ctx.strokeStyle = "rgba(255,255,255,.7)";
+    ctx.lineWidth = instance.px(1.2);
+    ctx.setLineDash([instance.px(4), instance.px(4)]);
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Aktuelle Position
-    const issPoint = projection([currentIssLon, currentIssLat]);
+    // Aktuelle Position: roter Punkt mit pulsierendem Hof.
+    // Der Punkt braucht einen dunklen Ring (Trennung von weisser Landflaeche)
+    // und einen hellen Ring (Trennung vom schwarzen Ozean) - nur so ist er
+    // ueber dem weissen Europa genauso sichtbar wie ueber dem Pazifik.
+    const issPoint = globePointOnNearSide(instance, currentIssLon, currentIssLat)
+      ? projection([currentIssLon, currentIssLat])
+      : null;
     if(issPoint){
+      const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 520);
+      const halo = instance.px(9 + pulse * 5);
+
       ctx.beginPath();
-      ctx.arc(issPoint[0], issPoint[1], 6, 0, Math.PI * 2);
-      ctx.strokeStyle = "#fff";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(issPoint[0], issPoint[1], 3, 0, Math.PI * 2);
-      ctx.fillStyle = "#fff";
+      ctx.arc(issPoint[0], issPoint[1], halo, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,59,48,${0.32 - pulse * 0.2})`;
       ctx.fill();
-      ctx.font = '600 10px -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif';
-      ctx.fillStyle = "#fff";
+
+      // dunkler Ring
+      ctx.beginPath();
+      ctx.arc(issPoint[0], issPoint[1], instance.px(5.5), 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(0,0,0,.75)";
+      ctx.fill();
+      // heller Ring
+      ctx.beginPath();
+      ctx.arc(issPoint[0], issPoint[1], instance.px(4.5), 0, Math.PI * 2);
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = instance.px(1.6);
+      ctx.stroke();
+      // der rote Punkt selbst
+      ctx.beginPath();
+      ctx.arc(issPoint[0], issPoint[1], instance.px(3.2), 0, Math.PI * 2);
+      ctx.fillStyle = "#ff3b30";
+      ctx.fill();
+
+      // Beschriftung nach innen setzen, damit sie nie ueber den Kugelrand
+      // hinausragt - und mit dunklem Umriss, damit sie auf Land lesbar bleibt.
+      const fontSize = instance.px(10);
+      ctx.font = `700 ${fontSize}px -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif`;
+      const labelW = ctx.measureText("ISS").width;
+      const toRight = issPoint[0] >= center[0];
+      const gap = instance.px(8);
+      let lx = toRight ? issPoint[0] - gap - labelW : issPoint[0] + gap;
+      let ly = issPoint[1] - instance.px(7);
+      ly = Math.min(Math.max(ly, center[1] - radius + fontSize + instance.px(2)),
+                    center[1] + radius - instance.px(2));
       ctx.textAlign = "left";
-      ctx.fillText("ISS", issPoint[0] + 9, issPoint[1] - 8);
+      ctx.lineWidth = instance.px(2.5);
+      ctx.strokeStyle = "rgba(0,0,0,.85)";
+      ctx.strokeText("ISS", lx, ly);
+      ctx.fillStyle = "#fff";
+      ctx.fillText("ISS", lx, ly);
     }
   }
   ctx.restore();
@@ -2149,7 +2462,7 @@ function drawGlobeFrame(instance, world){
   ctx.beginPath();
   ctx.arc(center[0], center[1], radius, 0, Math.PI * 2);
   ctx.strokeStyle = "rgba(255,255,255,.75)";
-  ctx.lineWidth = 1.5;
+  ctx.lineWidth = instance.px(1.5);
   ctx.stroke();
 }
 
@@ -2176,10 +2489,20 @@ function globeLoop(){
     if(!visible) continue;
 
     if(instance.world){
-      if(!instance.dragging && instance.autoRotate) instance.userRotation += 0.035;
+      // GloStar rotiert frei. Der ISS-Globus bleibt stehen und richtet sich
+      // nach der Station aus - eine automatisch drehende Karte schluckt den
+      // Punkt immer wieder hinter dem Horizont und ist unlesbar.
+      if(!instance.dragging && instance.autoRotate && !instance.showIss) instance.userRotation += 0.035;
       // Nur der ISS-Globus zentriert sich auf die Station, GloStar rotiert frei.
-      const lon = instance.showIss && Number.isFinite(currentIssLon) ? currentIssLon : 0;
-      instance.projection.rotate([-lon + instance.userRotation, -8, 0]);
+      // Wichtig: auf LÄNGE *und* BREITE zentrieren. Mit einem festen
+      // Breitengrad stand der Punkt bis zu 31 Grad neben der Kugelmitte und
+      // lief am Rand oder ueber Land - genau das war "schlecht sichtbar".
+      const hasIss = instance.showIss
+        && Number.isFinite(currentIssLon) && Number.isFinite(currentIssLat);
+      const lon = hasIss ? currentIssLon : 0;
+      const lat = hasIss ? currentIssLat : -8;
+      const spin = hasIss ? 0 : instance.userRotation;
+      instance.projection.rotate([-lon + spin, -lat, 0]);
       drawGlobeFrame(instance, instance.world);
     } else {
       drawGlobeFallback(instance, "…");
@@ -2200,8 +2523,17 @@ function sizeGlobeCanvas(instance){
   }
   instance.width = instance.canvas.width;
   instance.height = instance.canvas.height;
+  // Die Zeichenbefehle des Canvas rechnen in Geraetepixeln, die Angaben der
+  // Seite in CSS-Pixeln. Ohne dieses Verhaeltnis sieht ein 3-Punkt-Kreis auf
+  // einem dpr-2-Handy halb so gross aus wie auf einem dpr-1-Mac. Mit px() wird
+  // jede Groesse in CSS-Pixeln angegeben und ist damit auf beiden gleich.
+  instance.dpr = dpr;
+  instance.px = css => css * dpr;
   instance.center = [instance.width / 2, instance.height / 2];
-  instance.radius = Math.min(instance.width, instance.height) * instance.radiusFactor;
+  // Der Radius darf nie groesser als die kleinere Kante werden - sonst
+  // schneidet der Rahmen die Kugel an, unabhaengig von dpr oder Fenstergroesse.
+  const limit = Math.min(instance.width, instance.height) / 2;
+  instance.radius = Math.max(8, Math.min(limit - 2 * dpr, limit * instance.radiusFactor * 2));
   instance.projection
     .translate(instance.center)
     .scale(instance.radius);
@@ -2242,7 +2574,9 @@ function mountGlobe(canvasId, statusId, options = {}){
     width: 0,
     height: 0,
     center: [0, 0],
-    radius: 0
+    radius: 0,
+    dpr: 1,
+    px: css => css
   };
   instance.canvas = canvas;
   instance.ctx = ctx;
@@ -2255,6 +2589,15 @@ function mountGlobe(canvasId, statusId, options = {}){
   globes.set(canvasId, instance);
 
   sizeGlobeCanvas(instance);
+
+  // Beobachte den Container statt nur das Fenster: der Rahmen aendert seine
+  // Groesse auch, wenn eine Detailseite aufgeht, eine Schrift nachlaedt oder
+  // das Geraet gedreht wird. Ohne das bleibt der Radius auf einer alten
+  // Fenstergroesse stehen und die Kugel wird angeschnitten.
+  if(typeof ResizeObserver === "function" && !instance.observer){
+    instance.observer = new ResizeObserver(() => sizeGlobeCanvas(instance));
+    instance.observer.observe(canvas.parentElement || canvas);
+  }
 
   const onDown = e => { instance.dragging = true; instance.lastX = e.clientX ?? e.touches?.[0]?.clientX ?? 0; canvas.style.cursor = "grabbing"; };
   const onMove = e => {
@@ -2290,7 +2633,10 @@ function mountGlobe(canvasId, statusId, options = {}){
 // Beim Wechsel der Ansicht wird ein nicht mehr sichtbarer Globus abgeraeumt.
 function pruneGlobes(){
   for(const [canvasId, instance] of globes){
-    if(!instance.canvas.isConnected || instance.canvas.offsetParent === null) globes.delete(canvasId);
+    if(!instance.canvas.isConnected || instance.canvas.offsetParent === null){
+      if(instance.observer){ instance.observer.disconnect(); instance.observer = null; }
+      globes.delete(canvasId);
+    }
   }
 }
 
@@ -2381,7 +2727,7 @@ function switchView(target){
   resetDetail(target);
   pruneGlobes();
   renderAll();
-  if(target === "glostar") mountGlobe("globeCanvasGloStar", null, {radiusFactor: 0.42, autoRotate: true, showIss: false});
+  if(target === "glostar") mountGlobe("globeCanvasGloStar", null, {radiusFactor: 0.47, autoRotate: true, showIss: false});
   return view;
 }
 
@@ -2398,7 +2744,7 @@ document.getElementById('searchHistory').addEventListener('input', e => renderHi
 document.getElementById('searchGloStar').addEventListener('input', e => renderGloStar(e.target.value));
 
 // Globus im GloStar-Bereich vorab laden, damit er sofort da ist.
-mountGlobe("globeCanvasGloStar", null, {radiusFactor: 0.42, autoRotate: true, showIss: false});
+mountGlobe("globeCanvasGloStar", null, {radiusFactor: 0.47, autoRotate: true, showIss: false});
 
 loadEventCache();
 sortEventsAutomatically();
