@@ -2471,13 +2471,12 @@ function globePointVisibility(instance, lon, lat){
        + Math.sin(lat * toRad) * Math.sin(lat0 * toRad);
 }
 
-// Verhaeltnis des ISS-Orbits zum Erdradius. 1 + 420/6371 = 1,066: der Punkt
-// wandert damit um 6,6 % vom Kugelmittelpunkt nach aussen. Das ist die echte
-// Proportion, nicht ueberhoeht.
-function globeOrbitFactor(){
-  const altKm = Number.isFinite(currentIssAlt) ? currentIssAlt : ISS_ORBIT.altitudeKm;
-  return 1 + Math.max(0, altKm) / ISS_ORBIT.earthRadiusKm;
-}
+// Sichtbarer Abstand der ISS-Bahn ueber der Erde, als Anteil am Radius.
+// Der echte Wert waere 420 km / 6371 km = 6,6 % - auf dem Globus schwebt die
+// Station damit weit ausserhalb der Kugel. Gewaehlt ist ein kleinerer Wert, der
+// als Bruchteil des Radius angegeben wird: dadurch waechst der Abstand mit der
+// Kugel mit und sieht auf jedem Bildschirm gleich aus.
+const ISS_RING_FACTOR = 1.03;
 
 function globePointOnNearSide(instance, lon, lat){
   return globePointVisibility(instance, lon, lat) > 0;
@@ -2488,6 +2487,14 @@ function drawGlobeFrame(instance, world){
   const projection = instance.projection;
 
   ctx.clearRect(0, 0, width, height);
+
+  // Zieht einen projizierten Punkt vom Kugelmittelpunkt aus nach aussen auf
+  // den schwebenden Ring. Bahn und Station werden beide damit behandelt, damit
+  // sie auf gleicher Hoehe liegen.
+  const schweben = pt => pt && [
+    center[0] + (pt[0] - center[0]) * ISS_RING_FACTOR,
+    center[1] + (pt[1] - center[1]) * ISS_RING_FACTOR
+  ];
 
   // Schwarzer Ozean
   ctx.beginPath();
@@ -2511,10 +2518,12 @@ function drawGlobeFrame(instance, world){
   ctx.fill();
   ctx.stroke();
 
-  // ISS-Bahn (Bodenspur) als vollstaendiger Ring um die Kugel.
-  // GloStar zeigt den Globus ohne ISS: dort gehoert sie thematisch nicht hin.
-  let issPoint = null;
-  let issHover = null;
+  ctx.restore();
+
+  // ISS-Bahn. Sie liegt nicht auf der Landflaeche, sondern schwebt als Ring
+  // knapp darueber - deshalb wird sie nach dem Kugel-Clip gezeichnet, sonst
+  // wuerde sie am Rand von der Kugel abgeschnitten. GloStar zeigt den Globus
+  // ohne ISS: dort gehoert sie thematisch nicht hin.
   if(instance.showIss && Number.isFinite(currentIssLat) && Number.isFinite(currentIssLon)){
     // Sehr dichte Abtastung: an den Polen wechselt die Laenge schnell, und
     // mit zu wenigen Punkten bricht die Bahn dort in sichtbare Zacken aus.
@@ -2529,7 +2538,7 @@ function drawGlobeFrame(instance, world){
       let offen = null;
       for(const point of track){
         const vorn = globePointVisibility(instance, point[0], point[1]) > 0;
-        const projected = projection(point);
+        const projected = schweben(projection(point));
         if(!projected){ offen = null; continue; }
         if(!offen || offen.vorn !== vorn){ offen = {vorn, punkte: []}; stuecke.push(offen); }
         offen.punkte.push(projected);
@@ -2565,19 +2574,10 @@ function drawGlobeFrame(instance, world){
     // zueinander, weil die Erde in dieser Zeit weiterdreht.
     strokeTrack(nextTrack, "rgba(255,255,255,.9)", "rgba(255,255,255,.22)", [instance.px(4), instance.px(4)]);
 
-    // Die Station steht nicht auf der Kugel, sondern rund 420 km darueber.
-    // Fuellt man den Punkt auf diesen Radius auf, wandert er radial nach
-    // aussen und schwebt sichtbar ueber der Bahn darunter.
-    issPoint = projection([currentIssLon, currentIssLat]);
-    if(issPoint){
-      const factor = 1 + globeOrbitFactor();
-      issHover = [
-        center[0] + (issPoint[0] - center[0]) * factor,
-        center[1] + (issPoint[1] - center[1]) * factor
-      ];
-    }
+    // Station und Bahn liegen beide auf dem schwebenden Ring, nicht auf der
+    // Kugel. Deshalb laeuft die ISS buendig in ihrer Spur - so soll es sein.
+    issPoint = schweben(projection([currentIssLon, currentIssLat]));
   }
-  ctx.restore();
 
   // Die Markierung wird nach dem Kugel-Clip gezeichnet, damit sie am Rand
   // nicht abgeschnitten wird.
@@ -2589,12 +2589,11 @@ function drawGlobeFrame(instance, world){
     const pulse = vorn ? 0.5 + 0.5 * Math.sin(Date.now() / 520) : 0;
     const fontSize = instance.px(10);
 
-    // Der Punkt sitzt einen Spalt ueber der Bahn, mit der echten
-    // Proportion: 420 km auf 6371 km Erdradius sind 6,6 %. Keine Linie,
-    // kein Ring, keine Zahl - der Abstand ergibt sich allein daraus,
-    // dass die Station nicht auf der Kugel liegt wie die Bahnen darunter.
-    const mx = issHover ? issHover[0] : issPoint[0];
-    const my = issHover ? issHover[1] : issPoint[1];
+    // Die Station sitzt auf ihrer Bahn: der Punkt wandert denselben Weg wie
+    // die Linie, nur um ISS_RING_FACTOR vom Kugelmittelpunkt nach aussen
+    // geschoben. Deshalb sitzt er buendig in der Spur.
+    const mx = issPoint[0];
+    const my = issPoint[1];
     ctx.beginPath();
     ctx.arc(mx, my, instance.px(9 + pulse * 5), 0, Math.PI * 2);
     ctx.fillStyle = `rgba(255,59,48,${(0.32 - pulse * 0.2) * alpha})`;
