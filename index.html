@@ -3010,6 +3010,14 @@ function mountGlobe(canvasId, statusId, options = {}){
     instance.lastY = punkt.clientY ?? 0;
     canvas.style.cursor = "grabbing";
   };
+  // Wie viele Grad dreht ein Pixel? Das haengt am Zoom. Ohne Zoom ist ein
+  // Grad auf der Karte etwa so breit wie ein Pixel, deshalb passt dort 0,35.
+  // Beim Hineinzoomen wird ein Grad aber immer schmaler, eine feste
+  // Empfindlichkeit schleudert die Kugel nur noch hin und her. Mit diesem
+  // Wert folgt der Karteninhalt dem Finger genau so weit, wie man ihn
+  // schiebt - wie beim Ziehen in Google Maps.
+  const drehGrad = () => Math.max(0.012, 0.35 / instance.zoom);
+
   const onMove = e => {
     if(!instance.dragging) return;
     if(e.touches && e.touches.length > 1) return;      // Pinch laeuft
@@ -3025,11 +3033,12 @@ function mountGlobe(canvasId, statusId, options = {}){
     // liegt - dadurch dreht sich die Erde unter dem Finger und die Bahn
     // bleibt als geschlossener Ring im Bild.
     if(instance.showIss){
+      const f = drehGrad();
       instance.userMoved = true;
-      instance.viewLon = ((instance.viewLon - dx * 0.35) % 360 + 540) % 360 - 180;
-      instance.viewLat = Math.max(-88, Math.min(88, instance.viewLat + dy * 0.35));
+      instance.viewLon = ((instance.viewLon - dx * f) % 360 + 540) % 360 - 180;
+      instance.viewLat = Math.max(-88, Math.min(88, instance.viewLat + dy * f));
     } else {
-      instance.userRotation += dx * 0.35;
+      instance.userRotation += dx * drehGrad();
     }
     if(e.cancelable && e.touches) e.preventDefault();
   };
