@@ -3116,17 +3116,147 @@ document.addEventListener("visibilitychange", () => {
   if(!document.hidden) for(const instance of globes.values()) sizeGlobeCanvas(instance);
 });
 
+// ---- Sternenhimmel --------------------------------------------------------
+// Drei Tiefenschichten uebereinander. Je naeher dem Betrachter, desto groesser
+// und heller der Stern und desto weiter wandert er, wenn sich der Cursor
+// bewegt. Diese Staffelung erzeugt Tiefe - ein einziger Haufen gleichartiger
+// Punkte bleibt flach. Ausserdem ist die Zahl an die Bildflaeche gebunden,
+// damit ein grosses Display nicht dieselbe Menge wie ein Handy bekommt.
+const STERN_FARBEN = [
+  {rgb:"255,255,255", w:68},   // weiss, der Grossteil
+  {rgb:"214,232,255", w:17},   // blaeulich, heisse Riesen
+  {rgb:"255,241,216", w:11},   // gelblich
+  {rgb:"255,214,186", w:4}     // orange, seltene Rote Riesen
+];
+
+// Ein Sternbild wird einmal gezeichnet und danach nur noch als Bild
+// eingesetzt. Ein Verlauf je Stern und Bild wuerde die Bildrate ruinieren.
+const sternBilder = new Map();
+function sternBild(farbe, strahlen){
+  const schluessel = farbe + (strahlen ? ":s" : "");
+  if(sternBilder.has(schluessel)) return sternBilder.get(schluessel);
+  const S = 64, m = S / 2;
+  const bild = document.createElement("canvas");
+  bild.width = bild.height = S;
+  const x = bild.getContext("2d");
+  const schein = x.createRadialGradient(m, m, 0, m, m, m);
+  schein.addColorStop(0,    `rgba(${farbe},1)`);
+  schein.addColorStop(0.1,  `rgba(${farbe},${strahlen ? 0.9 : 0.62})`);
+  schein.addColorStop(0.3,  `rgba(${farbe},0.14)`);
+  schein.addColorStop(1,    `rgba(${farbe},0)`);
+  x.fillStyle = schein;
+  x.beginPath();
+  x.arc(m, m, m, 0, Math.PI * 2);
+  x.fill();
+  if(strahlen){
+    // Vier Lichtstrahlen, wie sie eine Linse oder die Luft erzeugt
+    const kante = x.createLinearGradient(0, m, S, m);
+    kante.addColorStop(0,   "rgba(255,255,255,0)");
+    kante.addColorStop(0.5, "rgba(255,255,255,.85)");
+    kante.addColorStop(1,   "rgba(255,255,255,0)");
+    x.fillStyle = kante;
+    for(let i = 0; i < 2; i++){
+      x.save();
+      x.translate(m, m);
+      x.rotate(i * Math.PI / 2);
+      x.beginPath();
+      x.moveTo(-m, 0); x.lineTo(0, -1.7); x.lineTo(m, 0); x.lineTo(0, 1.7);
+      x.closePath();
+      x.fill();
+      x.restore();
+    }
+  }
+  sternBilder.set(schluessel, bild);
+  return bild;
+}
+
+function sternFarbe(){
+  let r = Math.random() * 100;
+  for(const f of STERN_FARBEN){ if((r -= f.w) <= 0) return f.rgb; }
+  return STERN_FARBEN[0].rgb;
+}
+
+// Schicht 0: weiter weg, winzig, kaum Tiefe. Schicht 1: mittel, mit Halo.
+// Schicht 2: nahe, hell, mit Lichtstrahlen.
+function neuerStern(farbe, schicht, tiefe, x, y){
+  const w = Math.random();
+  const s = {
+    x: x !== undefined ? x : Math.random() * sternB,
+    y: y !== undefined ? y : Math.random() * sternH,
+    tiefe,
+    ph: Math.random() * Math.PI * 2,
+    rate: 0.35 + Math.random() * 1.5,          // Funkeln
+    blink: 0.05 + Math.random() * 0.13,
+    geschwindigkeit: 0.015 + tiefe * 0.16,    // Naeher treibt schneller
+    bild: null, halbeGroesse: 0
+  };
+  if(schicht === 0){
+    s.size = 0.5 + w * 0.8;
+    s.alpha = 0.1 + w * 0.26;
+  } else if(schicht === 1){
+    s.size = 0.9 + w * 0.7;
+    s.alpha = 0.34 + w * 0.3;
+    s.bild = sternBild(farbe, false);
+    s.halbeGroesse = s.size * 2.3;
+  } else {
+    s.size = 1.5 + w * 0.9;
+    s.alpha = 0.62 + w * 0.33;
+    s.bild = sternBild(farbe, true);
+    s.halbeGroesse = s.size * 6.5;
+  }
+  return s;
+}
+
+// Dichte an die Bildflaeche binden: ein grosser Bildschirm soll mehr Sterne
+// bekommen, nicht dieselben paar hundert wie ein Telefon.
+function sternZielzahl(flaeche){
+  return Math.max(320, Math.min(1500, Math.round(flaeche / 1500)));
+}
+
+function sternFuellen(b, h){
+  const ziel = sternZielzahl(b * h);
+  const w = Math.random();
+  const schicht = w < 0.72 ? 0 : (w < 0.95 ? 1 : 2);
+  const tiefe = schicht === 0 ? 0.1 + Math.random() * 0.22
+              : schicht === 1 ? 0.42 + Math.random() * 0.38
+              : 0.95 + Math.random() * 0.4;
+  return neuerStern(sternFarbe(), schicht, tiefe);
+}
+
 const starCanvas = document.getElementById('stars');
 const starCtx = starCanvas.getContext('2d');
-let stars = [];
+let sterne = [];
+let sternB = 0, sternH = 0, sternDpr = 1;
 let pointerX = window.innerWidth / 2;
 let pointerY = window.innerHeight / 2;
 let parallaxX = 0;
 let parallaxY = 0;
 
+// Wie weit der Hintergrund dem Cursor folgt. Vorher 0,04 - damit wanderte der
+// naechste Stern nur 28 Pixel. Der Wert ist mit der Bildbreite gekoppelt, damit
+// ein grosser Monitor genauso stark reagiert wie ein kleiner, und die Schichten
+// spreizen weit auseinander: der ferne Hintergrund bleibt fast stehen, der
+// nahe Schwebt deutlich mit.
+const STERN_PARALLAX = 0.15;
+
 function resizeStars(){
-  starCanvas.width = window.innerWidth;
-  starCanvas.height = window.innerHeight;
+  const b = window.innerWidth, h = window.innerHeight;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  if(b === sternB && h === sternH && dpr === sternDpr) return;
+  if(sternB > 0 && b > 0 && h > 0){
+    // Bestehende Sterne proportional verschieben, statt neu zu wuerfeln,
+    // und die Zahl an die neue Flaeche anpassen.
+    const fx = b / sternB, fy = h / sternH;
+    for(const s of sterne){ s.x = (s.x * fx) % b; s.y = (s.y * fy) % h; }
+  }
+  sternB = b; sternH = h; sternDpr = dpr;
+  // Auf dem Retina-Display sonst wuerden die Sterne weichgezeichnet.
+  starCanvas.width = Math.round(b * dpr);
+  starCanvas.height = Math.round(h * dpr);
+  starCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const ziel = sternZielzahl(b * h);
+  while(sterne.length < ziel) sterne.push(sternFuellen(b, h));
+  if(sterne.length > ziel) sterne.length = ziel;
 }
 window.addEventListener('resize', resizeStars);
 resizeStars();
@@ -3142,47 +3272,37 @@ window.addEventListener('touchmove', (e) => {
   }
 }, { passive: true });
 
-for(let i=0; i<300; i++){
-  stars.push({
-    x: Math.random() * window.innerWidth,
-    y: Math.random() * window.innerHeight,
-    size: Math.random() * 1.1 + 0.2,
-    alpha: Math.random() * 0.6 + 0.1,
-    speed: Math.random() * 0.15 + 0.03,
-    depth: Math.random() * 0.8 + 0.2
-  });
-}
+function drawStarsFixed(zeit){
+  const b = sternB, h = sternH;
+  starCtx.clearRect(0, 0, b, h);
+  const sekunden = zeit / 1000;
 
-function drawStarsFixed(){
-  starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+  const targetX = (pointerX - b / 2) * STERN_PARALLAX;
+  const targetY = (pointerY - h / 2) * STERN_PARALLAX;
+  parallaxX += (targetX - parallaxX) * 0.08;
+  parallaxY += (targetY - parallaxY) * 0.08;
 
-  const targetX = (pointerX - starCanvas.width / 2) * 0.04;
-  const targetY = (pointerY - starCanvas.height / 2) * 0.04;
-  parallaxX += (targetX - parallaxX) * 0.05;
-  parallaxY += (targetY - parallaxY) * 0.05;
-
-  stars.forEach(s => {
-    s.y -= s.speed;
-    if(s.y < 0) s.y = starCanvas.height;
-
-    const offsetX = parallaxX * s.depth;
-    const offsetY = parallaxY * s.depth;
-    let drawX = s.x - offsetX;
-    let drawY = s.y - offsetY;
-
-    if(drawX < 0) drawX += starCanvas.width;
-    if(drawX > starCanvas.width) drawX -= starCanvas.width;
-    if(drawY < 0) drawY += starCanvas.height;
-    if(drawY > starCanvas.height) drawY -= starCanvas.height;
-
-    starCtx.fillStyle = `rgba(255,255,255,${s.alpha})`;
-    starCtx.beginPath();
-    starCtx.arc(drawX, drawY, s.size, 0, Math.PI*2);
-    starCtx.fill();
-  });
+  for(const s of sterne){
+    s.y -= s.geschwindigkeit;
+    if(s.y < 0) s.y += h;
+    // Der Rest wird gekappt, sonst springen die Sterne am Rand, sobald die
+    // Parallaxe groesser als die Bildbreite wird.
+    const drawX = (((s.x - parallaxX * s.tiefe) % b) + b) % b;
+    const drawY = (((s.y - parallaxY * s.tiefe) % h) + h) % h;
+    const funkeln = 1 + s.blink * Math.sin(sekunden * s.rate + s.ph);
+    starCtx.globalAlpha = Math.max(0, Math.min(1, s.alpha * funkeln));
+    if(s.bild){
+      const g = s.halbeGroesse;
+      starCtx.drawImage(s.bild, drawX - g, drawY - g, g * 2, g * 2);
+    } else {
+      starCtx.fillStyle = "#fff";
+      starCtx.fillRect(drawX, drawY, s.size, s.size);
+    }
+  }
+  starCtx.globalAlpha = 1;
   requestAnimationFrame(drawStarsFixed);
 }
-drawStarsFixed();
+requestAnimationFrame(drawStarsFixed);
 
 function switchView(target){
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
