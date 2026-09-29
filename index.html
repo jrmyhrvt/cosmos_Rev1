@@ -2060,7 +2060,10 @@ function openDetail(eventId, viewPrefix){
       ${renderSourceBlock(e)}
       ${glostarBtn}
     `;
-    mountGlobe("globeCanvasDetail", "globeIssStatus", {radiusFactor: 0.47, autoRotate: true});
+    // Etwas kleiner als die volle Hoehe: ueber der Kugel liegt noch der
+    // Orbitring der ISS, der die Flughoehe sichtbar macht. Ohne den Rand
+    // wuerde der Ring vom Rahmen abgeschnitten.
+    mountGlobe("globeCanvasDetail", "globeIssStatus", {radiusFactor: 0.43, autoRotate: true});
     updateIssReadouts();
     return;
   }
@@ -2469,6 +2472,13 @@ function globePointVisibility(instance, lon, lat){
        + Math.sin(lat * toRad) * Math.sin(lat0 * toRad);
 }
 
+// Verhaeltnis des ISS-Orbits zum Erdradius. 1 + 420/6371 = 1,066 - der Punkt
+// wandert damit um 6,6 % vom Kugelmittelpunkt nach aussen.
+function globeOrbitFactor(instance){
+  const altKm = Number.isFinite(currentIssAlt) ? currentIssAlt : ISS_ORBIT.altitudeKm;
+  return 1 + Math.max(0, altKm) / ISS_ORBIT.earthRadiusKm;
+}
+
 function globePointOnNearSide(instance, lon, lat){
   return globePointVisibility(instance, lon, lat) > 0;
 }
@@ -2504,6 +2514,7 @@ function drawGlobeFrame(instance, world){
   // ISS-Bahn (Bodenspur) als vollstaendiger Ring um die Kugel.
   // GloStar zeigt den Globus ohne ISS: dort gehoert sie thematisch nicht hin.
   let issPoint = null;
+  let issHover = null;
   if(instance.showIss && Number.isFinite(currentIssLat) && Number.isFinite(currentIssLon)){
     // Sehr dichte Abtastung: an den Polen wechselt die Laenge schnell, und
     // mit zu wenigen Punkten bricht die Bahn dort in sichtbare Zacken aus.
@@ -2554,10 +2565,17 @@ function drawGlobeFrame(instance, world){
     // zueinander, weil die Erde in dieser Zeit weiterdreht.
     strokeTrack(nextTrack, "rgba(255,255,255,.9)", "rgba(255,255,255,.22)", [instance.px(4), instance.px(4)]);
 
-    // Die aktuelle Position liegt auf der Kugel - dort sitzt der Punkt. Ist
-    // die Station gerade ueber dem Horizont, wandert der Punkt hinter die
-    // Erde; dann wird er nur gedimmt durch die Kugel hindurch gezeigt.
+    // Die Station steht nicht auf der Kugel, sondern rund 420 km darueber.
+    // Fuellt man den Punkt auf diesen Radius auf, wandert er radial nach
+    // aussen - der Bodenpunkt und der Orbitring machen den Abstand lesbar.
     issPoint = projection([currentIssLon, currentIssLat]);
+    if(issPoint){
+      const factor = 1 + globeOrbitFactor(instance);
+      issHover = [
+        center[0] + (issPoint[0] - center[0]) * factor,
+        center[1] + (issPoint[1] - center[1]) * factor
+      ];
+    }
   }
   ctx.restore();
 
@@ -2571,35 +2589,51 @@ function drawGlobeFrame(instance, world){
     const pulse = vorn ? 0.5 + 0.5 * Math.sin(Date.now() / 520) : 0;
     const fontSize = instance.px(10);
 
+    // Steg zwischen Bodenpunkt und Station. In der Scheibenmitte faellt der
+    // Abstand optisch weg, dort uebernimmt der Orbitring die Anzeige.
+    if(issHover && Math.hypot(issHover[0] - issPoint[0], issHover[1] - issPoint[1]) > instance.px(3)){
+      ctx.beginPath();
+      ctx.moveTo(issPoint[0], issPoint[1]);
+      ctx.lineTo(issHover[0], issHover[1]);
+      ctx.strokeStyle = `rgba(255,255,255,${0.5 * alpha})`;
+      ctx.lineWidth = instance.px(1);
+      ctx.setLineDash([instance.px(2), instance.px(3)]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Der Punkt sitzt auf dem Orbitring, nicht auf der Kugel.
+    const mx = issHover ? issHover[0] : issPoint[0];
+    const my = issHover ? issHover[1] : issPoint[1];
     ctx.beginPath();
-    ctx.arc(issPoint[0], issPoint[1], instance.px(9 + pulse * 5), 0, Math.PI * 2);
+    ctx.arc(mx, my, instance.px(9 + pulse * 5), 0, Math.PI * 2);
     ctx.fillStyle = `rgba(255,59,48,${(0.32 - pulse * 0.2) * alpha})`;
     ctx.fill();
 
     // dunkler Ring
     ctx.beginPath();
-    ctx.arc(issPoint[0], issPoint[1], instance.px(5.5), 0, Math.PI * 2);
+    ctx.arc(mx, my, instance.px(5.5), 0, Math.PI * 2);
     ctx.fillStyle = `rgba(0,0,0,${0.75 * alpha})`;
     ctx.fill();
     // heller Ring
     ctx.beginPath();
-    ctx.arc(issPoint[0], issPoint[1], instance.px(4.5), 0, Math.PI * 2);
+    ctx.arc(mx, my, instance.px(4.5), 0, Math.PI * 2);
     ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
     ctx.lineWidth = instance.px(1.6);
     ctx.stroke();
     // der rote Punkt selbst
     ctx.beginPath();
-    ctx.arc(issPoint[0], issPoint[1], instance.px(3.2), 0, Math.PI * 2);
+    ctx.arc(mx, my, instance.px(3.2), 0, Math.PI * 2);
     ctx.fillStyle = `rgba(255,59,48,${alpha})`;
     ctx.fill();
 
     // Beschriftung nach aussen, mit dunklem Umriss, damit sie auf Land wie
     // ueber dem Ozean gleich gut lesbar bleibt.
     ctx.font = `700 ${fontSize}px -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif`;
-    const toRight = issPoint[0] >= center[0];
+    const toRight = mx >= center[0];
     const gap = instance.px(9);
-    const lx = toRight ? issPoint[0] + gap : issPoint[0] - gap;
-    const ly = Math.min(Math.max(issPoint[1] - instance.px(7), fontSize + instance.px(4)),
+    const lx = toRight ? mx + gap : mx - gap;
+    const ly = Math.min(Math.max(my - instance.px(7), fontSize + instance.px(4)),
                         instance.height - instance.px(4));
     ctx.textAlign = toRight ? "left" : "right";
     ctx.lineWidth = instance.px(2.5);
@@ -2615,6 +2649,28 @@ function drawGlobeFrame(instance, world){
   ctx.strokeStyle = "rgba(255,255,255,.75)";
   ctx.lineWidth = instance.px(1.5);
   ctx.stroke();
+
+  // Orbitring der ISS. Der Abstand zwischen Kugel und Ring ist die
+  // Flughoehe, und zwar an jeder Stelle des Globus - nicht nur am Rand,
+  // wo ein einzelner Punkt von selbst nach aussen rueckt.
+  if(instance.showIss){
+    const ring = radius * globeOrbitFactor(instance);
+    // Die Schale zwischen Erde und Orbit: die ISS fliegt in diesem Raum, nicht
+    // auf dem Globus. In der Scheibenmitte faellt der Abstand eines einzelnen
+    // Punktes optisch weg - als eigene Schale ist die Hoehe immer erkennbar.
+    ctx.beginPath();
+    ctx.arc(center[0], center[1], ring, 0, Math.PI * 2);
+    ctx.arc(center[0], center[1], radius, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,255,255,.06)";
+    ctx.fill("evenodd");
+    ctx.beginPath();
+    ctx.arc(center[0], center[1], ring, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(255,255,255,.32)";
+    ctx.lineWidth = instance.px(1);
+    ctx.setLineDash([instance.px(3), instance.px(4)]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
 }
 
 function drawGlobeFallback(instance, message){
