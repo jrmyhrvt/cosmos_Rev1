@@ -30,7 +30,7 @@
   .utc-container{display:flex;align-items:center;gap:6px;border:1px solid var(--border);padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.5);backdrop-filter:blur(18px)}
   .utc-pill{font-size:11px;letter-spacing:.08em;color:var(--muted);user-select:none}
   .tz-btn{border:none;background:rgba(255,255,255,0.1);color:#fff;width:20px;height:20px;border-radius:50%;font-size:11px;font-weight:700;display:grid;place-items:center;cursor:pointer}
-  .tz-btn:active{transform:scale(0.9);background:rgba(255,255,255,.25)}
+  .tz-btn:active{transform:scale(0.9);background:rgba(255,255,255,0.25)}
   .tz-display{font-size:11px;font-weight:600;color:#fff;min-width:32px;text-align:center}
   
   main{flex:1;position:relative;overflow:hidden}
@@ -500,7 +500,7 @@ const TRANSLATIONS = {
     gs_redshift_exp: "Redshift occurs when a light source moves away from us, stretching the wavelength of its light — evidence for the expansion of the universe.",
 
     gs_exoplanet: "Exoplanet",
-    gs_exoplanet_sum: "A planet outside of our solar system.",
+    gs_exoplanet_sum: "A planet outside our solar system.",
     gs_exoplanet_exp: "Exoplanets orbit stars other than the Sun and are usually detected indirectly, through the dimming of their star or tiny orbital wobbles.",
 
     gs_lightyear: "Light-year",
@@ -1268,7 +1268,8 @@ function getLocalizedApiText(item) {
 
 // Kategorienamen laut Space-Calendar-Feed. Die zuvor verwendeten Namen
 // ("eclipses", "planetary-events", "rocket-launches", "space-history") sind
-// ungueltig und liefern 0 Ereignisse - deshalb sind sie hier korrigiert.const SPACE_CALENDAR_CATEGORIES = [
+// ungueltig und liefern 0 Ereignisse - deshalb sind sie hier korrigiert.
+const SPACE_CALENDAR_CATEGORIES = [
   "moon-phases", "meteor-showers", "eclipses-solar", "eclipses-lunar",
   "solstices-equinoxes", "oppositions", "elongations", "conjunctions",
   "alignments", "occultations", "asteroids", "launches",
@@ -2302,6 +2303,7 @@ let globeWorldData = null;
 let globeWorldPromise = null;
 let globeAnimationId = null;
 const globes = new Map();
+
 // Reale Bahndaten der ISS: Inklination und mittlere Hoehe werden fuer die
 // Bodenspur verwendet, der Ankerpunkt ist die aktuelle echte Position.
 const ISS_ORBIT = {inclination: 51.64, altitudeKm: 420, mu: 398600.4418, earthRadiusKm: 6371};
@@ -2456,7 +2458,7 @@ function drawGlobeFrame(instance, world){
       ctx.fill();
 
       // Beschriftung nach innen setzen, damit sie nie ueber den Kugelrand
-      // hinaus ragt - und mit dunklem Umriss, damit sie auf Land lesbar bleibt.
+      // hinausragt - und mit dunklem Umriss, damit sie auf Land lesbar bleibt.
       const fontSize = instance.px(10);
       ctx.font = `700 ${fontSize}px -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif`;
       const labelW = ctx.measureText("ISS").width;
@@ -2761,7 +2763,7 @@ document.getElementById('searchEvents').addEventListener('input', e => renderEve
 document.getElementById('searchHistory').addEventListener('input', e => renderHistory(e.target.value));
 document.getElementById('searchGloStar').addEventListener('input', e => renderGloStar(e.target.value));
 
-// Globus im GloStar-Bereich vorab laden, damit er sofort da ist。
+// Globus im GloStar-Bereich vorab laden, damit er sofort da ist.
 mountGlobe("globeCanvasGloStar", null, {radiusFactor: 0.47, autoRotate: true, showIss: false});
 
 loadEventCache();
