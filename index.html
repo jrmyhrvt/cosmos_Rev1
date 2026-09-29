@@ -36,6 +36,17 @@
   main{flex:1;position:relative;overflow:hidden}
   .view{position:absolute;inset:0;padding:22px 20px 140px;overflow:auto;opacity:0;transform:translateY(8px) scale(.995);pointer-events:none;transition:.32s ease}
   .view.active{opacity:1;transform:none;pointer-events:auto}
+  /* Die unteren Eintragsreihen sind länger als der Bildschirm. Ohne diese
+     weiche Kante schieben sie sich unter die halb durchlaessige Leiste und
+     man sieht dort einen abgeschnittenen Streifen durch deren Milchglas.
+     Stattdessen blendet die Liste kurz ueber der Leiste aus, sodass die
+     Sterne dahinter weiterlaufen - so wie es sonst schon ist. Der Bereich
+     reicht bis knapp ueber die Leiste; deren Oberkante sitzt
+     safe-area + 12 + 72 Pixel ueber dem Fuss. */
+  .view{
+    -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - var(--safe-bottom) - 104px),transparent 100%);
+    mask-image:linear-gradient(to bottom,#000 calc(100% - var(--safe-bottom) - 104px),transparent 100%)
+  }
   .home{display:flex;align-items:center;justify-content:center;text-align:center}
   .hero{max-width:520px;margin-top:-6vh}
   .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
