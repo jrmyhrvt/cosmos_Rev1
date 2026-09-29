@@ -2333,7 +2333,11 @@ async function loadGlobeWorld(){
 
 // Bodenspur der ISS aus der aktuellen Position: Breitengrad folgt der
 // Inklination, Laengsgrad sinkt mit der Erdrotation.
-function issGroundTrack(lat, lon, samples = 180){
+// fromTurns/toTurns waehlen den Abschnitt der Bahn:
+//   -1 bis 0 = die zuletzt geflogene Umrundung, 0 bis 1 = die naechste.
+// Negative Werte laufen in der Zeit zurueck, das erzeugt denselben Kreislauf
+// nur in Gegenrichtung - Breite und Laengsgrad bleiben damit korrekt.
+function issGroundTrack(lat, lon, fromTurns = 0, toTurns = 1, samples = 180){
   const r = ISS_ORBIT.earthRadiusKm + (Number.isFinite(currentIssAlt) ? currentIssAlt : ISS_ORBIT.altitudeKm);
   const n = Math.sqrt(ISS_ORBIT.mu / (r * r * r));           // mittlere Bewegung [rad/s]
   const omegaEarth = 7.2921159e-5;                            // Erdrotation [rad/s]
@@ -2344,7 +2348,7 @@ function issGroundTrack(lat, lon, samples = 180){
   const lon0 = lonAt(u0);
   const points = [];
   for(let i = 0; i <= samples; i++){
-    const u = u0 + (i / samples) * 2 * Math.PI;
+    const u = u0 + (fromTurns + (i / samples) * (toTurns - fromTurns)) * 2 * Math.PI;
     const phi = Math.asin(Math.sin(inc) * Math.sin(u)) * 180 / Math.PI;
     const lambda = lon + (lonAt(u) - lon0) - omegaEarth * ((u - u0) / n) * 180 / Math.PI;
     points.push([((lambda + 540) % 360) - 180, phi]);
@@ -2405,24 +2409,36 @@ function drawGlobeFrame(instance, world){
   // ISS-Bahn (Bodenspur) - nur der sichtbare Teil der Erdkugel.
   // GloStar zeigt den Globus ohne ISS: dort gehoert sie thematisch nicht hin.
   if(instance.showIss && Number.isFinite(currentIssLat) && Number.isFinite(currentIssLon)){
-    const track = issGroundTrack(currentIssLat, currentIssLon);
-    ctx.beginPath();
-    let drawing = false;
-    for(const point of track){
-      const projected = projection(point);
-      if(!projected || !globePointOnNearSide(instance, point[0], point[1])){
-        drawing = false; continue;                    // ueber den Horizont hinaus
+    // Zeichnet eine Bahnkurve, aber nur die sichtbare Haelfte: hinter dem
+    // Horizont wird die Linie unterbrochen, damit nichts auf die
+    // Rueckseite durchgezeichnet wird.
+    const strokeTrack = (track, style, dash) => {
+      ctx.beginPath();
+      let drawing = false;
+      for(const point of track){
+        const projected = projection(point);
+        if(!projected || !globePointOnNearSide(instance, point[0], point[1])){
+          drawing = false; continue;                    // ueber den Horizont hinaus
+        }
+        if(!drawing){ ctx.moveTo(projected[0], projected[1]); drawing = true; }
+        else ctx.lineTo(projected[0], projected[1]);
       }
-      if(!drawing){ ctx.moveTo(projected[0], projected[1]); drawing = true; }
-      else ctx.lineTo(projected[0], projected[1]);
-    }
-    // Die Spur bleibt weiss - rot ist ausschliesslich fuer die aktuelle
-    // Position reserviert, sonst weiss man nicht mehr, was der Punkt ist.
-    ctx.strokeStyle = "rgba(255,255,255,.7)";
-    ctx.lineWidth = instance.px(1.2);
-    ctx.setLineDash([instance.px(4), instance.px(4)]);
-    ctx.stroke();
-    ctx.setLineDash([]);
+      // Beide Spuren bleiben weiss - rot ist ausschliesslich fuer die
+      // aktuelle Position reserviert, sonst weiss man nicht mehr,
+      // was der Punkt ist.
+      ctx.strokeStyle = style;
+      ctx.lineWidth = instance.px(1.2);
+      ctx.setLineDash(dash);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    };
+
+    // Durchgezogen: die zuletzt geflogene Umrundung.
+    strokeTrack(issGroundTrack(currentIssLat, currentIssLon, -1, 0), "rgba(255,255,255,.45)", []);
+    // Gestrichelt: derselbe Kreislauf eine Umrundung weiter - dort ist die
+    // ISS in etwa 92 Minuten. Beide Spuren liegen rund 23 Grad versetzt
+    // zueinander, weil die Erde in dieser Zeit weiterdreht.
+    strokeTrack(issGroundTrack(currentIssLat, currentIssLon, 0, 1), "rgba(255,255,255,.85)", [instance.px(4), instance.px(4)]);
 
     // Aktuelle Position: roter Punkt mit pulsierendem Hof.
     // Der Punkt braucht einen dunklen Ring (Trennung von weisser Landflaeche)
