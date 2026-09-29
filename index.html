@@ -150,6 +150,7 @@
   .detail-backbar .back-btn{margin:0}
   .globe-status{position:absolute;left:14px;bottom:12px;padding:5px 9px;border:1px solid var(--border);border-radius:999px;background:rgba(0,0,0,.72);font-size:10px;color:var(--muted);backdrop-filter:blur(10px)}
   .globe-status strong{color:#fff}
+  .globe-hint{position:absolute;right:14px;bottom:12px;padding:5px 9px;border:1px solid var(--border);border-radius:999px;background:rgba(0,0,0,.72);font-size:10px;color:var(--muted);backdrop-filter:blur(10px);pointer-events:none}
   .glostar-detail-copy{color:var(--muted);line-height:1.65;font-size:14px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
@@ -314,6 +315,7 @@ const TRANSLATIONS = {
     velocity: "Geschwindigkeit",
     iss_orbit: "ISS-Bahn",
     error_globe: "Weltkarte nicht verfügbar",
+    globe_zoom_hint: "Ziehen: drehen · Scrollen: zoomen",
     lat: "Breitengrad", lon: "Längengrad", status: "Status",
     date_time: "Datum & Uhrzeit", type: "Typ",
     active: "Aktiv", planned: "Geplant", passed: "Vorbei", countdown: "Countdown", live_tracking: "Live-Tracking aktiv",
@@ -442,6 +444,7 @@ const TRANSLATIONS = {
     velocity: "Velocity",
     iss_orbit: "ISS orbit",
     error_globe: "World map unavailable",
+    globe_zoom_hint: "Drag: rotate · Scroll: zoom",
     lat: "Latitude", lon: "Longitude", status: "Status",
     date_time: "Date & Time", type: "Type",
     active: "Active", planned: "Planned", passed: "Passed", countdown: "Countdown", live_tracking: "Live tracking active",
@@ -570,6 +573,7 @@ const TRANSLATIONS = {
     velocity: "Velocidad",
     iss_orbit: "Órbita de la ISS",
     error_globe: "Mapa del mundo no disponible",
+    globe_zoom_hint: "Arrastra: girar · Rueda: zoom",
     lat: "Latitud", lon: "Longitud", status: "Estado",
     date_time: "Fecha y hora", type: "Tipo",
     active: "Activo", planned: "Planificado", passed: "Pasado", countdown: "Cuenta atrás", live_tracking: "Seguimiento en vivo activo",
@@ -2047,6 +2051,7 @@ function openDetail(eventId, viewPrefix){
       <div class="globe-container">
         <canvas id="globeCanvasDetail" width="400" height="320"></canvas>
         <div class="globe-status" id="globeIssStatus"><strong>ISS</strong> -- / --</div>
+        <div class="globe-hint" id="globeZoomHint">${t.globe_zoom_hint}</div>
       </div>
       <div class="eyebrow">${eventKind}</div>
       <h1 style="margin-bottom:10px">${eventName}</h1>
@@ -2577,6 +2582,53 @@ function drawGlobeFrame(instance, world){
     // Station und Bahn liegen beide auf dem schwebenden Ring, nicht auf der
     // Kugel. Deshalb laeuft die ISS buendig in ihrer Spur - so soll es sein.
     issPoint = schweben(projection([currentIssLon, currentIssLat]));
+
+    // Ab diesem Zoom wird die Station als 3D-Modell gezeigt. Alles andere
+    // bleibt liegen: der Globus, die Bahnen, die Beschriftung kommen nicht weg.
+    if(issPoint && instance.zoom >= 3){
+      // Das Modell steht senkrecht auf der Erdoberflaehe und zeigt in
+      // Flugrichtung der Bahn - es fliegt also sichtbar die Bahn entlang.
+      const track = issGroundTrack(currentIssLat, currentIssLon, 0, 0.02, 2);
+      const to = track[1] || track[0];
+      const rad = Math.PI / 180;
+      const phi = currentIssLat * rad, lam = currentIssLon * rad;
+      const hoch = [Math.cos(phi)*Math.cos(lam), Math.cos(phi)*Math.sin(lam), Math.sin(phi)];
+      const richtungLaenge = [to[0], to[1], 0];
+      const grad = d => d * rad;
+      const dLat = grad((to[0] - currentIssLat));
+      const dLon = grad((to[1] - currentIssLon)) * Math.cos(phi);
+      const flug = [dLon, dLat, 0];
+      const laengeF = Math.hypot(flug[0], flug[1]) || 1;
+      flug[0] /= laengeF; flug[1] /= laengeF;
+      // Senkrecht auf die Erde, aber in der Ebene der Bahnebene
+      const quer = [hoch[1]*flug[2] - hoch[2]*flug[1],
+                    hoch[2]*flug[0] - hoch[0]*flug[2],
+                    hoch[0]*flug[1] - hoch[1]*flug[0]];
+      const laengeQ = Math.hypot(quer[0], quer[1], quer[2]) || 1;
+      quer[0] /= laengeQ; quer[1] /= laengeQ; quer[2] /= laengeQ;
+      const senkrecht = [quer[1]*hoch[2] - quer[2]*hoch[1],
+                         quer[2]*hoch[0] - quer[0]*hoch[2],
+                         quer[0]*hoch[1] - quer[1]*hoch[0]];
+      // Spalten der Matrix: x = Flugrichtung, y = quer, z = nach oben
+      const richtung = [flug, quer, senkrecht];
+      // Blickrichtung: von aussen in die Kugel, dort wo der Globus gerade
+      // zeigt. Beim Drehen dreht sich das Modell dadurch mit.
+      const phi0 = instance.viewLat * rad, lam0 = instance.viewLon * rad;
+      const blick = [Math.cos(phi0)*Math.cos(lam0), Math.cos(phi0)*Math.sin(lam0), Math.sin(phi0)];
+      // Bei Zoom 3 blendet das Modell weich ein, ab Zoom 5 ist es voll da.
+      const anteil = Math.max(0, Math.min(1, (instance.zoom - 3) / 2));
+      if(anteil > 0 && globePointVisibility(instance, currentIssLon, currentIssLat) > 0){
+        // Die Modellgroesse waechst mit dem Zoom, bleibt aber so begrenzt,
+        // dass die Station nie ueber den Rahmen hinauslaeuft - auch nicht, wenn
+        // sie sich quer stellt. Massgeblich ist die kleinere Kante, denn das
+        // Modell kann sich in beide Richtungen ausbreiten. 118 ist die
+        // Spannweite in Modell-Einheiten.
+        const deckel = Math.min(instance.width, instance.height) / instance.dpr * 0.62;
+        const zielBreite = Math.min(deckel, 90 + 20 * instance.zoom);
+        drawIssModel(ctx, issPoint[0], issPoint[1], instance.px(zielBreite / 118),
+          richtung, blick, anteil, Date.now() / 4200);
+      }
+    }
   }
 
   // Die Markierung wird nach dem Kugel-Clip gezeichnet, damit sie am Rand
@@ -2641,6 +2693,143 @@ function drawGlobeFrame(instance, world){
 
 }
 
+// ---------------------------------------------------------------------------
+// 3D-Modell der ISS
+//
+// Vollstaendig aus Code: eine Liste von Flaechen mit Punkten im lokalen
+// Koordinatensystem der Station. x zeigt in Flugrichtung, y laeuft entlang
+// des Trusses, z zeigt nach oben aus der Erde heraus. Keine externe Datei, kein
+// weiterer Download - so bleibt die App eine einzige Datei.
+const ISS_TEILE = (() => {
+  const teile = [];
+  const quadrat = (a, b, c, d, farbe) => teile.push({punkte: [a, b, c, d], farbe});
+  const quader = (x, y, z, dx, dy, dz, farbe) => {
+    const p = (i, j, k) => [x + dx*i, y + dy*j, z + dz*k];
+    quadrat(p(0,0,0), p(0,1,0), p(0,1,1), p(0,0,1), farbe);
+    quadrat(p(1,0,0), p(1,0,1), p(1,1,1), p(1,1,0), farbe);
+    quadrat(p(0,0,0), p(0,0,1), p(1,0,1), p(1,0,0), farbe);
+    quadrat(p(0,1,0), p(1,1,0), p(1,1,1), p(0,1,1), farbe);
+    quadrat(p(0,0,1), p(0,1,1), p(1,1,1), p(1,0,1), farbe);
+    quadrat(p(0,0,0), p(1,0,0), p(1,1,0), p(0,1,0), farbe);
+  };
+  // Rohr entlang der x-Achse: die druckgefuellten Module und die
+  // angedockten Schiffe sind Zylinder, keine Quader.
+  const rohr = (x0, x1, r, farbe, seg = 12) => {
+    for(let i = 0; i < seg; i++){
+      const a0 = i / seg * Math.PI * 2, a1 = (i + 1) / seg * Math.PI * 2;
+      const y0 = Math.cos(a0)*r, z0 = Math.sin(a0)*r;
+      const y1 = Math.cos(a1)*r, z1 = Math.sin(a1)*r;
+      quadrat([x0,y0,z0], [x0,y1,z1], [x1,y1,z1], [x1,y0,z0], farbe);
+      const deckel = x => {
+        const c = [x, 0, 0], m = [x, 0, r];
+        quadrat(c, [x,y0,z0], m, [x,y1,z1], farbe);
+      };
+      if(i === 0){ deckel(x0); deckel(x1); }
+    }
+  };
+
+  const grauTruss = [188, 196, 205];
+  const weiss = [216, 222, 229];
+  const solar = [26, 46, 92];
+  const solarRahmen = [70, 92, 140];
+  const radiator = [236, 240, 245];
+  const dunkel = [120, 128, 138];
+
+  // Integrierter Truss: das lange Gitter in der Mitte
+  quader(-4, -42, -1.6, 8, 84, 3.2, grauTruss);
+  // Module in Flugrichtung, darunter der Untersturz
+  rohr(-15, 15, 2.2, weiss);
+  rohr(-20, -15, 1.7, weiss, 10);
+  rohr(15, 20, 1.7, weiss, 10);
+  // Russland an einem Ende, Amerika am anderen
+  rohr(-25, -20, 1.6, dunkel, 10);
+  rohr(20, 25, 1.6, dunkel, 10);
+  // Kana­len und Antennen
+  quader(-1.6, 0, 3.2, 3.2, 4, 5, weiss);
+  quader(-.6, -2, 8.2, 1.2, 4, 1.2, dunkel);
+  // Vier Solarflügel: je zwei Panels pro Seite
+  for(const vorzeichen of [-1, 1]){
+    for(const seite of [-1, 1]){
+      for(const panel of [0, 1]){
+        const y0 = vorzeichen * (22 + panel * 14);
+        quader(seite * 3, y0, -0.4, seite * 30, 13, 0.8, solar);
+        // Rahmenkante, damit die Flaeche als Solarpanel erkennbar bleibt
+        quader(seite * 3, y0, -0.5, seite * 30, 1, 0.9, solarRahmen);
+        quader(seite * 3, y0 + 12, -0.5, seite * 30, 1, 0.9, solarRahmen);
+      }
+    }
+  }
+  // Zwei Kuehler an den Enden des Trusses
+  for(const vorzeichen of [-1, 1]){
+    quader(-3, vorzeichen * 50, 0.4, 6, 9, 0.5, radiator);
+    quader(-0.3, vorzeichen * 49.5, 0.4, 0.6, 8, 4, radiator);
+  }
+  return teile;
+})();
+
+// Zeichnet die Station an der Stelle (x, y). Die Blickrichtung folgt dem
+// Globus, damit sich das Modell beim Drehen mitdreht - und es dreht sich
+// langsam von selbst, damit die Form auch ohne Ziehen lesbar wird.
+function drawIssModel(ctx, x, y, groesse, richtung, blick, alpha, spin){
+  const flaechen = [];
+  const beleuchtung = [-0.45, 0.6, 0.66];          // Licht von oben links vorn
+  for(const teil of ISS_TEILE){
+    const ecken = teil.punkte.map(p => {
+      // Spin um die Hochachse, danach in die Welt drehen
+      const c = Math.cos(spin), sn = Math.sin(spin);
+      const rx = p[0]*c - p[1]*sn, ry = p[0]*sn + p[1]*c, rz = p[2];
+      return [
+        rx * richtung[0][0] + ry * richtung[1][0] + rz * richtung[2][0],
+        rx * richtung[0][1] + ry * richtung[1][1] + rz * richtung[2][1],
+        rx * richtung[0][2] + ry * richtung[1][2] + rz * richtung[2][2],
+      ];
+    });
+    // Flaechennormale aus zwei Kanten
+    const a = ecken[1].map((w, i) => w - ecken[0][i]);
+    const b = ecken[2].map((w, i) => w - ecken[0][i]);
+    let n = [
+      a[1]*b[2] - a[2]*b[1],
+      a[2]*b[0] - a[0]*b[2],
+      a[0]*b[1] - a[1]*b[0],
+    ];
+    const laenge = Math.hypot(n[0], n[1], n[2]) || 1;
+    n = n.map(w => w / laenge);
+    // Helligkeit, dazu eine Kante zum Aufhaengen der Flaeche
+    const licht = Math.max(0, n[0]*blick[0] + n[1]*blick[1] + n[2]*blick[2]);
+    const ton = 0.42 + 0.58 * licht;
+    const tiefe = ecken.reduce((sum, e) => sum + e[0]*blick[0] + e[1]*blick[1] + e[2]*blick[2], 0) / 4;
+    flaechen.push({ecken, farbe: teil.farbe, ton, tiefe});
+  }
+  // Von hinten nach vorn zeichnen, sonst liegen die nahen Flaechen drunter
+  flaechen.sort((a, b) => a.tiefe - b.tiefe);
+  // Die Kamera steht weit ausserhalb. Liegt sie dicht am Modell, teilt eine
+  // Flaeche genau auf der Blickachse fast durch null - der Punkt springt dann
+  // auf Tausende Pixel weit nach aussen. Mit diesem Abstand bleibt der Nenner
+  // in jedem Fall weit von null weg.
+  const kameraAbstand = 60;
+  for(const f of flaechen){
+    const proj = f.ecken.map(e => {
+      const tiefe = Math.max(6, kameraAbstand - e[0]);
+      const k = kameraAbstand / tiefe;
+      return [x + (e[1] * blick[1] - e[2] * blick[2]) * groesse * k,
+              y - (e[2] * blick[0] + e[1] * blick[1]) * groesse * k];
+    });
+    const [r0, g0, b0] = f.farbe;
+    const r = Math.round(Math.min(255, r0 * f.ton));
+    const g = Math.round(Math.min(255, g0 * f.ton));
+    const b = Math.round(Math.min(255, b0 * f.ton));
+    ctx.beginPath();
+    ctx.moveTo(proj[0][0], proj[0][1]);
+    for(let i = 1; i < proj.length; i++) ctx.lineTo(proj[i][0], proj[i][1]);
+    ctx.closePath();
+    ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+    ctx.fill();
+    ctx.lineWidth = 0.6;
+    ctx.strokeStyle = `rgba(0,0,0,${0.3 * alpha})`;
+    ctx.stroke();
+  }
+}
+
 function drawGlobeFallback(instance, message){
   const {ctx, width, height, center, radius} = instance;
   ctx.clearRect(0, 0, width, height);
@@ -2686,6 +2875,10 @@ function globeLoop(){
       } else {
         instance.projection.rotate([instance.userRotation, 8, 0]);
       }
+      // Der Zoom steckt allein in der Projektionsskala: Drehen, Bahnen und
+      // Landflaechen wachsen dadurch gemeinsam, ohne dass irgendetwas neu
+      // gezeichnet oder ausgeblendet werden muss.
+      instance.projection.scale(instance.radius * instance.zoom);
       drawGlobeFrame(instance, instance.world);
     } else {
       drawGlobeFallback(instance, "…");
@@ -2753,6 +2946,8 @@ function mountGlobe(canvasId, statusId, options = {}){
     userRotation: 0,
     // Blickpunkt: geografischer Punkt in der Scheibenmitte. Beim ISS-Globus
     // steuert der Nutzer damit die Kugel frei, bis er sie selbst gedreht hat.
+    // Zoomfaktor der Projektion. 1 = ganze Kugel, 14 = dicht herangezoomt.
+    zoom: 1,
     viewLon: 0,
     viewLat: -8,
     userMoved: false,
@@ -2789,6 +2984,8 @@ function mountGlobe(canvasId, statusId, options = {}){
   }
 
   const onDown = e => {
+    // Zwei Finger gleichzeitig heisst Zoom, nicht Drehen.
+    if(e.touches && e.touches.length > 1){ instance.dragging = false; return; }
     instance.dragging = true;
     const punkt = e.touches?.[0] || e;
     instance.lastX = punkt.clientX ?? 0;
@@ -2797,6 +2994,7 @@ function mountGlobe(canvasId, statusId, options = {}){
   };
   const onMove = e => {
     if(!instance.dragging) return;
+    if(e.touches && e.touches.length > 1) return;      // Pinch laeuft
     const punkt = e.touches?.[0] || e;
     const x = punkt.clientX ?? 0;
     const y = punkt.clientY ?? 0;
@@ -2817,7 +3015,41 @@ function mountGlobe(canvasId, statusId, options = {}){
     }
     if(e.cancelable && e.touches) e.preventDefault();
   };
-  const onUp = () => { instance.dragging = false; canvas.style.cursor = "grab"; };
+  const onUp = () => { instance.dragging = false; instance.pinch = 0; canvas.style.cursor = "grab"; };
+
+  // Zoom mit dem Mausrad. Ohne preventDefault wuerde die ganze Seite scrollen.
+  const onWheel = e => {
+    e.preventDefault();
+    const faktor = e.deltaY < 0 ? 1.16 : 1 / 1.16;
+    instance.zoom = Math.max(1, Math.min(14, instance.zoom * faktor));
+  };
+
+  // Zwei-Finger-Zoom auf dem Touchscreen. Solange zwei Finger auf dem Glas
+  // liegen, wird nicht gedreht - das wuerde die Bahn wild hin- und herspringen.
+  const pinchAbstand = t => t.length < 2 ? 0
+    : Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  canvas.addEventListener("wheel", onWheel, {passive: false});
+  const onTouchStart = e => {
+    if(e.touches.length === 2) instance.pinch = pinchAbstand(e.touches);
+  };
+  const onTouchMove = e => {
+    if(e.touches.length !== 2) return;
+    const jetzt = pinchAbstand(e.touches);
+    if(instance.pinch > 0 && jetzt > 0){
+      instance.zoom = Math.max(1, Math.min(14, instance.zoom * (jetzt / instance.pinch)));
+    }
+    instance.pinch = jetzt;
+    if(e.cancelable) e.preventDefault();
+  };
+  const onTouchEnd = () => { if(instance.pinch) instance.pinch = 0; };
+  canvas.addEventListener("touchstart", onTouchStart, {passive: true});
+  canvas.addEventListener("touchmove", onTouchMove, {passive: false});
+  canvas.addEventListener("touchend", onTouchEnd, {passive: true});
+
+  // Doppelklick setzt den Zoom zurueck - der Weg zurueck muss immer leicht
+  // zu finden sein, sonst ist man bei hohem Zoom eingeschlossen.
+  const onDblClick = () => { instance.zoom = 1; };
+  canvas.addEventListener("dblclick", onDblClick);
 
   canvas.onmousedown = onDown;
   canvas.onmousemove = onMove;
