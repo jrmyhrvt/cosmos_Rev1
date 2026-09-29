@@ -2432,7 +2432,10 @@ function issGroundTrack(lat, lon, fromTurns = 0, toTurns = 1, samples = 320){
   const inc = ISS_ORBIT.inclination * Math.PI / 180;
   const sinU0 = Math.sin(lat * Math.PI / 180) / Math.sin(inc);
   const u0 = Math.asin(Math.max(-1, Math.min(1, sinU0)));
-  const lonAt = u => Math.atan2(Math.cos(inc) * Math.sin(u), Math.cos(u));
+  //atan2 liefert Bogenmass. Die folgenden Rechnungen mischen sonst Grad
+  // (die ISS-Länge aus der TLE) mit Bogenmass - die Bahn schwingt dann nur
+  // ein paar Grad hin und her statt um die halbe Erde zu laufen.
+  const lonAt = u => Math.atan2(Math.cos(inc) * Math.sin(u), Math.cos(u)) * 180 / Math.PI;
   const lon0 = lonAt(u0);
   const points = [];
   for(let i = 0; i <= samples; i++){
