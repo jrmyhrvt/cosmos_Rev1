@@ -2498,133 +2498,112 @@ function drawGlobeFrame(instance, world){
   ctx.fill();
   ctx.stroke();
 
-  // ISS-Bahn (Bodenspur) - nur der sichtbare Teil der Erdkugel.
+  // ISS-Bahn (Bodenspur) als vollstaendiger Ring um die Kugel.
   // GloStar zeigt den Globus ohne ISS: dort gehoert sie thematisch nicht hin.
-  let issHover = null;
-  let issSurface = null;
+  let issPoint = null;
   if(instance.showIss && Number.isFinite(currentIssLat) && Number.isFinite(currentIssLon)){
-    // Direkt am Horizont schiebt die Projektion die Punkte zusammen, die
-    // Linie bricht dort in spitze Winkel aus. Deshalb wird ein schmaler
-    // Streifen vor dem Rand ausgelassen - das ist der Unterschied zwischen
-    // einer weichen Sinuskurve und einem Zickzack.
-    const horizonMargin = 0.06;
-    const strokeTrack = (track, style, dash, onlyNearSide) => {
-      ctx.beginPath();
-      let drawing = false;
+    // Sehr dichte Abtastung: an den Polen wechselt die Laenge schnell, und
+    // mit zu wenigen Punkten bricht die Bahn dort in sichtbare Zacken aus.
+    const SAMPLES = 900;
+
+    // Die Bahn wird in zusammenhaengende Stuecke zerlegt, getrennt an der
+    // Stelle, wo sie ueber den Horizont in die Rueckseite laeuft. Jedes Stueck
+    // wird einzeln gezeichnet - so sitzen die Enden genau am Rand und ragen
+    // nicht ueber die Kugel hinaus, wo sie als spitze Haken auffaellen.
+    const trackStuecke = track => {
+      const stuecke = [];
+      let offen = null;
       for(const point of track){
-        if(onlyNearSide && globePointVisibility(instance, point[0], point[1]) <= horizonMargin){
-          drawing = false; continue;                    // ueber den Horizont hinaus
-        }
+        const vorn = globePointVisibility(instance, point[0], point[1]) > 0;
         const projected = projection(point);
-        if(!projected){ drawing = false; continue; }
-        if(!drawing){ ctx.moveTo(projected[0], projected[1]); drawing = true; }
-        else ctx.lineTo(projected[0], projected[1]);
+        if(!projected){ offen = null; continue; }
+        if(!offen || offen.vorn !== vorn){ offen = {vorn, punkte: []}; stuecke.push(offen); }
+        offen.punkte.push(projected);
       }
-      // Beide Spuren bleiben weiss - rot ist ausschliesslich fuer die
-      // aktuelle Position reserviert, sonst weiss man nicht mehr,
-      // was der Punkt ist.
-      ctx.strokeStyle = style;
-      ctx.lineWidth = instance.px(1.2);
-      ctx.setLineDash(dash);
-      ctx.stroke();
+      return stuecke.filter(stueck => stueck.punkte.length > 1);
+    };
+
+    // Rueckseiten-Stuecke werden nur schwach gezeichnet. Der Kurs laeuft dann
+    // ohne Luecke einmal um die ganze Erde, aber die Kugel verdeckt trotzdem,
+    // welcher Teil gerade hinten liegt.
+    const strokeTrack = (track, stilVorn, stilHinten, strich) => {
+      for(const stueck of trackStuecke(track)){
+        ctx.beginPath();
+        ctx.moveTo(stueck.punkte[0][0], stueck.punkte[0][1]);
+        for(let i = 1; i < stueck.punkte.length; i++) ctx.lineTo(stueck.punkte[i][0], stueck.punkte[i][1]);
+        // Beide Spuren bleiben weiss - rot ist ausschliesslich fuer die
+        // aktuelle Position reserviert, sonst weiss man nicht mehr,
+        // was der Punkt ist.
+        ctx.strokeStyle = stueck.vorn ? stilVorn : stilHinten;
+        ctx.lineWidth = instance.px(stueck.vorn ? 1.3 : 1);
+        ctx.setLineDash(strich);
+        ctx.stroke();
+      }
       ctx.setLineDash([]);
     };
 
-    const pastTrack = issGroundTrack(currentIssLat, currentIssLon, -1, 0);
-    const nextTrack = issGroundTrack(currentIssLat, currentIssLon, 0, 1);
-    // Ein hauchduenner Schleier ueber den kompletten Ring: der Kurs ist ein
-    // durchgehender Sinus um die Erde. Nur so bleibt die ganze Bahn erkennbar,
-    // auch wenn ein Teil gerade hinter dem Horizont liegt.
-    strokeTrack(pastTrack, "rgba(255,255,255,.10)", [], false);
-    strokeTrack(nextTrack, "rgba(255,255,255,.10)", [], false);
+    const pastTrack = issGroundTrack(currentIssLat, currentIssLon, -1, 0, SAMPLES);
+    const nextTrack = issGroundTrack(currentIssLat, currentIssLon, 0, 1, SAMPLES);
     // Durchgezogen: die zuletzt geflogene Umrundung.
-    strokeTrack(pastTrack, "rgba(255,255,255,.45)", [], true);
+    strokeTrack(pastTrack, "rgba(255,255,255,.5)", "rgba(255,255,255,.12)", []);
     // Gestrichelt: derselbe Kreislauf eine Umrundung weiter - dort ist die
     // ISS in etwa 92 Minuten. Beide Spuren liegen rund 23 Grad versetzt
     // zueinander, weil die Erde in dieser Zeit weiterdreht.
-    strokeTrack(nextTrack, "rgba(255,255,255,.85)", [instance.px(4), instance.px(4)], true);
+    strokeTrack(nextTrack, "rgba(255,255,255,.9)", "rgba(255,255,255,.22)", [instance.px(4), instance.px(4)]);
 
-    // Die ISS schwebt rund 400 km ueber der Erde, sie steht also nicht auf
-    // der Kugel. Fuellt man den Punkt auf diesen Radius auf, wandert er
-    // radial nach aussen - der Bodenpunkt bleibt als kleine Marke liegen.
-    if(globePointVisibility(instance, currentIssLon, currentIssLat) > horizonMargin){
-      issSurface = projection([currentIssLon, currentIssLat]);
-      const altKm = Number.isFinite(currentIssAlt) ? currentIssAlt : ISS_ORBIT.altitudeKm;
-      const factor = 1 + Math.max(0, altKm) / ISS_ORBIT.earthRadiusKm;
-      issHover = [
-        center[0] + (issSurface[0] - center[0]) * factor,
-        center[1] + (issSurface[1] - center[1]) * factor
-      ];
-      ctx.beginPath();
-      ctx.arc(issSurface[0], issSurface[1], instance.px(3.5), 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(255,255,255,.7)";
-      ctx.lineWidth = instance.px(1);
-      ctx.stroke();
-    }
+    // Die aktuelle Position liegt auf der Kugel - dort sitzt der Punkt. Ist
+    // die Station gerade ueber dem Horizont, wandert der Punkt hinter die
+    // Erde; dann wird er nur gedimmt durch die Kugel hindurch gezeigt.
+    issPoint = projection([currentIssLon, currentIssLat]);
   }
   ctx.restore();
 
-  // Die Markierung wird nach dem Kugel-Clip gezeichnet: sie liegt ja ausserhalb
-  // der Erdoberflaeche und waere am Rand sonst abgeschnitten.
-  if(issHover){
-    const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 520);
-    const altKm = Math.round(Number.isFinite(currentIssAlt) ? currentIssAlt : ISS_ORBIT.altitudeKm);
+  // Die Markierung wird nach dem Kugel-Clip gezeichnet, damit sie am Rand
+  // nicht abgeschnitten wird.
+  if(issPoint){
+    // Liegt die Station gerade hinter dem Horizont, zeigt der Punkt nur
+    // gedimmt durch die Erde hindurch - so weiss man jederzeit, wo sie ist.
+    const vorn = globePointVisibility(instance, currentIssLon, currentIssLat) > 0;
+    const alpha = vorn ? 1 : 0.34;
+    const pulse = vorn ? 0.5 + 0.5 * Math.sin(Date.now() / 520) : 0;
     const fontSize = instance.px(10);
 
-    // Hoehenlinie vom Bodenpunkt zur Station.
     ctx.beginPath();
-    ctx.moveTo(issSurface[0], issSurface[1]);
-    ctx.lineTo(issHover[0], issHover[1]);
-    ctx.strokeStyle = "rgba(255,255,255,.55)";
-    ctx.lineWidth = instance.px(1.2);
-    ctx.setLineDash([instance.px(2), instance.px(3)]);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    ctx.beginPath();
-    ctx.arc(issHover[0], issHover[1], instance.px(9 + pulse * 5), 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(255,59,48,${0.32 - pulse * 0.2})`;
+    ctx.arc(issPoint[0], issPoint[1], instance.px(9 + pulse * 5), 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,59,48,${(0.32 - pulse * 0.2) * alpha})`;
     ctx.fill();
 
     // dunkler Ring
     ctx.beginPath();
-    ctx.arc(issHover[0], issHover[1], instance.px(5.5), 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(0,0,0,.75)";
+    ctx.arc(issPoint[0], issPoint[1], instance.px(5.5), 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,0,0,${0.75 * alpha})`;
     ctx.fill();
     // heller Ring
     ctx.beginPath();
-    ctx.arc(issHover[0], issHover[1], instance.px(4.5), 0, Math.PI * 2);
-    ctx.strokeStyle = "#fff";
+    ctx.arc(issPoint[0], issPoint[1], instance.px(4.5), 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
     ctx.lineWidth = instance.px(1.6);
     ctx.stroke();
     // der rote Punkt selbst
     ctx.beginPath();
-    ctx.arc(issHover[0], issHover[1], instance.px(3.2), 0, Math.PI * 2);
-    ctx.fillStyle = "#ff3b30";
+    ctx.arc(issPoint[0], issPoint[1], instance.px(3.2), 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,59,48,${alpha})`;
     ctx.fill();
 
     // Beschriftung nach aussen, mit dunklem Umriss, damit sie auf Land wie
     // ueber dem Ozean gleich gut lesbar bleibt.
     ctx.font = `700 ${fontSize}px -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif`;
-    const toRight = issHover[0] >= center[0];
+    const toRight = issPoint[0] >= center[0];
     const gap = instance.px(9);
-    const lx = toRight ? issHover[0] + gap : issHover[0] - gap;
-    const ly = Math.min(Math.max(issHover[1] - instance.px(7), fontSize + instance.px(4)),
+    const lx = toRight ? issPoint[0] + gap : issPoint[0] - gap;
+    const ly = Math.min(Math.max(issPoint[1] - instance.px(7), fontSize + instance.px(4)),
                         instance.height - instance.px(4));
     ctx.textAlign = toRight ? "left" : "right";
     ctx.lineWidth = instance.px(2.5);
-    ctx.strokeStyle = "rgba(0,0,0,.85)";
+    ctx.strokeStyle = `rgba(0,0,0,${0.85 * alpha})`;
     ctx.strokeText("ISS", lx, ly);
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
     ctx.fillText("ISS", lx, ly);
-
-    // Der Abstand zur Erde als Zahl - das ist die Angabe, die auf den
-    // Tracker-Seiten neben dem Punkt steht.
-    ctx.font = `${fontSize}px -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif`;
-    ctx.strokeStyle = "rgba(0,0,0,.85)";
-    ctx.strokeText(altKm + " km", lx, ly + fontSize + instance.px(2));
-    ctx.fillStyle = "rgba(255,255,255,.85)";
-    ctx.fillText(altKm + " km", lx, ly + fontSize + instance.px(2));
   }
 
   // Weisser Kreisumriss
@@ -2650,11 +2629,6 @@ function drawGlobeFallback(instance, message){
   ctx.fillText(message, center[0], center[1]);
 }
 
-// Blickversatz der ISS: sie steht um diese Grad rechts und ueber der
-// Kugelmitte. Nur so ist der Abstand zur Erdoberflaeche sichtbar.
-const ISS_VIEW_LON_OFFSET = -48;
-const ISS_VIEW_LAT_OFFSET = -26;
-
 function globeLoop(){
   globeAnimationId = null;
   for(const [canvasId, instance] of globes){
@@ -2673,14 +2647,18 @@ function globeLoop(){
       // lief am Rand oder ueber Land - genau das war "schlecht sichtbar".
       const hasIss = instance.showIss
         && Number.isFinite(currentIssLon) && Number.isFinite(currentIssLat);
-      // Die ISS sitzt bewusst NICHT in der Kugelmitte. Mittig betrachtet
-      // liegt die Station genau auf der Scheibe, ihr Abstand zur Erde
-      // waere unsichtbar. Seitlich versetzt sieht man beim Drehen deutlich,
-      // dass sie ueber der Oberflaeche schwebt.
-      const lon = hasIss ? currentIssLon + ISS_VIEW_LON_OFFSET : 0;
-      const lat = hasIss ? currentIssLat + ISS_VIEW_LAT_OFFSET : -8;
-      const spin = instance.userRotation;
-      instance.projection.rotate([-lon + spin, -lat, 0]);
+      if(hasIss){
+        // Solange der Nutzer die Kugel nicht selbst gedreht hat, schaut sie
+        // auf die Station. Danach bleibt der Blick genau dort stehen, wo er
+        // hingesdreht wurde - sonst kaeme das Drehen nicht ueberhaupt an.
+        if(!instance.userMoved){
+          instance.viewLon = currentIssLon;
+          instance.viewLat = currentIssLat;
+        }
+        instance.projection.rotate([-instance.viewLon, -instance.viewLat, 0]);
+      } else {
+        instance.projection.rotate([instance.userRotation, 8, 0]);
+      }
       drawGlobeFrame(instance, instance.world);
     } else {
       drawGlobeFallback(instance, "…");
@@ -2746,8 +2724,14 @@ function mountGlobe(canvasId, statusId, options = {}){
     path: null,
     projection: d3.geoOrthographic().clipAngle(90),
     userRotation: 0,
+    // Blickpunkt: geografischer Punkt in der Scheibenmitte. Beim ISS-Globus
+    // steuert der Nutzer damit die Kugel frei, bis er sie selbst gedreht hat.
+    viewLon: 0,
+    viewLat: -8,
+    userMoved: false,
     dragging: false,
     lastX: 0,
+    lastY: 0,
     world: null,
     width: 0,
     height: 0,
@@ -2777,12 +2761,33 @@ function mountGlobe(canvasId, statusId, options = {}){
     instance.observer.observe(canvas.parentElement || canvas);
   }
 
-  const onDown = e => { instance.dragging = true; instance.lastX = e.clientX ?? e.touches?.[0]?.clientX ?? 0; canvas.style.cursor = "grabbing"; };
+  const onDown = e => {
+    instance.dragging = true;
+    const punkt = e.touches?.[0] || e;
+    instance.lastX = punkt.clientX ?? 0;
+    instance.lastY = punkt.clientY ?? 0;
+    canvas.style.cursor = "grabbing";
+  };
   const onMove = e => {
     if(!instance.dragging) return;
-    const x = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
-    instance.userRotation += (x - instance.lastX) * 0.35;
+    const punkt = e.touches?.[0] || e;
+    const x = punkt.clientX ?? 0;
+    const y = punkt.clientY ?? 0;
+    const dx = x - instance.lastX;
+    const dy = y - instance.lastY;
     instance.lastX = x;
+    instance.lastY = y;
+    // Der ISS-Globus wird frei um die Mitte der Kugel gedreht, waagrecht wie
+    // senkrecht. Bewegt wird der Punkt, der gerade in der Scheibenmitte
+    // liegt - dadurch dreht sich die Erde unter dem Finger und die Bahn
+    // bleibt als geschlossener Ring im Bild.
+    if(instance.showIss){
+      instance.userMoved = true;
+      instance.viewLon = ((instance.viewLon - dx * 0.35) % 360 + 540) % 360 - 180;
+      instance.viewLat = Math.max(-88, Math.min(88, instance.viewLat + dy * 0.35));
+    } else {
+      instance.userRotation += dx * 0.35;
+    }
     if(e.cancelable && e.touches) e.preventDefault();
   };
   const onUp = () => { instance.dragging = false; canvas.style.cursor = "grab"; };
