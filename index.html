@@ -110,8 +110,6 @@
      beim Scrollen lag sie sichtbar hinter den Text. Absolut + inset:0
      heisst: fuellt den Rahmen exakt und wird von border-radius
      sauber abgeschnitten. Die Detail-Grafik (SVG) bleibt zentriert. */
-  .glostar-viewport canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-  .globe-hint{position:absolute;right:14px;top:12px;font-size:10px;color:var(--muted);letter-spacing:.04em}
 
   .src-link{display:inline-block;margin-top:12px;font-size:12px;font-weight:600;color:#fff;text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px}
   .src-note{margin-top:16px;padding:12px 14px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.03)}
@@ -188,7 +186,7 @@
     <section class="view" id="live-view">
       <div id="live-view-main">
         <div class="section-head">
-          <div><div class="eyebrow" style="margin-bottom:9px" data-i18n="sec_live_eyebrow">Echtzeit & Aktiv</div><h1 data-i18n="sec_live_title">Live Events</h1></div>
+          <div><div class="eyebrow" style="margin-bottom:9px" data-i18n="sec_live_eyebrow">Echtzeit & Aktiv</div><h1 data-i18n="sec_live_title">Live-Ereignisse</h1></div>
         </div>
         <div class="event-list" id="liveEventList"></div>
       </div>
@@ -198,7 +196,7 @@
     <section class="view" id="events">
       <div id="events-main">
         <div class="search-sticky">
-          <input type="text" class="search-input" id="searchEvents" data-i18n-placeholder="search_events" placeholder="Events durchsuchen..." />
+          <input type="text" class="search-input" id="searchEvents" data-i18n-placeholder="search_events" placeholder="Ereignisse durchsuchen..." />
         </div>
         <div class="section-head">
           <div><div class="eyebrow" style="margin-bottom:9px" data-i18n="sec_events_eyebrow">Space-Calendar-Feed</div><h1 data-i18n="sec_events_title">Ereignisse</h1></div>
@@ -230,10 +228,6 @@
         </div>
         <div class="section-head">
           <div><div class="eyebrow" style="margin-bottom:9px" data-i18n="sec_glostar_eyebrow">Astro-Lexikon</div><h1 data-i18n="sec_glostar_title">GloStar</h1></div>
-        </div>
-        <div class="glostar-viewport">
-          <canvas id="globeCanvasGloStar"></canvas>
-          <div class="globe-hint" data-i18n="glostar_globe_hint">Ziehen zum Drehen</div>
         </div>
         <div class="glostar-grid" id="glostarGrid"></div>
       </div>
@@ -283,10 +277,10 @@ const TRANSLATIONS = {
     quote: "&ldquo;Irgendwo wartet etwas <em>Unglaubliches</em> darauf, entdeckt zu werden.&rdquo;",
     sub: "Verfolge kosmische Momente. Tippe auf ein Ereignis, um das Universum zu erkunden.",
     home: "Home", live: "Live", events: "Ereignisse", history: "Verlauf", glostar: "GloStar",
-    search_events: "Events durchsuchen...",
+    search_events: "Ereignisse durchsuchen...",
     search_history: "Verlauf durchsuchen...",
     search_glostar: "Begriffe im GloStar suchen...",
-    sec_live_title: "Live Events",
+    sec_live_title: "Live-Ereignisse",
     sec_live_eyebrow: "Echtzeit & Aktiv",
     sec_events_title: "Ereignisse",
     sec_events_eyebrow: "Space Calendar · NASA/JPL · NOAA",
@@ -299,8 +293,8 @@ const TRANSLATIONS = {
     gs_lookup: "%s im GloStar nachschlagen",
     gs_related: "Verwandte Einträge",
     no_live: "Keine aktiven Live-Ereignisse",
-    no_live_sub: "Sobald ein Kalender-Event aktiv wird, erscheint hier automatisch.",
-    no_events: "Keine kommenden Events",
+    no_live_sub: "Sobald ein Kalender-Ereignis aktiv wird, erscheint hier automatisch.",
+    no_events: "Keine kommenden Ereignisse",
     no_history: "Keine Verlaufseinträge",
     total: "gesamt",
     loading: "Daten werden geladen...",
@@ -318,14 +312,13 @@ const TRANSLATIONS = {
     diameter: "Durchmesser",
     altitude: "Höhe",
     velocity: "Geschwindigkeit",
-    glostar_globe_hint: "Ziehen zum Drehen",
     iss_orbit: "ISS-Bahn",
     error_globe: "Weltkarte nicht verfügbar",
     lat: "Breitengrad", lon: "Längengrad", status: "Status",
     date_time: "Datum & Uhrzeit", type: "Typ",
     active: "Aktiv", planned: "Geplant", passed: "Vorbei", countdown: "Countdown", live_tracking: "Live-Tracking aktiv",
     iss_name: "ISS — Live-Position", iss_desc: "Verfolge die Internationale Raumstation in Echtzeit, während sie die Erde auf ihrer Umlaufbahn umkreist.",
-    cat_live_space: "Live-Raumfahrt", cat_space_cal: "Space Kalender", cat_past: "Vergangenes Event",
+    cat_live_space: "Live-Raumfahrt", cat_space_cal: "Space-Kalender", cat_past: "Vergangenes Ereignis",
     cat_moon: "Mondphase", cat_meteor: "Meteorstrom", cat_eclipse: "Finsternis", cat_launch: "Raketenstart", cat_planet: "Planetar", cat_equinox: "Tagundnachtgleiche", cat_solstice: "Sonnenwende", cat_aurora: "Polarlicht", cat_close_approach: "Erdvorbeiflug", cat_space_weather: "Weltraumwetter", cat_history: "Weltraumgeschichte",
     cat_comet: "Komet", cat_mission: "Mission", cat_deep_sky: "Deep Sky", cat_occultation: "Bedeckung",
     
@@ -447,7 +440,6 @@ const TRANSLATIONS = {
     diameter: "Diameter",
     altitude: "Altitude",
     velocity: "Velocity",
-    glostar_globe_hint: "Drag to rotate",
     iss_orbit: "ISS orbit",
     error_globe: "World map unavailable",
     lat: "Latitude", lon: "Longitude", status: "Status",
@@ -576,7 +568,6 @@ const TRANSLATIONS = {
     diameter: "Diámetro",
     altitude: "Altitud",
     velocity: "Velocidad",
-    glostar_globe_hint: "Arrastra para girar",
     iss_orbit: "Órbita de la ISS",
     error_globe: "Mapa del mundo no disponible",
     lat: "Latitud", lon: "Longitud", status: "Estado",
@@ -2156,9 +2147,6 @@ function resetDetail(viewPrefix){
 function closeDetail(viewPrefix){
   resetDetail(viewPrefix);
   pruneGlobes();
-  if(viewPrefix === "glostar"){
-    mountGlobe("globeCanvasGloStar", null, {radiusFactor: 0.47, autoRotate: true, showIss: false});
-  }
 }
 
 function renderLiveEvents(){
@@ -2166,7 +2154,7 @@ function renderLiveEvents(){
   const t = TRANSLATIONS[currentLang];
 
   // "Live" ergibt sich automatisch aus den Zeitdaten: die ISS ist dauerhaft
-  // live, dazu jedes Kalender-Event, dessen Zeitfenster gerade laeuft.
+  // live, dazu jedes Kalender-Ereignis, dessen Zeitfenster gerade laeuft.
   const liveEvents = EVENTS.filter(e => eventState(e) === "live");
 
   if(liveEvents.length === 0){
@@ -2818,7 +2806,6 @@ function switchView(target){
   resetDetail(target);
   pruneGlobes();
   renderAll();
-  if(target === "glostar") mountGlobe("globeCanvasGloStar", null, {radiusFactor: 0.47, autoRotate: true, showIss: false});
   return view;
 }
 
@@ -2833,9 +2820,6 @@ document.getElementById('brandBtn').addEventListener('click', () => {
 document.getElementById('searchEvents').addEventListener('input', e => renderEvents(e.target.value));
 document.getElementById('searchHistory').addEventListener('input', e => renderHistory(e.target.value));
 document.getElementById('searchGloStar').addEventListener('input', e => renderGloStar(e.target.value));
-
-// Globus im GloStar-Bereich vorab laden, damit er sofort da ist.
-mountGlobe("globeCanvasGloStar", null, {radiusFactor: 0.47, autoRotate: true, showIss: false});
 
 loadEventCache();
 sortEventsAutomatically();
