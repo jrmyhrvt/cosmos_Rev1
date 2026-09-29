@@ -2483,6 +2483,13 @@ function globePointVisibility(instance, lon, lat){
 // Kugel mit und sieht auf jedem Bildschirm gleich aus.
 const ISS_RING_FACTOR = 1.03;
 
+// Vergroesserung des 3D-Modells gegenueber der echten Groesse. Die ISS ist
+// 0,0017 % des Erdradius und damit auf dem Globen unsichtbar. Mit diesem
+// Wert misst sie rund 6 Grad Bogen: bei maximalem Zoom nimmt sie etwa zwei
+// Drittel der Bildhoehe ein, davor ist sie ein kleiner Punkt. In der Szene
+// verankert waechst sie mit dem Zoom mit, statt eine Pixelgroesse zu behalten.
+const ISS_MODELL_MASSSTAB = 0.0009;
+
 function globePointOnNearSide(instance, lon, lat){
   return globePointVisibility(instance, lon, lat) > 0;
 }
@@ -2501,16 +2508,24 @@ function drawGlobeFrame(instance, world){
     center[1] + (pt[1] - center[1]) * ISS_RING_FACTOR
   ];
 
+  // Wie weit die Kugel wirklich reicht. Die Projektion skaliert beim Zoom
+  // bereits mit, aber gezeichnet wurde bisher immer im festen Radius - damit
+  // blieb ein starrer Kreis stehen und nur der Inhalt darin wurde groesser.
+  // Das ist eine Lupe. Hier waechst die Kugel selbst mit, laesst am Ende den
+  // Rand aus dem Bild heraus und man ist drin, so wie beim Hineinzoomen in
+  // eine Karte.
+  const kugel = radius * instance.zoom;
+
   // Schwarzer Ozean
   ctx.beginPath();
-  ctx.arc(center[0], center[1], radius, 0, Math.PI * 2);
+  ctx.arc(center[0], center[1], kugel, 0, Math.PI * 2);
   ctx.fillStyle = "#000";
   ctx.fill();
 
   // Reale Natural-Earth-Landflaechen
   ctx.save();
   ctx.beginPath();
-  ctx.arc(center[0], center[1], radius, 0, Math.PI * 2);
+  ctx.arc(center[0], center[1], kugel, 0, Math.PI * 2);
   ctx.clip();
   // clip() laesst den Begrenzungskreis im aktuellen Pfad liegen. Ohne dieses
   // beginPath() wuerde der Landfuellung auch der Kreis gefuellt und die
@@ -2617,16 +2632,17 @@ function drawGlobeFrame(instance, world){
       const blick = [Math.cos(phi0)*Math.cos(lam0), Math.cos(phi0)*Math.sin(lam0), Math.sin(phi0)];
       // Bei Zoom 3 blendet das Modell weich ein, ab Zoom 5 ist es voll da.
       const anteil = Math.max(0, Math.min(1, (instance.zoom - 3) / 2));
-      if(anteil > 0 && globePointVisibility(instance, currentIssLon, currentIssLat) > 0){
-        // Die Modellgroesse waechst mit dem Zoom, bleibt aber so begrenzt,
-        // dass die Station nie ueber den Rahmen hinauslaeuft - auch nicht, wenn
-        // sie sich quer stellt. Massgeblich ist die kleinere Kante, denn das
-        // Modell kann sich in beide Richtungen ausbreiten. 118 ist die
-        // Spannweite in Modell-Einheiten.
-        const deckel = Math.min(instance.width, instance.height) / instance.dpr * 0.62;
-        const zielBreite = Math.min(deckel, 90 + 20 * instance.zoom);
-        drawIssModel(ctx, issPoint[0], issPoint[1], instance.px(zielBreite / 118),
-          richtung, blick, anteil, Date.now() / 4200);
+      // Bei starkem Zoom liegt die Station schnell ausserhalb des Bildes.
+      // Dann wird gar nichts gezeichnet, statt 250 Flaechen ins Leere zu
+      // zeichnen. Der Rand ist grosszuegig, weil das Modell breiter ist als
+      // der Punkt selbst.
+      const ausserhalb = !issPoint ||
+        issPoint[0] < -instance.px(120) || issPoint[0] > instance.width + instance.px(120) ||
+        issPoint[1] < -instance.px(120) || issPoint[1] > instance.height + instance.px(120);
+      if(anteil > 0 && !ausserhalb &&
+         globePointVisibility(instance, currentIssLon, currentIssLat) > 0){
+        drawIssModel(ctx, instance, projection, center,
+          {hoch, flug, quer, senkrecht}, Date.now() / 4200, anteil);
       }
     }
   }
@@ -2686,7 +2702,7 @@ function drawGlobeFrame(instance, world){
 
   // Weisser Kreisumriss
   ctx.beginPath();
-  ctx.arc(center[0], center[1], radius, 0, Math.PI * 2);
+  ctx.arc(center[0], center[1], kugel, 0, Math.PI * 2);
   ctx.strokeStyle = "rgba(255,255,255,.75)";
   ctx.lineWidth = instance.px(1.5);
   ctx.stroke();
@@ -2767,65 +2783,67 @@ const ISS_TEILE = (() => {
   return teile;
 })();
 
-// Zeichnet die Station an der Stelle (x, y). Die Blickrichtung folgt dem
-// Globus, damit sich das Modell beim Drehen mitdreht - und es dreht sich
-// langsam von selbst, damit die Form auch ohne Ziehen lesbar wird.
-function drawIssModel(ctx, x, y, groesse, richtung, blick, alpha, spin){
+// Die Station wird als Teil der Szene gezeichnet, nicht als Aufkleber auf dem
+// Bildschirm: jeder Eckpunkt bekommt eine Position auf der Erdkugel und laeuft
+// durch dieselbe Projektion wie Land, Bahnen und Kugelrand. Dadurch waechst das
+// Modell beim Zoomen von selbst mit, verkuenzt sich am Horizont wie alles
+// andere und bleibt unverzerrt.
+function drawIssModel(ctx, instance, projection, center, basis, spin, alpha){
+  const {hoch, flug, quer, senkrecht} = basis;
+  const rad = Math.PI / 180;
+  // Die echte ISS ist 109 m breit, die Erde 12 742 km - auf dem Globus waere
+  // sie ein Punkt. Deshalb wird sie hier um ISS_MODELL_MASSSTAB vergroessert
+  // dargestellt. Sie waechst aber mit dem Zoom mit und ist am Ende genauso
+  // gross wie ein Objekt, dem man sich naehern wuerde.
+  const M = ISS_MODELL_MASSSTAB;
   const flaechen = [];
-  const beleuchtung = [-0.45, 0.6, 0.66];          // Licht von oben links vorn
+  const licht = [-0.4, 0.55, 0.73];
   for(const teil of ISS_TEILE){
+    const c = Math.cos(spin), sn = Math.sin(spin);
     const ecken = teil.punkte.map(p => {
-      // Spin um die Hochachse, danach in die Welt drehen
-      const c = Math.cos(spin), sn = Math.sin(spin);
       const rx = p[0]*c - p[1]*sn, ry = p[0]*sn + p[1]*c, rz = p[2];
-      return [
-        rx * richtung[0][0] + ry * richtung[1][0] + rz * richtung[2][0],
-        rx * richtung[0][1] + ry * richtung[1][1] + rz * richtung[2][1],
-        rx * richtung[0][2] + ry * richtung[1][2] + rz * richtung[2][2],
-      ];
+      // Lokale Achsen in die Erde drehen
+      const wx = rx*flug[0] + ry*quer[0] + rz*senkrecht[0];
+      const wy = rx*flug[1] + ry*quer[1] + rz*senkrecht[1];
+      const wz = rx*flug[2] + ry*quer[2] + rz*senkrecht[2];
+      // Station sitzt auf dem schwebenden Ring, wie ihre Bahn
+      const X = hoch[0]*ISS_RING_FACTOR + wx*M;
+      const Y = hoch[1]*ISS_RING_FACTOR + wy*M;
+      const Z = hoch[2]*ISS_RING_FACTOR + wz*M;
+      const laenge = Math.hypot(X, Y, Z);
+      const lon = Math.atan2(Y, X) / rad;
+      const lat = Math.asin(Z / laenge) / rad;
+      const proj = projection([lon, lat]);
+      if(!proj) return null;
+      // Die Projection rechnet mit dem Einheitsradius, der Abstand zur Erde
+      // kommt also als Skalierung vom Kugelmittelpunkt aus dazu.
+      return [center[0] + (proj[0] - center[0]) * laenge,
+              center[1] + (proj[1] - center[1]) * laenge,
+              X, Y, Z];
     });
-    // Flaechennormale aus zwei Kanten
-    const a = ecken[1].map((w, i) => w - ecken[0][i]);
-    const b = ecken[2].map((w, i) => w - ecken[0][i]);
-    let n = [
-      a[1]*b[2] - a[2]*b[1],
-      a[2]*b[0] - a[0]*b[2],
-      a[0]*b[1] - a[1]*b[0],
-    ];
-    const laenge = Math.hypot(n[0], n[1], n[2]) || 1;
-    n = n.map(w => w / laenge);
-    // Helligkeit, dazu eine Kante zum Aufhaengen der Flaeche
-    const licht = Math.max(0, n[0]*blick[0] + n[1]*blick[1] + n[2]*blick[2]);
-    const ton = 0.42 + 0.58 * licht;
-    const tiefe = ecken.reduce((sum, e) => sum + e[0]*blick[0] + e[1]*blick[1] + e[2]*blick[2], 0) / 4;
-    flaechen.push({ecken, farbe: teil.farbe, ton, tiefe});
+    if(ecken.some(e => !e)) continue;                 // Teil liegt hinten
+    // Flaechennormale aus zwei Kanten im Erdkoordinatensystem
+    const a = [ecken[1][2]-ecken[0][2], ecken[1][3]-ecken[0][3], ecken[1][4]-ecken[0][4]];
+    const b = [ecken[2][2]-ecken[0][2], ecken[2][3]-ecken[0][3], ecken[2][4]-ecken[0][4]];
+    let n = [a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2], a[0]*b[1] - a[1]*b[0]];
+    const laengeN = Math.hypot(n[0], n[1], n[2]) || 1;
+    n = [n[0]/laengeN, n[1]/laengeN, n[2]/laengeN];
+    const helligkeit = Math.max(0, n[0]*licht[0] + n[1]*licht[1] + n[2]*licht[2]);
+    const tiefe = ecken.reduce((sum, e) => sum + e[2]*hoch[0] + e[3]*hoch[1] + e[4]*hoch[2], 0) / 4;
+    flaechen.push({ecken, farbe: teil.farbe, ton: 0.4 + 0.6*helligkeit, tiefe});
   }
   // Von hinten nach vorn zeichnen, sonst liegen die nahen Flaechen drunter
   flaechen.sort((a, b) => a.tiefe - b.tiefe);
-  // Die Kamera steht weit ausserhalb. Liegt sie dicht am Modell, teilt eine
-  // Flaeche genau auf der Blickachse fast durch null - der Punkt springt dann
-  // auf Tausende Pixel weit nach aussen. Mit diesem Abstand bleibt der Nenner
-  // in jedem Fall weit von null weg.
-  const kameraAbstand = 60;
   for(const f of flaechen){
-    const proj = f.ecken.map(e => {
-      const tiefe = Math.max(6, kameraAbstand - e[0]);
-      const k = kameraAbstand / tiefe;
-      return [x + (e[1] * blick[1] - e[2] * blick[2]) * groesse * k,
-              y - (e[2] * blick[0] + e[1] * blick[1]) * groesse * k];
-    });
-    const [r0, g0, b0] = f.farbe;
-    const r = Math.round(Math.min(255, r0 * f.ton));
-    const g = Math.round(Math.min(255, g0 * f.ton));
-    const b = Math.round(Math.min(255, b0 * f.ton));
     ctx.beginPath();
-    ctx.moveTo(proj[0][0], proj[0][1]);
-    for(let i = 1; i < proj.length; i++) ctx.lineTo(proj[i][0], proj[i][1]);
+    ctx.moveTo(f.ecken[0][0], f.ecken[0][1]);
+    for(let i = 1; i < f.ecken.length; i++) ctx.lineTo(f.ecken[i][0], f.ecken[i][1]);
     ctx.closePath();
-    ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+    const [r, g, b] = f.farbe;
+    ctx.fillStyle = `rgba(${Math.round(Math.min(255, r*f.ton))},${Math.round(Math.min(255, g*f.ton))},${Math.round(Math.min(255, b*f.ton))},${alpha})`;
     ctx.fill();
-    ctx.lineWidth = 0.6;
-    ctx.strokeStyle = `rgba(0,0,0,${0.3 * alpha})`;
+    ctx.lineWidth = instance.px(0.5);
+    ctx.strokeStyle = `rgba(0,0,0,${0.25 * alpha})`;
     ctx.stroke();
   }
 }
